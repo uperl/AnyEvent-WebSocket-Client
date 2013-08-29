@@ -7,6 +7,9 @@ use Moo;
 use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
 
+# ABSTRACT: WebSocket connection for AnyEvent
+# VERSION
+
 =head1 SYNOPSIS
 
  # send a message through the websocket...
