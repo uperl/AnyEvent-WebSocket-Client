@@ -24,13 +24,15 @@ websocket '/count/:num' => sub {
 };
 
 my $server = Mojo::Server::Daemon->new;
+my $port = $server->ioloop->generate_port;
+note "port = $port";
 $server->app(app);
-$server->listen(["http://127.0.0.1:3000"]);
+$server->listen(["http://127.0.0.1:$port"]);
 $server->start;
 
 my $client = AnyEvent::WebSocket::Client->new;
 
-my $connection = $client->connect("ws://127.0.0.1:3000/count/10")->recv;
+my $connection = $client->connect("ws://127.0.0.1:$port/count/10")->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 $connection->send('ping');
