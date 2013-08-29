@@ -1,0 +1,37 @@
+=pod
+
+=head1 NAME
+
+AnyEvent::WebSocket::Client - WebSocket client for AnyEvent
+
+=head1 VERSION
+
+version 0.01
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 ATTRIBUTES
+
+=head2 timeout
+
+=head1 METHODS
+
+=head2 $client-E<gt>connect($uri)
+
+=head1 SEE ALSO
+
+L<AnyEvent::WebSocket::Client::Connection>, L<AnyEvent>, L<URI::ws>,
+
+=head1 AUTHOR
+
+Graham Ollis <plicease@cpan.org>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2013 by Graham Ollis.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
