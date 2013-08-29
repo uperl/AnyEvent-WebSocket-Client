@@ -8,11 +8,16 @@ use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
 use Test::More;
 
-my $port = 3000;
+our $timeout = AnyEvent->timer( after => 5, cb => sub {
+  diag "timeout!";
+  exit 2;
+});
 
 my $hdl;
 
-tcp_server undef, $port, sub {
+my $server_cv = AnyEvent->condvar;
+
+tcp_server undef, undef, sub {
   my $handshake = Protocol::WebSocket::Handshake::Server->new;
   my $frame     = Protocol::WebSocket::Frame->new;
   
@@ -52,12 +57,13 @@ tcp_server undef, $port, sub {
       }
     }
   );
+}, sub {
+  my($fh, $host, $port) = @_;
+  $server_cv->send($port);
 };
 
-our $timeout = AnyEvent->timer( after => 5, cb => sub {
-  diag "timeout!";
-  exit 2;
-});
+my $port = $server_cv->recv;
+note "port = $port";
 
 my $client = AnyEvent::WebSocket::Client->new;
 
