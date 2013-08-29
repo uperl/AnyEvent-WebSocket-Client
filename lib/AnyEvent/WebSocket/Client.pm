@@ -151,7 +151,7 @@ sub connect
 
 This is pretty simple minded and there are probably WebSocket features
 that you might like to use that aren't supported by this distribution.
-Patches are welcome to improve it.
+Patches are encouraged to improve it.
 
 =head1 SEE ALSO
 

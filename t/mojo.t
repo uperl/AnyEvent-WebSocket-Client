@@ -15,11 +15,11 @@ websocket '/count/:num' => sub {
   $self->on(message => sub {
    my($self, $payload) = @_;
      note "send $counter";
-    $self->send($counter++);
-    if($counter >= $max)
-    {
-      $self->finish;
-    }
+     $self->send($counter++);
+     if($counter >= $max)
+     {
+       $self->finish;
+     }
   });
 };
 
@@ -30,10 +30,17 @@ $server->app(app);
 $server->listen(["http://127.0.0.1:$port"]);
 $server->start;
 
+our $timeout = AnyEvent->timer( after => 5, cb => sub {
+  diag "timeout!";
+  exit 2;
+});
+
 my $client = AnyEvent::WebSocket::Client->new;
 
 my $connection = $client->connect("ws://127.0.0.1:$port/count/10")->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
+
+my $done = AnyEvent->condvar;
 
 $connection->send('ping');
 
@@ -45,8 +52,6 @@ $connection->on_each_message(sub {
   $connection->send('ping');
   $last = $message;
 });
-
-my $done = AnyEvent->condvar;
 
 $connection->on_finish(sub {
   $done->send(1);

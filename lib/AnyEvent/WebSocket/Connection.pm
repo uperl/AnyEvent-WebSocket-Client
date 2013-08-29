@@ -75,7 +75,7 @@ sub BUILD
   $self->_handle->on_read(sub {
     $self->_handle->push_read(sub {
       $frame->append($_[0]{rbuf});
-      if(my $message = $frame->next)
+      while(my $message = $frame->next)
       {
         $_->($message) for @{ $self->_next_cb };
         @{ $self->_next_cb } = ();
