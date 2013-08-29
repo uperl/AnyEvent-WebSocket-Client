@@ -68,6 +68,12 @@ be either an instance of L<AnyEvent::WebSocket::Connection> or a croak
 message indicating a failure.  The synopsis above shows how to catch
 such errors using C<eval>.
 
+=head1 CAVEATS
+
+This is pretty simple minded and there are probably WebSocket features
+that you might like to use that aren't supported by this distribution.
+Patches are welcome to improve it.
+
 =head1 SEE ALSO
 
 =over 4

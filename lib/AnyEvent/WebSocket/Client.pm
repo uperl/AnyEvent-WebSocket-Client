@@ -147,6 +147,12 @@ sub connect
 
 1;
 
+=head1 CAVEATS
+
+This is pretty simple minded and there are probably WebSocket features
+that you might like to use that aren't supported by this distribution.
+Patches are welcome to improve it.
+
 =head1 SEE ALSO
 
 =over 4
