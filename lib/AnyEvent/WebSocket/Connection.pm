@@ -1,4 +1,4 @@
-package AnyEvent::WebSocket::Client::Connection;
+package AnyEvent::WebSocket::Connection;
 
 use strict;
 use warnings;

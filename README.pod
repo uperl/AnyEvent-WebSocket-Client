@@ -22,7 +22,7 @@ version 0.01
 
 =head1 SEE ALSO
 
-L<AnyEvent::WebSocket::Client::Connection>, L<AnyEvent>, L<URI::ws>,
+L<AnyEvent::WebSocket::Connection>, L<AnyEvent>, L<URI::ws>,
 
 =head1 AUTHOR
 

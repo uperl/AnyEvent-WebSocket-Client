@@ -9,7 +9,7 @@ use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket qw( tcp_connect );
 use Protocol::WebSocket::Handshake::Client;
-use AnyEvent::WebSocket::Client::Connection;
+use AnyEvent::WebSocket::Connection;
 
 # ABSTRACT: WebSocket client for AnyEvent
 # VERSION
@@ -85,7 +85,7 @@ sub connect
         {
           undef $hdl;
           undef $handshake;
-          $done->send(AnyEvent::WebSocket::Client::Connection->new(
+          $done->send(AnyEvent::WebSocket::Connection->new(
             _handle => AnyEvent::Handle->new(fh => $fh),
           ));
           undef $done;
@@ -101,6 +101,6 @@ sub connect
 
 =head1 SEE ALSO
 
-L<AnyEvent::WebSocket::Client::Connection>, L<AnyEvent>, L<URI::ws>,
+L<AnyEvent::WebSocket::Connection>, L<AnyEvent>, L<URI::ws>,
 
 =cut

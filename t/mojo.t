@@ -31,7 +31,7 @@ $server->start;
 my $client = AnyEvent::WebSocket::Client->new;
 
 my $connection = $client->connect("ws://127.0.0.1:3000/count/10")->recv;
-isa_ok $connection, 'AnyEvent::WebSocket::Client::Connection';
+isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 $connection->send('ping');
 
