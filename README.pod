@@ -10,19 +10,89 @@ version 0.01
 
 =head1 SYNOPSIS
 
+ use AnyEvent::WebSocket::Client;
+ 
+ my $client = AnyEvent::WebSocket::Client->new;
+ 
+ $client->connect("ws://localhost:1234")->cb(sub {
+   my $connection = eval { shift->recv };
+   if($@) {
+     # handle error...
+   }
+   
+   # send a message through the websocket...
+   $connection->send('a message');
+   
+   # recieve message from the websocket...
+   $connection->on_each_message(sub {
+     my $message = shift;
+     ...
+   });
+   
+   # handle a closed connection...
+   $connection->on_finish(sub {
+     ...
+   });
+ 
+ });
+
 =head1 DESCRIPTION
+
+This class provides an interface to interact with a web server that provides
+services via the WebSocket protocol in an L<AnyEvent> context.  It uses
+L<Protocol::WebSocket> rather than reinventing the wheel.  You could use 
+L<AnyEvent> and L<Protocol::WebSocket> directly if you wanted finer grain
+control, but if that is not necessary then this class may save you some time.
 
 =head1 ATTRIBUTES
 
 =head2 timeout
 
+Timeout for the initial connection to the web server.  The default
+is 30.
+
 =head1 METHODS
 
 =head2 $client-E<gt>connect($uri)
 
+Open a connection to the web server and open a WebSocket to the resource
+defined by the given URL.  The URL may be either an instance of L<URI::ws>
+or a string that represents a legal WebSocket URL.
+
+Only insecure (unencrypted) WebSockets are supported, but I hope to have
+that limitation corrected soon.
+
+This method will return an L<AnyEvent> condition variable which you can 
+attach a callback to.  The value sent through the condition variable will
+be either an instance of L<AnyEvent::WebSocket::Connection> or a croak
+message indicating a failure.  The synopsis above shows how to catch
+such errors using C<eval>.
+
 =head1 SEE ALSO
 
-L<AnyEvent::WebSocket::Connection>, L<AnyEvent>, L<URI::ws>,
+=over 4
+
+=item *
+
+L<AnyEvent::WebSocket::Connection>
+
+=item *
+
+L<AnyEvent>
+
+=item *
+
+L<URI::ws>
+
+=item *
+
+L<Protocol::WebSocket>
+
+=item *
+
+L<RFC 6455 The WebSocket Protocol|http://tools.ietf.org/html/rfc6455>
+
+=back
 
 =head1 AUTHOR
 
