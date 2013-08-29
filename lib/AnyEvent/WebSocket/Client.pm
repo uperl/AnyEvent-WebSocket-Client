@@ -64,8 +64,6 @@ has timeout => (
   default => sub { 30 },
 );
 
-my $hdl;
-
 =head1 METHODS
 
 =head2 $client-E<gt>connect($uri)
@@ -114,7 +112,7 @@ sub connect
       url => $uri->as_string,
     );
     
-    $hdl = AnyEvent::Handle->new(fh => $fh);
+    my $hdl = AnyEvent::Handle->new(fh => $fh);
     $hdl->push_write($handshake->to_string);
     
     $hdl->on_read(sub {
