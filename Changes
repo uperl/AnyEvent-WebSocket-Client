@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.04      2013-08-30 09:52:42 -0400
+  - kill some memory cycles
+
 0.03      2013-08-30 08:53:30 -0400
   - added SSL/TLS support
 
