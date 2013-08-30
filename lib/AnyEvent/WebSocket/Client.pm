@@ -112,35 +112,63 @@ sub connect
       url => $uri->as_string,
     );
     
-    my $hdl = AnyEvent::Handle->new(fh => $fh);
+    my $stream = AnyEvent::WebSocket::Client::Stream->new(
+      handle => AnyEvent::Handle->new(
+        fh => $fh,
+      ),
+    );
+    my $hdl = $stream->handle;
+    
     $hdl->push_write($handshake->to_string);
-    
-    $hdl->on_read(sub {
-      return unless $handshake;
-      $hdl->push_read(sub {
-        return unless $handshake;
-        $handshake->parse($_[0]{rbuf});
-        if($handshake->error)
-        {
-          $done->croak("handshake error: " . $handshake->error);
-          undef $hdl;
-          undef $handshake;
-          undef $done;
-        }
-        elsif($handshake->is_done)
-        {
-          undef $hdl;
-          undef $handshake;
-          $done->send(AnyEvent::WebSocket::Connection->new(
-            _handle => AnyEvent::Handle->new(fh => $fh),
-          ));
-          undef $done;
-        }
-      })
-    });
-    
+
+    $stream->read_cb(sub {
+      $handshake->parse($_[0]{rbuf});
+      if($handshake->error)
+      {
+        $done->croak("handshake error: " . $handshake->error);
+        undef $hdl;
+        undef $handshake;
+        undef $done;
+      }
+      elsif($handshake->is_done)
+      {
+        undef $handshake;
+        $done->send(AnyEvent::WebSocket::Connection->new(
+          _stream => $stream,
+        ));
+        undef $hdl;
+        undef $done;
+      }
+    });   
   }, sub { $self->timeout };
   $done;
+}
+
+package
+  AnyEvent::WebSocket::Client::Stream;
+
+use Moo;
+use warnings NONFATAL => 'all';
+
+has handle => (
+  is       => 'ro',
+  required => 1,
+);
+
+has read_cb => (
+  is      => 'rw',
+  lazy    => 1,
+  default => sub { sub { } },
+);
+
+sub BUILD
+{
+  my $self = shift;
+  $self->handle->on_read(sub {
+    $self->handle->push_read(sub {
+      $self->read_cb->(@_);
+    });
+  });
 }
 
 1;

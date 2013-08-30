@@ -46,9 +46,15 @@ much the same).
 
 =cut
 
-has _handle => (
-  is       => 'ro',
+has _stream => (
+  is => 'ro',
   required => 1,
+);
+
+has _handle => (
+  is   => 'ro',
+  lazy => 1,
+  default => sub { shift->_stream->handle },
 );
 
 foreach my $type (qw( each next finish ))
@@ -72,16 +78,14 @@ sub BUILD
 
   my $frame = Protocol::WebSocket::Frame->new;
   
-  $self->_handle->on_read(sub {
-    $self->_handle->push_read(sub {
-      $frame->append($_[0]{rbuf});
-      while(my $message = $frame->next)
-      {
-        $_->($message) for @{ $self->_next_cb };
-        @{ $self->_next_cb } = ();
-        $_->($message) for @{ $self->_each_cb };
-      }
-    });
+  $self->_stream->read_cb(sub {
+    $frame->append($_[0]{rbuf});
+    while(my $message = $frame->next)
+    {
+      $_->($message) for @{ $self->_next_cb };
+      @{ $self->_next_cb } = ();
+      $_->($message) for @{ $self->_each_cb };
+    }
   });
 }
 
