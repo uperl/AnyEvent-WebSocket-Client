@@ -157,6 +157,7 @@ sub connect
         undef $hdl;
         undef $handshake;
         undef $done;
+        undef $stream;
       }
       elsif($handshake->is_done)
       {
@@ -166,6 +167,7 @@ sub connect
         ));
         undef $hdl;
         undef $done;
+        undef $stream;
       }
     });   
   }, sub { $self->timeout };
@@ -177,6 +179,7 @@ package
 
 use Moo;
 use warnings NONFATAL => 'all';
+use Scalar::Util qw( weaken );
 
 has handle => (
   is       => 'ro',
@@ -184,17 +187,18 @@ has handle => (
 );
 
 has read_cb => (
-  is      => 'rw',
-  lazy    => 1,
-  default => sub { sub { } },
+  is       => 'rw',
+  lazy     => 1,
+  default  => sub { sub { } },
 );
 
 sub BUILD
 {
   my $self = shift;
+  weaken $self;
   $self->handle->on_read(sub {
     $self->handle->push_read(sub {
-      $self->read_cb->(@_);
+      $self->read_cb->(@_) if $self->read_cb;
     });
   });
 }

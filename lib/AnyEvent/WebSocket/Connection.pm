@@ -6,6 +6,7 @@ use v5.10;
 use Moo;
 use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
+use Scalar::Util qw( weaken );
 
 # ABSTRACT: WebSocket connection for AnyEvent
 # VERSION
@@ -52,9 +53,10 @@ has _stream => (
 );
 
 has _handle => (
-  is   => 'ro',
-  lazy => 1,
-  default => sub { shift->_stream->handle },
+  is       => 'ro',
+  lazy     => 1,
+  default  => sub { shift->_stream->handle },
+  weak_ref => 1,
 );
 
 foreach my $type (qw( each next finish ))
@@ -69,7 +71,7 @@ foreach my $type (qw( each next finish ))
 sub BUILD
 {
   my $self = shift;
-
+  weaken $self;
   my $finish = sub {
     $_->() for @{ $self->_finish_cb };
   };
