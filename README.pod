@@ -51,16 +51,23 @@ control, but if that is not necessary then this class may save you some time.
 Timeout for the initial connection to the web server.  The default
 is 30.
 
+=head2 ssl_no_verify
+
+If set to true, then secure WebSockets (those that use SSL/TLS) will
+not be verified.  The default is false.
+
+=head2 ssl_ca_file
+
+Provide your own CA certificates file instead of using the system default for
+SSL/TLS verification.
+
 =head1 METHODS
 
 =head2 $client-E<gt>connect($uri)
 
 Open a connection to the web server and open a WebSocket to the resource
-defined by the given URL.  The URL may be either an instance of L<URI::ws>
-or a string that represents a legal WebSocket URL.
-
-Only insecure (unencrypted) WebSockets are supported, but I hope to have
-that limitation corrected soon.
+defined by the given URL.  The URL may be either an instance of L<URI::ws>,
+L<URI::wss>, or a string that represents a legal WebSocket URL.
 
 This method will return an L<AnyEvent> condition variable which you can 
 attach a callback to.  The value sent through the condition variable will
@@ -89,6 +96,10 @@ L<AnyEvent>
 =item *
 
 L<URI::ws>
+
+=item *
+
+L<URI::wss>
 
 =item *
 

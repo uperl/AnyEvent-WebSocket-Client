@@ -67,8 +67,8 @@ has timeout => (
 
 =head2 ssl_no_verify
 
-If set to true, then secure websockets (those that use SSL/TLS) will
-not be varified.  The default is false.
+If set to true, then secure WebSockets (those that use SSL/TLS) will
+not be verified.  The default is false.
 
 =cut
 
