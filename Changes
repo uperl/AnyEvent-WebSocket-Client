@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.03      2013-08-30 08:53:30 -0400
   - added SSL/TLS support
 
 0.02      2013-08-29 15:38:34 -0400
