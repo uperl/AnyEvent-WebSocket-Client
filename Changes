@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - added SSL/TLS support
 
 0.02      2013-08-29 15:38:34 -0400
   - added AnyEvent only test for when Mojo isn't installed

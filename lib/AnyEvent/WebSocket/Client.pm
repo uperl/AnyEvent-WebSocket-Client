@@ -10,6 +10,7 @@ use AnyEvent::Handle;
 use AnyEvent::Socket qw( tcp_connect );
 use Protocol::WebSocket::Handshake::Client;
 use AnyEvent::WebSocket::Connection;
+use PerlX::Maybe qw( maybe provided );
 
 # ABSTRACT: WebSocket client for AnyEvent
 # VERSION
@@ -60,8 +61,30 @@ is 30.
 =cut
 
 has timeout => (
-  is      => 'rw',
+  is      => 'ro',
   default => sub { 30 },
+);
+
+=head2 ssl_no_verify
+
+If set to true, then secure websockets (those that use SSL/TLS) will
+not be varified.  The default is false.
+
+=cut
+
+has ssl_no_verify => (
+  is => 'ro',
+);
+
+=head2 ssl_ca_file
+
+Provide your own CA certificates file instead of using the system default for
+SSL/TLS verification.
+
+=cut
+
+has ssl_ca_file => (
+  is => 'ro',
 );
 
 =head1 METHODS
@@ -69,11 +92,8 @@ has timeout => (
 =head2 $client-E<gt>connect($uri)
 
 Open a connection to the web server and open a WebSocket to the resource
-defined by the given URL.  The URL may be either an instance of L<URI::ws>
-or a string that represents a legal WebSocket URL.
-
-Only insecure (unencrypted) WebSockets are supported, but I hope to have
-that limitation corrected soon.
+defined by the given URL.  The URL may be either an instance of L<URI::ws>,
+L<URI::wss>, or a string that represents a legal WebSocket URL.
 
 This method will return an L<AnyEvent> condition variable which you can 
 attach a callback to.  The value sent through the condition variable will
@@ -94,12 +114,9 @@ sub connect
   
   my $done = AnyEvent->condvar;
 
-  if($uri->scheme eq 'wss')
-  {
-    $done->croak("Secure WebSockets not supported");
-    return $done;
-  }
-  elsif($uri->scheme ne 'ws')
+  # TODO: should we also accept http and https URLs?
+  # probably.
+  if($uri->scheme ne 'ws' && $uri->scheme ne 'wss')
   {
     $done->croak("URI is not a websocket");
     return $done;
@@ -114,7 +131,18 @@ sub connect
     
     my $stream = AnyEvent::WebSocket::Client::Stream->new(
       handle => AnyEvent::Handle->new(
-        fh => $fh,
+                                                        fh       => $fh,
+        provided $uri->secure,                          tls      => 'connect',
+        provided $uri->secure && !$self->ssl_no_verify, peername => $uri->host,
+        provided $uri->secure && !$self->ssl_no_verify, tls_ctx  => {
+                                                                                       verify => 1,
+                                                                                       verify_peername => "https",
+                                                          provided $self->ssl_ca_file, ca_file => $self->ssl_ca_file,
+                                                        },
+                                                        on_error => sub {
+                                                          my ($hdl, $fatal, $msg) = @_;
+                                                          $done->croak("connect error: " . $msg) if $fatal,
+                                                        },
       ),
     );
     my $hdl = $stream->handle;
@@ -194,6 +222,10 @@ L<AnyEvent>
 =item *
 
 L<URI::ws>
+
+=item *
+
+L<URI::wss>
 
 =item *
 
