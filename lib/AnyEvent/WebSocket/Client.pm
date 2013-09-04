@@ -124,7 +124,11 @@ sub connect
     
   tcp_connect $uri->host, $uri->port, sub {
     my $fh = shift;
-    $done->croak("unable to connect") unless $fh;
+    unless($fh)
+    {
+      $done->croak("unable to connect");
+      return;
+    }
     my $handshake = Protocol::WebSocket::Handshake::Client->new(
       url => $uri->as_string,
     );
@@ -142,6 +146,7 @@ sub connect
                                                         on_error => sub {
                                                           my ($hdl, $fatal, $msg) = @_;
                                                           $done->croak("connect error: " . $msg) if $fatal,
+                                                          warn $msg;
                                                         },
       ),
     );

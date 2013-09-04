@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - fix connect error bug
 
 0.04      2013-08-30 09:52:42 -0400
   - kill some memory cycles
