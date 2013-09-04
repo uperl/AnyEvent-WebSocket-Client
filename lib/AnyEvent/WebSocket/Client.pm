@@ -145,8 +145,10 @@ sub connect
                                                         },
                                                         on_error => sub {
                                                           my ($hdl, $fatal, $msg) = @_;
-                                                          $done->croak("connect error: " . $msg) if $fatal,
-                                                          warn $msg;
+                                                          if($fatal)
+                                                          { $done->croak("connect error: " . $msg) }
+                                                          else
+                                                          { warn $msg }
                                                         },
       ),
     );
