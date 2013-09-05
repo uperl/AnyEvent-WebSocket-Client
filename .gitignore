@@ -1,2 +1,3 @@
 /AnyEvent-WebSocket-Client-*
 /.build
+/example/output
