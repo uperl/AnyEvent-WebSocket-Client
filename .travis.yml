@@ -2,7 +2,7 @@ language: perl
 
 install:
   - cpanm -n URI
-  - cpanm -n URI::ws
+  - cpanm -n http://dist.wdlabs.com/URI-ws-0.01.tar.gz
   - cpanm -n Moo
   - cpanm -n PerlX::Maybe
   - cpanm -n Protocol::WebSocket
