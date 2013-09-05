@@ -16,3 +16,8 @@ can use AnyEvent::WebSocket::Client.
    to the jobserver and displays a job as it isrunning via 
    WebSockets.
 
+There are probably a few bugs and race conditions (in particular
+events may be missing for currently running jobs in the webapp
+or from the jobviewer) and there are probably better ways to do
+this sort of thing, but it demonstrates the library so there it
+is.

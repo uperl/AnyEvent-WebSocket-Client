@@ -65,27 +65,52 @@ get '/job/:server/:id' => sub {
     $self->stash(command => \@command);
     $redis->lrange($list, 0, -1, sub {
       my $redis = shift;
-      my @events = map { $json->decode($_) } @{ shift() };
-      use YAML ();
-      print YAML::Dump(\@events);
-      $self->stash(events => \@events);
+      my $events = shift;
+      my @events = map { $json->decode($_) } @$events;
+      $self->stash(encoded_events => $json->encode(\@events));      
+      my $url = $self->req->url->to_abs;
+      $url->path($self->url_for('events', server => $self->param('server'), id => $self->param('id')));
+      $url->scheme($url->scheme eq 'https' ? 'wss' : 'ws');
+      $self->stash(url => $url);      
       $self->render('job');
     });
   });
   $self->render_later;
 } => 'job';
 
-websocket '/watch/:server/:job' => sub {
-  my($self) = @_;
+websocket '/events/:server/:id' => sub {
+  my($self)  = @_;
   my $server = $self->param('server');
-  my $job    = $self->param('job');
-};
+  my $id     = $self->param('id');
+  
+  # Increase inactivity timeout for connection a bit
+  Mojo::IOLoop->stream($self->tx->connection)->timeout(600);
+
+  my $redis = Mojo::Redis->new;
+  
+  $redis->subscribe(join('.', qw( job event ), $server, $id), sub {
+    my($redis, $payload) = @_;
+    my($type, $channel, $data) = @$payload;
+    return unless $type eq 'message';
+    say "data = $data";
+    $self->send($data);
+  });
+  
+  $self->on(finish => sub {
+    $redis->quit;
+    undef $redis;
+  });
+  
+} => 'events';
 
 websocket '/run' => sub {
   my($self) = @_;
 
   my $id1 = join '.', $$, $jobnumber;
   my $id2 = join '.', qw( job event ), $$, $jobnumber++;
+  
+  # Increase inactivity timeout for connection a bit
+  Mojo::IOLoop->stream($self->tx->connection)->timeout(600);
   
   $self->on(message => sub {
     my($self, $message) = @_;
@@ -104,12 +129,15 @@ websocket '/run' => sub {
     else
     {
       $redis->rpush($id2, $message);
+      $redis->publish($id2, $message);
     }
 
   });
   
   $self->on(finish => sub {
-    $redis->rpush($id2, $json->encode({ type => 'closed' }));
+    my $message = $json->encode({ type => 'closed' });
+    $redis->rpush($id2, $message);
+    $redis->publish($id2, $message);
     undef $id1;
     undef $id2;
   });
@@ -156,26 +184,58 @@ __DATA__
 % layout 'default';
 % title 'job';
 
-<pre>
-<%= join ' ', '%', @$command %>
-% foreach my $event (@{ $events }) {
-%   if($event->{type} eq 'out') {
-<%= $event->{data} %>
-%   } elsif($event->{type} eq 'err') {
-<%= $event->{data} %>
-%   } elsif($event->{type} eq 'error') {
-ERROR: <%= $event->{data} %>
-%   } elsif($event->{type} eq 'exit') {
-EXIT: <%= $event->{exit} %> <% if($event->{signal}) { %>SIGNAL: <%= $event->{signal} %><% } %>
-%   } elsif($event->{type} eq 'closed') {
-CONNECTION CLOSED
-%   }
-% }
-</pre>
+<input id="starter_events" value="<%= $encoded_events %>" type="hidden" />
+
+<pre id="output"></pre>
+
+<script language="javascript">
+
+function append_event(event)
+{
+  if(event.type == 'out')
+  {
+    $('#output').append(event.data + "\n");
+  }
+  else if(event.type == 'err')
+  {
+    $('#output').append(event.data + "\n");
+  }
+  else if(event.type == 'error')
+  {
+    $('#output').append("ERROR: " + event.data + "\n");
+  }
+  else if(event.type == 'exit')
+  {
+    $('#output').append("EXIT: " + event.exit);
+    if(event.signal > 0)
+    { $('#output').append(" SIGNAL: " + event.signal) }
+    $('#output').append("\n");
+  }
+  else if(event.type == 'closed')
+  {
+    $('#output').append("CONNECTION CLOSED\n");
+  }
+}
+
+$(document).ready(function() {
+  var ws = new WebSocket('<%= $url %>');
+  var events = $.parseJSON($('#starter_events').attr('value'));
+  $.each(events, function(index, event) {
+    append_event(event);
+    ws.onmessage = function(event) {
+      append_event($.parseJSON(event.data));
+    };
+  });
+});
+
+</script>
 
 @@ layouts/default.html.ep
 <!DOCTYPE html>
 <html>
-  <head><title><%= title %></title></head>
+  <head>
+    <title><%= title %></title>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  </head>
   <body><%= content %></body>
 </html>
