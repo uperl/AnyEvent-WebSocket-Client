@@ -21,3 +21,36 @@ events may be missing for currently running jobs in the webapp
 or from the jobviewer) and there are probably better ways to do
 this sort of thing, but it demonstrates the library so there it
 is.
+
+Instructions:
+
+  - install the prereqs if they aren't there:
+  
+    % cpanm JSON AnyEvent AnyEvent::Open3::Simple       \
+    AnyEvent::WebSocket::Client Mojolicious Mojo::Redis \
+    LWP::UserAgent URI Text::Table
+
+  - start the jobserver 
+  
+    % jobserver
+    
+  - in another window run a slow running process that produces
+    some output, you can use slowlast as an example that comes
+    with this distro
+    
+    % slowlast
+  
+  - in your web browser, go to the jobserver url and navigate
+    to the slow running process.  You should see the existing
+    output, plus any new output as it gets sent through the 
+    job server.
+  
+    http://localhost:3000
+
+  - in another window (again!) you can use jobviewer to watch
+    a job in process:
+    
+    % jobviewer
+    ... lists jobs managed by jobserver
+    % jobviewer 1234:1
+    ... watch job 1234:1
