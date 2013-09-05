@@ -1,0 +1,18 @@
+This is a silly little example that shows how you
+can use AnyEvent::WebSocket::Client.
+
+ - jobserver is a Mojolicious::Lite app (also requires Mojo::Redis
+   and a redis server running on localhost) that cordinates and
+   displays job output.
+ 
+ - jobrunner is an AnyEvent::WebSocket::Client program that runs a
+   program locally and sends the output as events via WebSocket
+   to jobserver.
+ 
+ - slowlast is just a program that runs last -30 very slowly so
+   that you can see the output update on the server.
+   
+ - jobviewer is an AnyEvent::WebSocket::Client program that attaches
+   to the jobserver and displays a job as it isrunning via 
+   WebSockets.
+

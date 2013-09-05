@@ -24,21 +24,21 @@ my $ipc = AnyEvent::Open3::Simple->new(
   on_stdout => sub {
     my($proc, $line) = @_;
     say $line;
-    $connection->send(to_json({ stdout => $line }));
+    $connection->send(to_json({ type => 'out', data => $line }));
   },
   on_stderr => sub {
     my($proc, $line) = @_;
     say STDERR $line;
-    $connection->send(to_json({ stderr => $line }));
+    $connection->send(to_json({ type => 'err', data => $line }));
   },
   on_exit => sub {
     my($proc, $exit, $signal) = @_;
-    $connection->send(to_json({ exit => $exit, signal => $signal }));
+    $connection->send(to_json({ type => 'exit', exit => $exit, signal => $signal }));
     $done->send([$exit,$signal]);
   },
   on_error => sub {
     my($error) = @_;
-    $connection->send(to_json({ error => $error }));
+    $connection->send(to_json({ type => 'error', data => $error }));
     $done->croak($error);
   },
 );
