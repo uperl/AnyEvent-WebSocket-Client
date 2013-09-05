@@ -5,6 +5,7 @@ BEGIN { plan skip_all => 'Requires Capture::Tiny' unless eval q{ use Capture::Ti
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolicious::Lite; 1 } }
 BEGIN { plan skip_all => 'Requires Test::Memory::Cycle' unless eval q{ use Test::Memory::Cycle; 1 } }
+BEGIN { plan skip_all => 'Requires Devel::Cycle' unless eval q{ use Devel::Cycle } }
 use AnyEvent::WebSocket::Client;
 
 app->log->level('fatal');
@@ -46,7 +47,6 @@ $connection->send('foo');
 
 is $finished, 0, 'finished = 0';
 
-use Devel::Cycle;
 note capture_stderr { memory_cycle_ok $connection };
 undef $connection;
 
