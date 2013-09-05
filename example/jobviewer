@@ -1,0 +1,80 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use v5.10;
+use AnyEvent;
+use JSON qw( from_json );
+use AnyEvent::WebSocket::Client;
+use LWP::UserAgent;
+use URI;
+use Text::Table;
+
+my $uri = URI->new("http://localhost:3000");
+
+if(@ARGV == 0)
+{
+  $uri->path("/server.json");
+  my $ua = LWP::UserAgent->new;
+  my $res = $ua->get($uri);
+  die $res->status_line unless $res->is_success;
+  my $data = from_json($res->decoded_content);
+  
+  my $table = Text::Table->new( 'id', 'command' );
+  
+  foreach my $server (sort keys %$data)
+  {
+    foreach my $id (sort keys %{ $data->{$server} })
+    {
+      $table->load([ "$server:$id", join(' ', '%', @{ $data->{$server}->{$id}}) ]);
+    }
+  }
+  
+  print $table;
+  print "\n";
+  print "usage: $0 [ id ]\n";
+  exit;
+}
+
+my($server, $id) = split /:/, shift @ARGV;
+unless(defined $server && defined $id)
+{
+  print "usage: $0 [ id ]\n";
+  exit 2;
+}
+
+$uri->scheme('ws');
+$uri->path("/events/$server/$id");
+
+my $ws = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
+
+my $done = AnyEvent->condvar;
+
+$ws->on_each_message(sub {
+  my $msg = from_json( shift );
+  if($msg->{type} eq 'out')
+  {
+    say $msg->{data};
+  }
+  elsif($msg->{type} eq 'err')
+  {
+    say $msg->{data};
+  }
+  elsif($msg->{type} eq 'exit')
+  {
+    print "EXIT: " . $msg->{exit};
+    print " SIGNAL: " . $msg->{signal} if $msg->{signal};
+    print "\n";
+  }
+  elsif($msg->{type} eq 'error')
+  {
+    say "ERROR: " . $msg->{data};
+  }
+  elsif($msg->{type} eq 'closed')
+  {
+    say "CONNECTION CLOSED";
+    $done->send;
+  }
+});
+
+$done->recv;

@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/usr/bin/perl
 
 use autodie;
 use strict;
@@ -33,6 +33,17 @@ sub get_job_hash
 }
 
 get '/' => sub {
+  shift->redirect_to('index');
+};
+
+get '/server.json' => sub {
+  my $self = shift;
+  get_job_hash($self, sub {
+    $self->render(json => $self->stash('jobs'));
+  });
+};
+
+get '/server' => sub {
   my $self = shift;
   get_job_hash($self, sub {
     $self->render('index');
