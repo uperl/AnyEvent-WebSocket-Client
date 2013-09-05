@@ -66,27 +66,47 @@ get '/server/:server' => sub {
   });
 } => 'server';
 
-get '/job/:server/:id' => sub {
-  my($self) = shift;
-  my $key = join '.', $self->param('server'), $self->param('id');
+sub get_old_events
+{
+  my($c, $cb) = @_;
+  my $key = join '.', $c->param('server'), $c->param('id');
   my $list = join '.', qw( job event ), $key;
   $redis->hget('jobs', $key, sub {
     my($redis, $command) = @_;
     my @command = @{ $json->decode($command) };
-    $self->stash(command => \@command);
+    $c->stash(command => \@command);
     $redis->lrange($list, 0, -1, sub {
       my $redis = shift;
       my $events = shift;
       my @events = map { $json->decode($_) } @$events;
-      $self->stash(encoded_events => $json->encode(\@events));      
-      my $url = $self->req->url->to_abs;
-      $url->path($self->url_for('events', server => $self->param('server'), id => $self->param('id')));
+      $c->stash(events => \@events);
+      $c->stash(encoded_events => $json->encode(\@events));      
+      my $url = $c->req->url->to_abs;
+      $url->path($c->url_for('events', server => $c->param('server'), id => $c->param('id')));
       $url->scheme($url->scheme eq 'https' ? 'wss' : 'ws');
-      $self->stash(url => $url);      
-      $self->render('job');
+      $c->stash(url => $url);
+      $cb->();
     });
   });
-  $self->render_later;
+  $c->render_later;
+}
+
+get '/job/:server/:id.json' => sub {
+  my $self = shift;
+  get_old_events($self, sub {
+    $self->render(json => { 
+      command   => $self->stash->{command},
+      events    => $self->stash->{events},
+      event_url => $self->stash->{url},
+    });
+  });
+};
+
+get '/job/:server/:id' => sub {
+  my $self = shift;
+  get_old_events($self, sub {
+    $self->render('job');
+  });
 } => 'job';
 
 websocket '/events/:server/:id' => sub {

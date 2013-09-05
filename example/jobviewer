@@ -43,15 +43,20 @@ unless(defined $server && defined $id)
   exit 2;
 }
 
-$uri->scheme('ws');
-$uri->path("/events/$server/$id");
-
-my $ws = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
+$uri->path("/job/$server/$id.json");
+my $ua = LWP::UserAgent->new;
+my $res = $ua->get($uri);
+die $res->status_line unless $res->is_success;
+my $job = from_json($res->decoded_content);
 
 my $done = AnyEvent->condvar;
 
-$ws->on_each_message(sub {
-  my $msg = from_json( shift );
+say join(' ', '%', @{ $job->{command} });
+process_message($_) for @{ $job->{events} };
+
+sub process_message
+{
+  my $msg = shift;
   if($msg->{type} eq 'out')
   {
     say $msg->{data};
@@ -75,6 +80,13 @@ $ws->on_each_message(sub {
     say "CONNECTION CLOSED";
     $done->send;
   }
+}
+
+my $ws = AnyEvent::WebSocket::Client->new->connect($job->{event_url})->recv;
+
+$ws->on_each_message(sub {
+  my $msg = from_json( shift );
+  process_message($msg);
 });
 
 $done->recv;
