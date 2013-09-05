@@ -92,7 +92,6 @@ websocket '/events/:server/:id' => sub {
     my($redis, $payload) = @_;
     my($type, $channel, $data) = @$payload;
     return unless $type eq 'message';
-    say "data = $data";
     $self->send($data);
   });
   
