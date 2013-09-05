@@ -8,6 +8,7 @@ install:
   - cpanm -n Protocol::WebSocket
   - cpanm -n Scalar::Util
   - cpanm -n AnyEvent
+  - cpanm -n Mojolicious
 
 perl:
   - "5.10"
