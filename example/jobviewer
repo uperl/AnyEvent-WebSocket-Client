@@ -1,0 +1,89 @@
+#!/usr/bin/env perl
+
+use autodie;
+use strict;
+use warnings;
+use v5.10;
+use EV;
+use AnyEvent;
+use Linux::Inotify2;
+use Mojolicious::Lite;
+use Path::Class qw( file dir );
+use JSON qw( from_json );
+
+my $root = file( __FILE__ )->parent->subdir('output');
+
+my $jobnumber = 0;
+
+get '/' => sub {
+  my $self = shift;
+  $self->render('index');
+};
+
+websocket '/watch/:server/:job' => sub {
+  my($self) = @_;
+  my $server = $self->param('server');
+  my $job    = $self->param('job');
+};
+
+websocket '/run' => sub {
+  my($self) = @_;
+  
+  my $file = $root->file($$,$jobnumber++);
+  $file->parent->mkpath(0,0700)
+    unless -d $file->parent;
+  open my $fh, '>', $file;
+  
+  $self->on(message => sub {
+    my($self, $message) = @_;
+
+    my $payload = eval { from_json($message) };
+    if(my $error = $@)
+    {
+      warn $@;
+      return;
+    }
+    
+    if(ref($payload) eq 'ARRAY')
+    {
+      say $fh "% " . join(' ', @$payload);
+      return;
+    }
+
+    if($payload->{error})
+    { say $fh "error: " . $payload->{error} }
+
+    if($payload->{stdout})
+    { say $fh "out: " . $payload->{stdout} }
+
+    if($payload->{stderr})
+    { say $fh "err: " . $payload->{stderr} }
+
+    if($payload->{signal})
+    { say $fh "signal: " . $payload->{signal} }
+
+    if(defined $payload->{exit})
+    { say $fh "exit: " . $payload->{exit} }
+
+  });
+  
+  $self->on(finish => sub {
+    say $fh "END:";
+    close $fh;
+  });
+};
+
+app->start;
+__DATA__
+
+@@ index.html.ep
+% layout 'default';
+% title 'Welcome';
+Welcome to the Mojolicious real-time web framework!
+
+@@ layouts/default.html.ep
+<!DOCTYPE html>
+<html>
+  <head><title><%= title %></title></head>
+  <body><%= content %></body>
+</html>
