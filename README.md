@@ -1,4 +1,4 @@
-# AnyEvent::WebSocket::Client
+# AnyEvent::WebSocket::Client [![Build Status](https://secure.travis-ci.org/plicease/AnyEvent-WebSocket-Client.png)](http://travis-ci.org/plicease/AnyEvent-WebSocket-Client)
 
 WebSocket client for AnyEvent
 
