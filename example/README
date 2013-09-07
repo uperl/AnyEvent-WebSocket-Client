@@ -25,10 +25,8 @@ is.
 Instructions:
 
   - install the prereqs if they aren't there:
-  
-    % cpanm JSON AnyEvent AnyEvent::Open3::Simple       \
-    AnyEvent::WebSocket::Client Mojolicious Mojo::Redis \
-    LWP::UserAgent URI Text::Table
+
+    % cpanm --installdeps .  
 
   - start the jobserver 
   
