@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - require PerlX::Maybe 0.003 for "provided" method
 
 0.05      2013-09-05 15:34:56 -0400
   - propagate connect error properly
