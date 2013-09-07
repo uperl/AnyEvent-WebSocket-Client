@@ -2,10 +2,6 @@
 
 WebSocket client for AnyEvent
 
-# VERSION
-
-version 0.05
-
 # SYNOPSIS
 
     use AnyEvent::WebSocket::Client;

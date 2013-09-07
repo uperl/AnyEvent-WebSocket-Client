@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.06      2013-09-07 04:29:10 -0400
   - require PerlX::Maybe 0.003 for "provided" method
 
 0.05      2013-09-05 15:34:56 -0400
