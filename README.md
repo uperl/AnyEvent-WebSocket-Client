@@ -8,14 +8,12 @@ WebSocket client for AnyEvent
     
     my $client = AnyEvent::WebSocket::Client->new;
     
-
     $client->connect("ws://localhost:1234")->cb(sub {
       my $connection = eval { shift->recv };
       if($@) {
         # handle error...
       }
       
-
     # send a message through the websocket...
     $connection->send('a message');
     
