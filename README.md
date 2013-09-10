@@ -6,7 +6,6 @@ WebSocket client for AnyEvent
 
     use AnyEvent::WebSocket::Client;
     
-
     my $client = AnyEvent::WebSocket::Client->new;
     
 
@@ -20,20 +19,17 @@ WebSocket client for AnyEvent
     # send a message through the websocket...
     $connection->send('a message');
     
-
     # recieve message from the websocket...
     $connection->on_each_message(sub {
       my $message = shift;
       ...
     });
     
-
       # handle a closed connection...
       $connection->on_finish(sub {
         ...
       });
     
-
     });
 
 # DESCRIPTION
