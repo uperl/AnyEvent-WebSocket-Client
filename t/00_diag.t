@@ -34,7 +34,7 @@ foreach my $module (@modules)
   }
   else
   {
-    diag sprintf "%20s none";
+    diag sprintf "%-20s none", $module;
   }
 }
 
