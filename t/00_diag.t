@@ -5,6 +5,8 @@ use Test::More tests => 1;
 
 BEGIN { eval q{ use EV } }
 
+pass 'okay';
+
 my @modules = sort qw(
   AnyEvent
   AnyEvent::Socket
@@ -27,6 +29,8 @@ diag '';
 diag '';
 diag '';
 
+diag sprintf "%-20s %s", 'perl', $^V;
+
 foreach my $module (@modules)
 {
   if(eval qq{ use $module; 1 })
@@ -43,4 +47,3 @@ diag '';
 diag '';
 diag '';
 
-pass 'okay';
