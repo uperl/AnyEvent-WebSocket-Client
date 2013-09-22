@@ -3,6 +3,7 @@ use warnings;
 use Test::More;
 BEGIN { plan skip_all => 'Requires Capture::Tiny' unless eval q{ use Capture::Tiny qw( capture_stderr ); 1 } }
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
+BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicious 3.0; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolicious::Lite; 1 } }
 BEGIN { plan skip_all => 'Requires Test::Memory::Cycle' unless eval q{ use Test::Memory::Cycle; 1 } }
 BEGIN { plan skip_all => 'Requires Devel::Cycle' unless eval q{ use Devel::Cycle; 1 } }
