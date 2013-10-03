@@ -9,10 +9,10 @@ use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
 use Test::More;
 
-#our $timeout = AnyEvent->timer( after => 5, cb => sub {
-#  diag "timeout!";
-#  exit 2;
-#});
+our $timeout = AnyEvent->timer( after => 5, cb => sub {
+  diag "timeout!";
+  exit 2;
+});
 
 my $hdl;
 
@@ -48,6 +48,8 @@ tcp_server undef, undef, sub {
         : $frame->new("$message");
         
         $hdl->push_write($reply->to_bytes);
+        
+        $hdl->push_shutdown if $message eq 'quit';
       }
     }
   );
