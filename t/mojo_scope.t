@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More;
 BEGIN { plan skip_all => 'Requires Capture::Tiny' unless eval q{ use Capture::Tiny qw( capture_stderr ); 1 } }
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicious 3.0; 1 } }
@@ -10,6 +10,8 @@ BEGIN { plan skip_all => 'Requires Devel::Cycle' unless eval q{ use Devel::Cycle
 use AnyEvent::WebSocket::Client;
 use lib "t";
 use testlib::Mojo qw(start_mojo);
+
+plan tests => 5;
 
 app->log->level('fatal');
 
