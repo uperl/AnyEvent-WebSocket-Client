@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.10      2013-10-03 16:55:28 -0400
   - added a close method for the AnyEvent::WebSocket::Connection class
   - better test coverage
 
