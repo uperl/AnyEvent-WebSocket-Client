@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.09      2013-10-03 09:42:47 -0400
   - Fix for messages that Perl considers "false" (thanks Toshio Ito gh#4)
 
 0.08      2013-09-22 03:47:32 -0400
