@@ -7,6 +7,7 @@ BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicio
 BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolicious::Lite; 1 } }
 use lib "t";
 use testlib::Mojo qw(start_mojo);
+use utf8;
 
 app->log->level('fatal');
 
@@ -44,6 +45,8 @@ for my $testcase (
   {label => "5k bytes", data => "a" x 5000},
   {label => "empty", data => ""},
   {label => "0", data => 0},
+  {label => "utf8 charaters", data => 'ＵＴＦ８ ＷＩＤＥ ＣＨＡＲＡＣＴＥＲＳ'},
+
   {label => "quit", data => "quit"},
 )
 {
