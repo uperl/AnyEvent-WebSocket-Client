@@ -48,7 +48,7 @@ tcp_server undef, undef, sub {
       
       $frame->append($chunk);
       
-      while(my $message = $frame->next) {
+      while(defined(my $message = $frame->next)) {
         note "send $counter";
         $hdl->push_write($frame->new($counter++)->to_bytes);
         if($counter >= $max)
