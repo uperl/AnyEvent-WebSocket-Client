@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.11      2013-10-03 17:10:38 -0400
+  - fix mojo_ test plans for when mojo is not installed
+
 0.10      2013-10-03 16:55:28 -0400
   - added a close method for the AnyEvent::WebSocket::Connection class
   - better test coverage
