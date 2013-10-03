@@ -30,6 +30,7 @@ use Scalar::Util qw( weaken );
  # close an opened connection
  # (can do this either inside or outside of
  # a callback)
+ use AnyEvent::WebSocket::Connection 0.10; # requires 0.10
  $connection->close;
 
 (See L<AnyEvent::WebSocket::Client> on how to create

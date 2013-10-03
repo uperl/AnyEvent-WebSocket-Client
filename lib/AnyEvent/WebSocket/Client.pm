@@ -43,6 +43,7 @@ use PerlX::Maybe qw( maybe provided );
 
    # close the connection (either inside or
    # outside another callback)
+   use AnyEvent::WebSocket::Client 0.10; # requires 0.10
    $connection->close;
  
  });
