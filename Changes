@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - better test coverage
 
 0.09      2013-10-03 09:42:47 -0400
   - Fix for messages that Perl considers "false" (thanks Toshio Ito gh#4)
