@@ -1,49 +1,51 @@
 use strict;
 use warnings;
-use v5.10;
 use Test::More tests => 1;
-
 BEGIN { eval q{ use EV } }
+eval q{ 
+  use FindBin ();
+  use File::Spec;
+  1;
+} || die $@;
 
 pass 'okay';
 
-my @modules = sort qw(
-  AnyEvent
-  AnyEvent::Socket
-  Capture::Tiny
-  Devel::Cycle
-  EV
-  Mojolicious
-  Moo
-  PerlX::Maybe 
-  PerlX::Maybe::XS
-  Protocol::WebSocket
-  Scalar::Util
-  Test::More
-  Test::Memory::Cycle
-  URI
-  URI::ws
-);
+my @modules;
+do {
+  my $fh;
+  open($fh, '<', File::Spec->catfile($FindBin::Bin, '00_diag.txt'));
+  @modules = <$fh>;
+  close $fh;
+  chomp @modules;
+};
+
+my $max = 1;
+$max = $_ > $max ? $_ : $max for map { length $_ } @modules;
+our $format = "%-${max}s %s"; 
 
 diag '';
 diag '';
 diag '';
 
-diag sprintf "%-20s %s", 'perl', $^V;
+diag sprintf $format, 'perl ', $^V;
+
+require(File::Spec->catfile($FindBin::Bin, '00_diag.pl'))
+  if -e File::Spec->catfile($FindBin::Bin, '00_diag.pl');
 
 foreach my $module (@modules)
 {
   if(eval qq{ use $module; 1 })
   {
-    diag sprintf "%-20s %s", $module, eval qq{ \$$module\::VERSION } // 'undef';
+    my $ver = eval qq{ \$$module\::VERSION };
+    $ver = 'undef' unless defined $ver;
+    diag sprintf $format, $module, $ver;
   }
   else
   {
-    diag sprintf "%-20s none", $module;
+    diag sprintf $format, $module, '-';
   }
 }
 
 diag '';
 diag '';
 diag '';
-

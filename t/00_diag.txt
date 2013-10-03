@@ -1,0 +1,14 @@
+AnyEvent
+Devel::Cycle
+EV
+Exporter
+Module::Build
+Mojolicious
+Moo
+PerlX::Maybe
+PerlX::Maybe::XS
+Protocol::WebSocket
+Test::Memory::Cycle
+Test::More
+URI
+URI::ws
