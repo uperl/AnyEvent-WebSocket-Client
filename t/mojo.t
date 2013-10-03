@@ -5,6 +5,8 @@ use Test::More;
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicious 3.0; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolicious::Lite; 1 } }
+use lib "t";
+use testlib::Mojo qw(start_mojo);
 
 app->log->level('fatal');
 
@@ -25,12 +27,7 @@ websocket '/count/:num' => sub {
   });
 };
 
-my $server = Mojo::Server::Daemon->new;
-my $port = $server->ioloop->generate_port;
-note "port = $port";
-$server->app(app);
-$server->listen(["http://127.0.0.1:$port"]);
-$server->start;
+my ($server, $port) = start_mojo(app => app());
 
 our $timeout = AnyEvent->timer( after => 5, cb => sub {
   diag "timeout!";

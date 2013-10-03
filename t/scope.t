@@ -8,6 +8,8 @@ BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolic
 BEGIN { plan skip_all => 'Requires Test::Memory::Cycle' unless eval q{ use Test::Memory::Cycle; 1 } }
 BEGIN { plan skip_all => 'Requires Devel::Cycle' unless eval q{ use Devel::Cycle; 1 } }
 use AnyEvent::WebSocket::Client;
+use lib "t";
+use testlib::Mojo qw(start_mojo);
 
 app->log->level('fatal');
 
@@ -25,12 +27,8 @@ websocket '/foo' => sub {
   });
 };
 
-my $server = Mojo::Server::Daemon->new;
-my $port = $server->ioloop->generate_port;
-note "port = $port";
-$server->app(app);
-$server->listen(["http://127.0.0.1:$port"]);
-$server->start;
+
+my ($server, $port) = start_mojo(app => app());
 
 our $timeout = AnyEvent->timer( after => 5, cb => sub {
   diag "timeout!";
