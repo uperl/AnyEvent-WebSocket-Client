@@ -8,6 +8,7 @@ use AnyEvent::WebSocket::Client;
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
 use Test::More;
+use utf8;
 
 our $timeout = AnyEvent->timer( after => 5, cb => sub {
   diag "timeout!";
@@ -42,14 +43,16 @@ tcp_server undef, undef, sub {
       
       while(defined(my $message = $frame->next)) {
         next if !$frame->is_text && !$frame->is_binary;
+        #$DB::single = 1;
+        #$message = encode('UTF-8', $message);
 
-        my $reply = $message eq 'quit'
-        ? $frame->new(type => 'close') # doesn't seem to work
-        : $frame->new("$message");
+        $hdl->push_write($frame->new("$message")->to_bytes);
         
-        $hdl->push_write($reply->to_bytes);
-        
-        $hdl->push_shutdown if $message eq 'quit';
+        if($message eq 'quit')
+        {
+          $hdl->push_write($frame->new(type => 'close')->to_bytes);
+          $hdl->push_shutdown;
+        }
       }
     }
   );
