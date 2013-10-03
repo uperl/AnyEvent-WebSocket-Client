@@ -86,7 +86,11 @@ Patches are encouraged to improve it.
 
 # AUTHOR
 
-Graham Ollis <plicease@cpan.org>
+author: Graham Ollis <plicease@cpan.org>
+
+contributors:
+
+Toshio Ito
 
 # COPYRIGHT AND LICENSE
 
