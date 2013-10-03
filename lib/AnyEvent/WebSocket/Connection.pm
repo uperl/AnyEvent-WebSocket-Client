@@ -114,6 +114,7 @@ sub send
 Register a callback to be called on each subsequent message received.
 The message itself will be passed in as the only parameter to the
 callback.
+The message is a decoded text string.
 
 =cut
 
@@ -129,6 +130,7 @@ sub on_each_message
 Register a callback to be called the next message received.
 The message itself will be passed in as the only parameter to the
 callback.
+The message is a decoded text string.
 
 =cut
 
@@ -137,6 +139,43 @@ sub on_next_message
   my($self, $cb) = @_;
   push @{ $self->_next_cb }, $cb;
   $self;
+}
+
+=head2 $connection-E<gt>on_each_data($cb)
+
+Register a callback to be called on each subsequent message received.
+
+This method is the same as C<on_each_message()> except that C<$cb> is called as in
+
+    $cb->($byte_message, $type)
+
+where C<$byte_message> is a non-decoded byte string,
+and C<$type> is the type of the message (either C<"text"> or C<"binary">).
+
+=cut
+
+sub on_each_data
+{
+  die "implement it";
+}
+
+
+=head2 $connection-E<gt>on_next_data($cb)
+
+Register a callback to be called the next message received.
+
+This method is the same as C<on_next_message()> except that C<$cb> is called as in
+
+    $cb->($byte_message, $type)
+
+where C<$byte_message> is a non-decoded byte string,
+and C<$type> is the type of the message (either C<"text"> or C<"binary">).
+
+=cut
+
+sub on_next_data
+{
+  die "implement it";
 }
 
 =head2 $connection-E<gt>on_finish($cb)
