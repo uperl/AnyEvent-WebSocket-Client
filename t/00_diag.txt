@@ -2,6 +2,7 @@ AnyEvent
 Devel::Cycle
 EV
 Exporter
+Math::Random::Secure
 Module::Build
 Mojolicious
 Moo
