@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More;
+use Test::More tests => 5;
 BEGIN { plan skip_all => 'Requires Capture::Tiny' unless eval q{ use Capture::Tiny qw( capture_stderr ); 1 } }
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicious 3.0; 1 } }
@@ -54,4 +54,3 @@ $server->ioloop->one_tick;
 
 is $finished, 1, 'finished = 1';
 
-done_testing;

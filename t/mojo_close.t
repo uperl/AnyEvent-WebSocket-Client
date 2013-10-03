@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use AnyEvent::WebSocket::Client;
-use Test::More;
+use Test::More tests => 4;
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicious 3.0; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolicious::Lite; 1 } }
@@ -63,4 +63,3 @@ $close_cv->recv;
 
 is $closed, 1, "closed";
 
-done_testing;

@@ -7,7 +7,7 @@ use AnyEvent::Socket qw( tcp_server);
 use AnyEvent::WebSocket::Client;
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
-use Test::More;
+use Test::More tests => 8;
 use utf8;
 
 our $timeout = AnyEvent->timer( after => 5, cb => sub {
@@ -97,4 +97,3 @@ for my $testcase (
 
 is $quit_cv->recv, "finished", "friendly disconnect";
 
-done_testing;

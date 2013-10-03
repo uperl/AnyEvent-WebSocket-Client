@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use AnyEvent::WebSocket::Client;
-use Test::More;
+use Test::More tests => 3;
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicious 3.0; 1 } }
 BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolicious::Lite; 1 } }
@@ -60,4 +60,3 @@ is $done->recv, '1', 'friendly disconnect';
 
 is $last, 9, 'last = 9';
 
-done_testing;
