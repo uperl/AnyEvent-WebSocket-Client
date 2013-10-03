@@ -26,6 +26,11 @@ use Scalar::Util qw( weaken );
  $connection->on_finish(sub {
    ...
  });
+ 
+ # close an opened connection
+ # (can do this either inside or outside of
+ # a callback)
+ $connection->close;
 
 (See L<AnyEvent::WebSocket::Client> on how to create
 a connection)

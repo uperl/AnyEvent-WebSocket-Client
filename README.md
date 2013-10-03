@@ -23,10 +23,14 @@ WebSocket client for AnyEvent
       ...
     });
     
-      # handle a closed connection...
-      $connection->on_finish(sub {
-        ...
-      });
+    # handle a closed connection...
+    $connection->on_finish(sub {
+      ...
+    });
+
+      # close the connection (either inside or
+      # outside another callback)
+      $connection->close;
     
     });
 

@@ -40,6 +40,10 @@ use PerlX::Maybe qw( maybe provided );
    $connection->on_finish(sub {
      ...
    });
+
+   # close the connection (either inside or
+   # outside another callback)
+   $connection->close;
  
  });
 
