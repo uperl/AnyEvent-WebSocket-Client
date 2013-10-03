@@ -152,6 +152,20 @@ sub on_finish
   $self;
 }
 
+=head2 $connection-E<gt>close
+
+Close the connection.
+
+=cut
+
+sub close
+{
+  my($self) = @_;
+
+  $self->_handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
+  $self->_handle->push_shutdown;
+}
+
 1;
 
 =head1 SEE ALSO

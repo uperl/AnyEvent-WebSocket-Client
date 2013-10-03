@@ -11,15 +11,19 @@ use utf8;
 
 app->log->level('fatal');
 
+my $close_cv = AE::cv;
+my $closed = 0;
+
 websocket '/echo' => sub {
   my($self) = shift;
   $self->on(message => sub {
     my($self, $payload) = @_;
     $self->send($payload);
-    if($payload eq "quit")
-    {
-      $self->finish;
-    }
+  });
+  $self->on(finish => sub {
+    my ($ws, $code, $reason) = @_;
+    $closed = 1;
+    $close_cv->send($code, $reason);
   });
 };
 
@@ -42,11 +46,6 @@ $connection->on_finish(sub {
 
 for my $testcase (
   {label => "single character", data => "a"},
-  {label => "5k bytes", data => "a" x 5000},
-  {label => "empty", data => ""},
-  {label => "0", data => 0},
-  {label => "utf8 charaters", data => 'ＵＴＦ８ ＷＩＤＥ ＣＨＡＲＡＣＴＥＲＳ'},
-
   {label => "quit", data => "quit"},
 )
 {
@@ -59,6 +58,9 @@ for my $testcase (
   is $cv->recv, $testcase->{data}, "$testcase->{label}: echo succeeds";
 }
 
-is $quit_cv->recv, "finished", "friendly disconnect";
+$connection->close;
+$close_cv->recv;
+
+is $closed, 1, "closed";
 
 done_testing;
