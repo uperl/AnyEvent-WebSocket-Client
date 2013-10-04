@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use v5.10;
+use utf8;
 BEGIN { eval q{ use EV } }
 use AnyEvent::Handle;
 use AnyEvent::Socket qw( tcp_server);
@@ -8,7 +9,6 @@ use AnyEvent::WebSocket::Client;
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
 use Test::More tests => 8;
-use utf8;
 
 our $timeout = AnyEvent->timer( after => 5, cb => sub {
   diag "timeout!";

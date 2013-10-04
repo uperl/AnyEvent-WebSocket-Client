@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use utf8;
 use AnyEvent::WebSocket::Client;
 use Test::More;
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
@@ -7,7 +8,6 @@ BEGIN { plan skip_all => 'Requires Mojolicious 3.0' unless eval q{ use Mojolicio
 BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolicious::Lite; 1 } }
 use lib "t";
 use testlib::Mojo qw(start_mojo);
-use utf8;
 
 plan tests => 8;
 
