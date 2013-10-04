@@ -90,10 +90,12 @@ sub BUILD
     $frame->append($_[0]{rbuf});
     while(defined(my $message = $frame->next))
     {
-      next if !$frame->is_text && !$frame->is_binary;
-      $_->($message) for @{ $self->_next_cb };
-      @{ $self->_next_cb } = ();
-      $_->($message) for @{ $self->_each_cb };
+      if($frame->is_text || $frame->is_binary)
+      {
+        $_->($message) for @{ $self->_next_cb };
+        @{ $self->_next_cb } = ();
+        $_->($message) for @{ $self->_each_cb };
+      }
     }
   });
 }
