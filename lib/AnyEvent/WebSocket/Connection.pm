@@ -7,6 +7,7 @@ use Moo;
 use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
 use Scalar::Util qw( weaken );
+use Encode qw(decode);
 
 # ABSTRACT: WebSocket connection for AnyEvent
 # VERSION
@@ -59,7 +60,7 @@ has _handle => (
   weak_ref => 1,
 );
 
-foreach my $type (qw( each next finish ))
+foreach my $type (qw( each_msg next_msg each_data next_data finish ))
 {
   has "_${type}_cb" => (
     is       => 'ro',
@@ -82,12 +83,21 @@ sub BUILD
   
   $self->_stream->read_cb(sub {
     $frame->append($_[0]{rbuf});
-    while(defined(my $message = $frame->next))
+    while(defined(my $data = $frame->next_bytes))
     {
       next if !$frame->is_text && !$frame->is_binary;
-      $_->($message) for @{ $self->_next_cb };
-      @{ $self->_next_cb } = ();
-      $_->($message) for @{ $self->_each_cb };
+      my $type = $frame->is_text ? "text" : "binary";
+      
+      $_->($data, $type) for @{ $self->_next_data_cb };
+      @{ $self->_next_data_cb } = ();
+      $_->($data, $type) for @{ $self->_each_data_cb };
+
+      if(@{ $self->_next_msg_cb } || @{ $self->_each_msg_cb }) {
+        my $message = decode("utf8", $data);
+        $_->($message) for @{ $self->_next_msg_cb };
+        @{ $self->_next_msg_cb } = ();
+        $_->($message) for @{ $self->_each_msg_cb };
+      }
     }
   });
 }
@@ -121,7 +131,7 @@ The message is a decoded text string.
 sub on_each_message
 {
   my($self, $cb) = @_;
-  push @{ $self->_each_cb }, $cb;
+  push @{ $self->_each_msg_cb }, $cb;
   $self;
 }
 
@@ -137,7 +147,7 @@ The message is a decoded text string.
 sub on_next_message
 {
   my($self, $cb) = @_;
-  push @{ $self->_next_cb }, $cb;
+  push @{ $self->_next_msg_cb }, $cb;
   $self;
 }
 
@@ -156,7 +166,9 @@ and C<$type> is the type of the message (either C<"text"> or C<"binary">).
 
 sub on_each_data
 {
-  die "implement it";
+  my ($self, $cb) = @_;
+  push @{ $self->_each_data_cb }, $cb;
+  $self;
 }
 
 
@@ -175,7 +187,9 @@ and C<$type> is the type of the message (either C<"text"> or C<"binary">).
 
 sub on_next_data
 {
-  die "implement it";
+  my ($self, $cb) = @_;
+  push @{ $self->_next_data_cb }, $cb;
+  $self;
 }
 
 =head2 $connection-E<gt>on_finish($cb)
