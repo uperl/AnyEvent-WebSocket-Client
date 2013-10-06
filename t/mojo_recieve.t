@@ -45,7 +45,7 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
   for my $test_index (0 .. $#test_cases)
   {
     my $cv = AnyEvent->condvar;
-    $connection->on_next_data(sub { $cb_count++; $cv->send(@_) });
+    $connection->on(next_message => sub { $cb_count++; $cv->send(@_) });
     $connection->send($test_index);
     my($connection, $message) = $cv->recv;
     isa_ok $connection, 'AnyEvent::WebSocket::Connection';
@@ -59,7 +59,7 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
   note("--- on_each_data()");
   my $cv;
   my $cb_count = 0;
-  $connection->on_each_data(sub { $cb_count++; $cv->send(@_) });
+  $connection->on(each_message => sub { $cb_count++; $cv->send(@_) });
   for my $test_index (0 .. $#test_cases)
   {
     $cv = AnyEvent->condvar;
