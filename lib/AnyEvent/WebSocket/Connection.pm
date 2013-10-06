@@ -68,7 +68,7 @@ has _handle => (
   weak_ref => 1,
 );
 
-foreach my $type (qw( each_data next_data finish ))
+foreach my $type (qw( each_message next_message finish ))
 {
   has "_${type}_cb" => (
     is       => 'ro',
@@ -100,9 +100,9 @@ sub BUILD
           opcode => $frame->opcode,
         );
       
-        $_->($self, $message) for @{ $self->_next_data_cb };
-        @{ $self->_next_data_cb } = ();
-        $_->($self, $message) for @{ $self->_each_data_cb };
+        $_->($self, $message) for @{ $self->_next_message_cb };
+        @{ $self->_next_message_cb } = ();
+        $_->($self, $message) for @{ $self->_each_message_cb };
       }
     }
   });
@@ -160,11 +160,11 @@ sub on
   
   if($event eq 'next_message')
   {
-    push @{ $self->_next_data_cb }, $cb;
+    push @{ $self->_next_message_cb }, $cb;
   }
   elsif($event eq 'each_message')
   {
-    push @{ $self->_each_data_cb }, $cb;
+    push @{ $self->_each_message_cb }, $cb;
   }
   elsif($event eq 'finish')
   {
