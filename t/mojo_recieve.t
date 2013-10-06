@@ -47,7 +47,10 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
     my $cv = AnyEvent->condvar;
     $connection->on_next_data(sub { $cb_count++; $cv->send(@_) });
     $connection->send($test_index);
-    is_deeply([$cv->recv], $test_cases[$test_index]{recv_exp}, "on_next_data(): test_index $test_index OK");
+    my($connection, $message) = $cv->recv;
+    isa_ok $connection, 'AnyEvent::WebSocket::Connection';
+    is $message->body, $test_cases[$test_index]->{recv_exp}->[0], "body = " . $message->body;
+    is $message->type, $test_cases[$test_index]->{recv_exp}->[1], "type = " . $message->type;
   }
   is($cb_count, scalar(@test_cases), "callback count OK");
 }
@@ -61,7 +64,10 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
   {
     $cv = AnyEvent->condvar;
     $connection->send($test_index);
-    is_deeply([$cv->recv], $test_cases[$test_index]{recv_exp}, "on_each_data(): test_index $test_index OK");
+    my($connection, $message) = $cv->recv;
+    isa_ok $connection, 'AnyEvent::WebSocket::Connection';
+    is $message->body, $test_cases[$test_index]->{recv_exp}->[0], "body = " . $message->body;
+    is $message->type, $test_cases[$test_index]->{recv_exp}->[1], "type = " . $message->type;
   }
   is($cb_count, scalar(@test_cases), "callback count OK");
 }

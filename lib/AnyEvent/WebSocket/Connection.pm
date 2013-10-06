@@ -8,6 +8,7 @@ use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
 use Scalar::Util qw( weaken );
 use Encode qw(decode);
+use AnyEvent::WebSocket::Message;
 
 # ABSTRACT: WebSocket connection for AnyEvent
 # VERSION
@@ -89,18 +90,21 @@ sub BUILD
   
   $self->_stream->read_cb(sub {
     $frame->append($_[0]{rbuf});
-    while(defined(my $data = $frame->next_bytes))
+    while(defined(my $body = $frame->next_bytes))
     {
       if($frame->is_text || $frame->is_binary)
       {
-        my $type = $frame->is_text ? "text" : "binary";
+        my $message = AnyEvent::WebSocket::Message->new(
+          body   => $body,
+          opcode => $frame->opcode,
+        );
       
-        $_->($data, $type) for @{ $self->_next_data_cb };
+        $_->($self, $message) for @{ $self->_next_data_cb };
         @{ $self->_next_data_cb } = ();
-        $_->($data, $type) for @{ $self->_each_data_cb };
+        $_->($self, $message) for @{ $self->_each_data_cb };
 
         if(@{ $self->_next_msg_cb } || @{ $self->_each_msg_cb }) {
-          my $message = decode("utf8", $data);
+          my $message = decode("utf8", $body);
           $_->($message) for @{ $self->_next_msg_cb };
           @{ $self->_next_msg_cb } = ();
           $_->($message) for @{ $self->_each_msg_cb };
@@ -165,7 +169,7 @@ Register a callback to be called on each subsequent message received.
 
 This method is the same as C<on_each_message()> except that C<$cb> is called as in
 
-    $cb->($byte_message, $type)
+ $cb->($byte_message, $type)
 
 where C<$byte_message> is a non-decoded byte string,
 and C<$type> is the type of the message (either C<"text"> or C<"binary">).
@@ -186,7 +190,7 @@ Register a callback to be called the next message received.
 
 This method is the same as C<on_next_message()> except that C<$cb> is called as in
 
-    $cb->($byte_message, $type)
+ $cb->($byte_message, $type)
 
 where C<$byte_message> is a non-decoded byte string,
 and C<$type> is the type of the message (either C<"text"> or C<"binary">).
