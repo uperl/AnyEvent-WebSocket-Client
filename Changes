@@ -1,10 +1,12 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
-
-0.11_02   2013-10-07 07:44:11 -0400
-
-0.11_01   2013-10-06 22:00:41 -0400
+  - deprecate on_next_message, on_each_message and on_finish
+    (use $connection->on($event => sub { }) instead
+    see documentation for different calling convention.
+  - added AnyEvent::WebSocket::Message class
+  - You can now use Connection#send method to send Message
+    objects in addition to strings.
 
 0.11      2013-10-03 17:10:38 -0400
   - fix mojo_ test plans for when mojo is not installed
