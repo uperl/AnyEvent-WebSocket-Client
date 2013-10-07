@@ -11,13 +11,28 @@ use warnings NONFATAL => 'all';
 
 =head1 SYNOPSIS
 
+ $connection->on(each_message => sub {
+   my($connection, $message) = @_;
+   if($message->is_text || $message->is_binary)
+   {
+     my $body = $message->body;
+   }
+ });
+
 =head1 DESCRIPTION
+
+Instances of this class represent a message passed through the WebSocket
+from the other end.
 
 =head1 ATTRIBUTES
 
 =head2 body
 
+The body or payload of the message.
+
 =head2 opcode
+
+The integer code for the type of message.
 
 =cut
 
@@ -28,13 +43,23 @@ has opcode => ( is => 'ro', required => 1 );
 
 =head2 is_text
 
+True if the message is text.
+
 =head2 is_binary
+
+True if the message is binary.
 
 =head2 is_close
 
+True if the message is a close message.
+
 =head2 is_ping
 
+True if the message is a ping.
+
 =head2 is_pong
+
+True if the message is a pong.
 
 =cut
 
@@ -61,6 +86,10 @@ L<AnyEvent::WebSocket::Connection>
 =item *
 
 L<AnyEvent>
+
+=item *
+
+L<RFC 6455 The WebSocket Protocol|http://tools.ietf.org/html/rfc6455>
 
 =back
 

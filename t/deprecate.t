@@ -1,6 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
+BEGIN { eval q{ use EV } }
 BEGIN { plan skip_all => 'test requires Test::Warn' unless eval q{ use Test::Warn; 1 } }
 use AnyEvent::WebSocket::Client;
 use AnyEvent::Socket qw( tcp_server );

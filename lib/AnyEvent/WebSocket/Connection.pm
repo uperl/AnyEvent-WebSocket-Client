@@ -20,20 +20,23 @@ use Carp qw( croak carp );
  $connection->send('a message');
  
  # recieve message from the websocket...
- $connection->on_each_message(sub {
-   my $message = shift;
+ $connection->on(each_message => sub {
+   # $connection is the same connection object
+   # $message isa AnyEvent::WebSocket::Message
+   my($connection, $message) = @_;
    ...
  });
  
  # handle a closed connection...
- $connection->on_finish(sub {
+ $connection->on(finish => sub {
+   # $connection is the same connection object
+   my($connection) = @_;
    ...
  });
  
  # close an opened connection
  # (can do this either inside or outside of
  # a callback)
- use AnyEvent::WebSocket::Connection 0.10; # requires 0.10
  $connection->close;
 
 (See L<AnyEvent::WebSocket::Client> on how to create
@@ -268,6 +271,10 @@ L<AnyEvent::WebSocket::Message>
 =item *
 
 L<AnyEvent>
+
+=item *
+
+L<RFC 6455 The WebSocket Protocol|http://tools.ietf.org/html/rfc6455>
 
 =back
 

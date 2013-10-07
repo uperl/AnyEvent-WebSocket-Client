@@ -18,19 +18,22 @@ WebSocket client for AnyEvent
     $connection->send('a message');
     
     # recieve message from the websocket...
-    $connection->on_each_message(sub {
-      my $message = shift;
+    $connection->on(each_message => sub {
+      # $connection is the same connection object
+      # $message isa AnyEvent::WebSocket::Message
+      my($connection, $message) = @_;
       ...
     });
     
     # handle a closed connection...
-    $connection->on_finish(sub {
+    $connection->on(finish => sub {
+      # $connection is the same connection object
+      my($connection) = @_;
       ...
     });
 
       # close the connection (either inside or
       # outside another callback)
-      use AnyEvent::WebSocket::Client 0.10; # requires 0.10
       $connection->close;
     
     });
@@ -83,6 +86,7 @@ Patches are encouraged to improve it.
 # SEE ALSO
 
 - [AnyEvent::WebSocket::Connection](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Connection)
+- [AnyEvent::WebSocket::Message](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Message)
 - [AnyEvent](http://search.cpan.org/perldoc?AnyEvent)
 - [URI::ws](http://search.cpan.org/perldoc?URI::ws)
 - [URI::wss](http://search.cpan.org/perldoc?URI::wss)
