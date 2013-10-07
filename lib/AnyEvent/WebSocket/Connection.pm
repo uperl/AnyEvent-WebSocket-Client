@@ -7,7 +7,7 @@ use Moo;
 use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
 use Scalar::Util qw( weaken );
-use Encode qw(decode);
+use Encode ();
 use AnyEvent::WebSocket::Message;
 use Carp qw( croak carp );
 
@@ -115,17 +115,27 @@ sub BUILD
 
 =head2 $connection-E<gt>send($message)
 
-Send a message to the other side.
+Send a message to the other side.  C<$message> may either be a string
+(in which case a text message will be sent), or an instance of
+L<AnyEvent::WebSocket::Message>.
 
 =cut
 
-# TODO: should also accept a Message object
 sub send
 {
-  my $self = shift;
-  $self->_handle->push_write(
-    Protocol::WebSocket::Frame->new(shift)->to_bytes
-  );
+  my($self, $message) = @_;
+  my $frame;
+  if(ref $message)
+  {
+    $DB::single = 1;
+    $frame = Protocol::WebSocket::Frame->new($message->body);
+    $frame->opcode($message->opcode);
+  }
+  else
+  {
+    $frame = Protocol::WebSocket::Frame->new($message);
+  }
+  $self->_handle->push_write($frame->to_bytes);
   $self;
 }
 
@@ -216,7 +226,7 @@ sub on_each_message
   my($self, $cb) = @_;
   carp "on_each_message is deprecated" if warnings::enabled('deprecated');
   $self->on(each_message => sub {
-    $cb->(decode("UTF-8",pop->body));
+    $cb->(Encode::decode("UTF-8",pop->body));
   });
   $self;
 }
@@ -235,7 +245,7 @@ sub on_next_message
   my($self, $cb) = @_;
   carp "on_next_message is deprecated" if warnings::enabled('deprecated');
   $self->on(next_message => sub {
-    $cb->(decode("UTF-8",pop->body));
+    $cb->(Encode::decode("UTF-8",pop->body));
   });
   $self;
 }

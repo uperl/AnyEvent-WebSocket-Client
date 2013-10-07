@@ -5,6 +5,7 @@ use warnings;
 use v5.10;
 use Moo;
 use warnings NONFATAL => 'all';
+use Encode ();
 
 # ABSTRACT: WebSocket message for AnyEvent
 # VERSION
@@ -40,6 +41,17 @@ has body => ( is => 'ro', required => 1 );
 has opcode => ( is => 'ro', required => 1 );
 
 =head1 METHODS
+
+=head2 decoded_body
+
+Returns the body decoded from UTF-8.
+
+=cut
+
+sub decoded_body
+{
+  Encode::decode("UTF-8", shift->body)
+}
 
 =head2 is_text
 
