@@ -17,7 +17,7 @@ use PerlX::Maybe qw( maybe provided );
 
 =head1 SYNOPSIS
 
- use AnyEvent::WebSocket::Client;
+ use AnyEvent::WebSocket::Client 0.12;
  
  my $client = AnyEvent::WebSocket::Client->new;
  
@@ -58,6 +58,11 @@ services via the WebSocket protocol in an L<AnyEvent> context.  It uses
 L<Protocol::WebSocket> rather than reinventing the wheel.  You could use 
 L<AnyEvent> and L<Protocol::WebSocket> directly if you wanted finer grain
 control, but if that is not necessary then this class may save you some time.
+
+The recommended API was added to the L<AnyEvent::WebSocket::Connection>
+class with version 0.12, so it is recommended that you include that version
+when using this module.  The older API will continue to work for now with
+deprecation warnings.
 
 =head1 ATTRIBUTES
 

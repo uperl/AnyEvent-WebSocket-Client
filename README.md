@@ -8,7 +8,7 @@ version 0.11\_02
 
 # SYNOPSIS
 
-    use AnyEvent::WebSocket::Client;
+    use AnyEvent::WebSocket::Client 0.12;
     
     my $client = AnyEvent::WebSocket::Client->new;
     
@@ -49,6 +49,11 @@ services via the WebSocket protocol in an [AnyEvent](http://search.cpan.org/perl
 [Protocol::WebSocket](http://search.cpan.org/perldoc?Protocol::WebSocket) rather than reinventing the wheel.  You could use 
 [AnyEvent](http://search.cpan.org/perldoc?AnyEvent) and [Protocol::WebSocket](http://search.cpan.org/perldoc?Protocol::WebSocket) directly if you wanted finer grain
 control, but if that is not necessary then this class may save you some time.
+
+The recommended API was added to the [AnyEvent::WebSocket::Connection](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Connection)
+class with version 0.12, so it is recommended that you include that version
+when using this module.  The older API will continue to work for now with
+deprecation warnings.
 
 # ATTRIBUTES
 
