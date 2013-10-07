@@ -11,10 +11,10 @@ use utf8;
 use Encode qw(encode);
 
 my @test_cases = (
-  { send => { binary => "hoge"}, recv_exp => ["hoge", "binary"] },
-  { send => { text   => "foobar"}, recv_exp => ["foobar", "text"] },
-  { send => { binary => encode("utf8", "ＵＴＦー８") }, recv_exp => [encode("utf8", "ＵＴＦー８"), "binary"] },
-  { send => { text   => encode("utf8", "ＵＴＦー８") }, recv_exp => [encode("utf8", "ＵＴＦー８"), "text"] },
+  { send => { binary => "hoge"}, recv_exp => ["hoge", "is_binary"] },
+  { send => { text   => "foobar"}, recv_exp => ["foobar", "is_text"] },
+  { send => { binary => encode("utf8", "ＵＴＦー８") }, recv_exp => [encode("utf8", "ＵＴＦー８"), "is_binary"] },
+  { send => { text   => encode("utf8", "ＵＴＦー８") }, recv_exp => [encode("utf8", "ＵＴＦー８"), "is_text"] },
 );
 
 app->log->level('fatal');
@@ -50,7 +50,9 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
     my($connection, $message) = $cv->recv;
     isa_ok $connection, 'AnyEvent::WebSocket::Connection';
     is $message->body, $test_cases[$test_index]->{recv_exp}->[0], "body = " . $message->body;
-    is $message->type, $test_cases[$test_index]->{recv_exp}->[1], "type = " . $message->type;
+    my $method = $test_cases[$test_index]->{recv_exp}->[1];
+    ok $message->$method, "\$message->$method is true";
+    
   }
   is($cb_count, scalar(@test_cases), "callback count OK");
 }
@@ -67,7 +69,8 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
     my($connection, $message) = $cv->recv;
     isa_ok $connection, 'AnyEvent::WebSocket::Connection';
     is $message->body, $test_cases[$test_index]->{recv_exp}->[0], "body = " . $message->body;
-    is $message->type, $test_cases[$test_index]->{recv_exp}->[1], "type = " . $message->type;
+    my $method = $test_cases[$test_index]->{recv_exp}->[1];
+    ok $message->$method, "\$message->$method is true";
   }
   is($cb_count, scalar(@test_cases), "callback count OK");
 }
