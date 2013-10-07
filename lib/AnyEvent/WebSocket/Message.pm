@@ -42,7 +42,7 @@ has opcode => ( is => 'ro', required => 1 );
 
 =head1 METHODS
 
-=head2 decoded_body
+=head2 $message-E<gt>decoded_body
 
 Returns the body decoded from UTF-8.
 
@@ -53,23 +53,23 @@ sub decoded_body
   Encode::decode("UTF-8", shift->body)
 }
 
-=head2 is_text
+=head2  $message-E<gt>is_text
 
 True if the message is text.
 
-=head2 is_binary
+=head2  $message-E<gt>is_binary
 
 True if the message is binary.
 
-=head2 is_close
+=head2  $message-E<gt>is_close
 
 True if the message is a close message.
 
-=head2 is_ping
+=head2  $message-E<gt>is_ping
 
 True if the message is a ping.
 
-=head2 is_pong
+=head2  $message-E<gt>is_pong
 
 True if the message is a pong.
 
