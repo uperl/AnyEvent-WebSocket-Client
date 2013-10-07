@@ -21,7 +21,7 @@ use PerlX::Maybe qw( maybe provided );
  
  my $client = AnyEvent::WebSocket::Client->new;
  
- $client->connect("ws://localhost:1234")->cb(sub {
+ $client->connect("ws://localhost:1234/service")->cb(sub {
    my $connection = eval { shift->recv };
    if($@) {
      # handle error...
