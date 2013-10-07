@@ -9,6 +9,8 @@ use warnings NONFATAL => 'all';
 # ABSTRACT: WebSocket message for AnyEvent
 # VERSION
 
+=head1 SYNOPSIS
+
 =head1 DESCRIPTION
 
 =head1 ATTRIBUTES
@@ -43,3 +45,23 @@ sub is_ping   { $_[0]->opcode == 9 }
 sub is_pong   { $_[0]->opcode == 10 }
 
 1;
+
+=head1 SEE ALSO
+
+=over 4
+
+=item *
+
+L<AnyEvent::WebSocket::Client>
+
+=item *
+
+L<AnyEvent::WebSocket::Connection>
+
+=item *
+
+L<AnyEvent>
+
+=back
+
+=cut

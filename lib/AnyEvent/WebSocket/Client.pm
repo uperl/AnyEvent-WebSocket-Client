@@ -233,6 +233,10 @@ L<AnyEvent::WebSocket::Connection>
 
 =item *
 
+L<AnyEvent::WebSocket::Message>
+
+=item *
+
 L<AnyEvent>
 
 =item *

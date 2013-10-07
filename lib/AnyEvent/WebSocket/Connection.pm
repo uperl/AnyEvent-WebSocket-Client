@@ -116,6 +116,7 @@ Send a message to the other side.
 
 =cut
 
+# TODO: should also accept a Message object
 sub send
 {
   my $self = shift;
@@ -177,6 +178,27 @@ sub on
   $self;
 }
 
+=head2 $connection-E<gt>close
+
+Close the connection.
+
+=cut
+
+sub close
+{
+  my($self) = @_;
+
+  $self->_handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
+  $self->_handle->push_shutdown;
+}
+
+=head1 DEPRECATED METHODS
+
+The methods in this section are deprecated and may be removed from a
+future version of this class.  They should not be used for new code,
+and are only remain documented here to aid in understanding legacy
+code that use them.
+
 =head2 $connection-E<gt>on_each_message($cb)
 
 Register a callback to be called on each subsequent message received.
@@ -226,20 +248,6 @@ sub on_finish
   $self;
 }
 
-=head2 $connection-E<gt>close
-
-Close the connection.
-
-=cut
-
-sub close
-{
-  my($self) = @_;
-
-  $self->_handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
-  $self->_handle->push_shutdown;
-}
-
 1;
 
 =head1 SEE ALSO
@@ -252,8 +260,13 @@ L<AnyEvent::WebSocket::Client>
 
 =item *
 
+L<AnyEvent::WebSocket::Message>
+
+=item *
+
 L<AnyEvent>
 
 =back
 
 =cut
+
