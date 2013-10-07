@@ -12,6 +12,10 @@ use Encode ();
 
 =head1 SYNOPSIS
 
+ $connection->send(
+   AnyEvent::WebSocket::Message->new(body => "some message"),
+ );
+
  $connection->on(each_message => sub {
    my($connection, $message) = @_;
    if($message->is_text || $message->is_binary)
@@ -38,7 +42,7 @@ The integer code for the type of message.
 =cut
 
 has body => ( is => 'ro', required => 1 );
-has opcode => ( is => 'ro', required => 1 );
+has opcode => ( is => 'ro', default => 1 );
 
 =head1 METHODS
 

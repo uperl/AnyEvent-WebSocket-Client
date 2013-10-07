@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 6;
 use AnyEvent::WebSocket::Message;
 
 my %ops = qw(
@@ -31,3 +31,13 @@ while(my($type, $opcode) = each %ops)
     ok $message->$method, "\$message->$method is true";
   };
 }
+
+subtest default => sub {
+  plan tests => 3;
+  my $message = eval { AnyEvent::WebSocket::Message->new(body => 'foo') };
+  diag $@ if $@;
+  isa_ok $message, 'AnyEvent::WebSocket::Message';
+  
+  is $message->opcode, 1, 'message.opcode = 1';
+  ok $message->is_text, 'message.is_text is true';
+};
