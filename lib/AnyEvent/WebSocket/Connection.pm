@@ -9,7 +9,7 @@ use Protocol::WebSocket::Frame;
 use Scalar::Util qw( weaken );
 use Encode qw(decode);
 use AnyEvent::WebSocket::Message;
-use Carp qw( croak );
+use Carp qw( croak carp );
 
 # ABSTRACT: WebSocket connection for AnyEvent
 # VERSION
@@ -211,6 +211,7 @@ The message is a decoded text string.
 sub on_each_message
 {
   my($self, $cb) = @_;
+  carp "on_each_message is deprecated" if warnings::enabled('deprecated');
   $self->on(each_message => sub {
     $cb->(decode("UTF-8",pop->body));
   });
@@ -229,6 +230,7 @@ The message is a decoded text string.
 sub on_next_message
 {
   my($self, $cb) = @_;
+  carp "on_next_message is deprecated" if warnings::enabled('deprecated');
   $self->on(next_message => sub {
     $cb->(decode("UTF-8",pop->body));
   });
@@ -244,6 +246,7 @@ Register a callback to be called when the connection is closed.
 sub on_finish
 {
   my($self, $cb) = @_;
+  carp "on_finish is deprecated" if warnings::enabled('deprecated');
   $self->on(finish => $cb);
   $self;
 }

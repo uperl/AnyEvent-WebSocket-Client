@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+no warnings 'deprecated';
 use utf8;
 use AnyEvent::WebSocket::Client;
 use Test::More;

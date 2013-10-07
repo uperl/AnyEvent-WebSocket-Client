@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+no warnings 'deprecated';
 use AnyEvent::WebSocket::Client;
 use Test::More;
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }

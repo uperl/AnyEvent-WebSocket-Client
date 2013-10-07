@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+no warnings 'deprecated';
 use v5.10;
 use utf8;
 BEGIN { eval q{ use EV } }

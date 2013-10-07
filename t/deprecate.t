@@ -1,14 +1,13 @@
 use strict;
 use warnings;
-no warnings 'deprecated';
-use v5.10;
-BEGIN { eval q{ use EV } }
-use AnyEvent::Handle;
-use AnyEvent::Socket qw( tcp_server);
+use Test::More;
+BEGIN { plan skip_all => 'test requires Test::Warn' unless eval q{ use Test::Warn; 1 } }
 use AnyEvent::WebSocket::Client;
+use AnyEvent::Socket qw( tcp_server );
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
-use Test::More tests => 3;
+
+plan tests => 4;
 
 our $timeout = AnyEvent->timer( after => 5, cb => sub {
   diag "timeout!";
@@ -23,9 +22,6 @@ tcp_server undef, undef, sub {
   my $handshake = Protocol::WebSocket::Handshake::Server->new;
   my $frame     = Protocol::WebSocket::Frame->new;
   
-  my $counter = 1;
-  my $max = 15;
-  
   $hdl = AnyEvent::Handle->new( fh => shift );
   
   $hdl->on_read(
@@ -38,11 +34,6 @@ tcp_server undef, undef, sub {
         if($handshake->is_done)
         {
           $hdl->push_write($handshake->to_string);
-          note "max = $max";
-          note "resource = " . $handshake->req->resource_name;
-          if($handshake->req->resource_name =~ /\/count\/(\d+)/)
-          { $max = $1 }
-          note "max = $max";
         }
         return;
       }
@@ -50,12 +41,7 @@ tcp_server undef, undef, sub {
       $frame->append($chunk);
       
       while(defined(my $message = $frame->next)) {
-        note "send $counter";
-        $hdl->push_write($frame->new($counter++)->to_bytes);
-        if($counter >= $max)
-        {
-          undef $hdl;
-        }
+        # lalalalala not listening
       }
     }
   );
@@ -69,26 +55,9 @@ note "port = $port";
 
 my $client = AnyEvent::WebSocket::Client->new;
 
-my $connection = $client->connect("ws://127.0.0.1:$port/count/10")->recv;
+my $connection = $client->connect("ws://127.0.0.1:$port/echo")->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
-my $done = AnyEvent->condvar;
-
-$connection->send('ping');
-
-my $last;
-
-$connection->on_each_message(sub {
-  my $message = shift;
-  note "recv $message";
-  $connection->send('ping');
-  $last = $message;
-});
-
-$connection->on_finish(sub {
-  $done->send(1);
-});
-
-is $done->recv, '1', 'friendly disconnect';
-
-is $last, 9, 'last = 9';
+warning_like { $connection->on_next_message(sub { }) } qr{on_next_message is deprecated}, "deprecation warning for on_next_message";
+warning_like { $connection->on_each_message(sub { }) } qr{on_each_message is deprecated}, "deprecation warning for on_each_message";
+warning_like { $connection->on_finish(sub { }) } qr{on_finish is deprecated}, "deprecation warning for on_finish";
