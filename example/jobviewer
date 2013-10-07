@@ -85,7 +85,7 @@ sub process_message
 my $ws = AnyEvent::WebSocket::Client->new->connect($job->{event_url})->recv;
 
 $ws->on(each_message => sub {
-  my $msg = from_json( pop->body );
+  my $msg = from_json( pop->decoded_body );
   process_message($msg);
 });
 
