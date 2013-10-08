@@ -8,7 +8,8 @@ BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolic
 BEGIN { plan skip_all => 'Requires Test::Memory::Cycle' unless eval q{ use Test::Memory::Cycle; 1 } }
 BEGIN { plan skip_all => 'Requires Devel::Cycle' unless eval q{ use Devel::Cycle; 1 } }
 use AnyEvent::WebSocket::Client;
-use lib "t";
+use FindBin;
+use lib $FindBin::Bin;
 use testlib::Mojo qw(start_mojo);
 
 plan tests => 5;

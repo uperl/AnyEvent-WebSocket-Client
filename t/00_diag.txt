@@ -3,6 +3,7 @@ Carp
 Devel::Cycle
 EV
 Encode
+FindBin
 Math::Random::Secure
 Module::Build
 Mojolicious
