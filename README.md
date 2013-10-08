@@ -4,7 +4,7 @@ WebSocket client for AnyEvent
 
 # VERSION
 
-version 0.11\_02
+version 0.11\_03
 
 # SYNOPSIS
 
