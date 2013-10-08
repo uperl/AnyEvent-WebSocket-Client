@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+use utf8;
 use AnyEvent::WebSocket::Client;
 use Test::More;
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
@@ -8,8 +9,10 @@ BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolic
 use FindBin;
 use lib $FindBin::Bin;
 use testlib::Mojo;
-use utf8;
 use Encode qw(encode);
+use testlib::Server;
+
+testlib::Server->set_timeout;
 
 my @test_cases = (
   { send => { binary => "hoge"}, recv_exp => ["hoge", "is_binary"] },
@@ -29,11 +32,6 @@ websocket '/data' => sub {
 };
 
 my ($server, $port) =  testlib::Mojo->start_mojo(app => app());
-
-our $timeout = AnyEvent->timer( after => 5, cb => sub {
-  diag "timeout!";
-  exit 2;
-});
 
 my $client = AnyEvent::WebSocket::Client->new;
 

@@ -10,6 +10,9 @@ BEGIN { plan skip_all => 'Requires Mojolicious::Lite' unless eval q{ use Mojolic
 use FindBin;
 use lib $FindBin::Bin;
 use testlib::Mojo;
+use testlib::Server;
+
+testlib::Server->set_timeout;
 
 plan tests => 3;
 
@@ -33,11 +36,6 @@ websocket '/count/:num' => sub {
 };
 
 my ($server, $port) =  testlib::Mojo->start_mojo(app => app(), ssl => 1);
-
-our $timeout = AnyEvent->timer( after => 5, cb => sub {
-  diag "timeout!";
-  exit 2;
-});
 
 my $client = AnyEvent::WebSocket::Client->new( ssl_no_verify => 1 );
 
