@@ -17,13 +17,15 @@ my $max;
 my $uri = testlib::Server->start_server(
   sub {  # message
     my($frame, $message, $hdl) = @_;
-    note "send $counter";
-    $hdl->push_write($frame->new($counter++)->to_bytes);
-    if($counter >= $max)
-    {
-      $hdl->push_write($frame->new(type => 'close')->to_bytes);
-      $hdl->push_shutdown;
-    }
+    eval q{
+      note "send $counter";
+      $hdl->push_write($frame->new($counter++)->to_bytes);
+      if($counter >= $max)
+      {
+        $hdl->push_write($frame->new(type => 'close')->to_bytes);
+        $hdl->push_shutdown;
+      }
+    };
   },
   sub {  # handshake
     my($handshake) = @_;
