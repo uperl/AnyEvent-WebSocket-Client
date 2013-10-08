@@ -12,6 +12,8 @@ use testlib::Mojo;
 use Encode qw(encode);
 use testlib::Server;
 
+plan tests => 3;
+
 testlib::Server->set_timeout;
 
 my @test_cases = (
@@ -38,8 +40,7 @@ my $client = AnyEvent::WebSocket::Client->new;
 my $connection = $client->connect("ws://127.0.0.1:$port/data")->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
-{
-  note("--- on_next_data()");
+subtest 'on_next_data' => sub {
   my $cb_count = 0;
   for my $test_index (0 .. $#test_cases)
   {
@@ -54,10 +55,9 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
     
   }
   is($cb_count, scalar(@test_cases), "callback count OK");
-}
+};
 
-{
-  note("--- on_each_data()");
+subtest 'on_each_data' => sub {
   my $cv;
   my $cb_count = 0;
   $connection->on(each_message => sub { $cb_count++; $cv->send(@_) });
@@ -72,8 +72,4 @@ isa_ok $connection, 'AnyEvent::WebSocket::Connection';
     ok $message->$method, "\$message->$method is true";
   }
   is($cb_count, scalar(@test_cases), "callback count OK");
-}
-
-done_testing();
-
-
+};
