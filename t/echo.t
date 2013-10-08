@@ -11,10 +11,10 @@ use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
 use Test::More tests => 4;
 
-#our $timeout = AnyEvent->timer( after => 5, cb => sub {
-#  diag "timeout!";
-#  exit 2;
-#});
+our $timeout = AnyEvent->timer( after => 5, cb => sub {
+  diag "timeout!";
+  exit 2;
+});
 
 my $hdl;
 
