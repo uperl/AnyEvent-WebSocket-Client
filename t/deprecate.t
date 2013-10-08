@@ -7,56 +7,17 @@ use AnyEvent::WebSocket::Client;
 use AnyEvent::Socket qw( tcp_server );
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
+use FindBin ();
+use lib $FindBin::Bin;
+use testlib::Server;
 
 plan tests => 4;
 
-our $timeout = AnyEvent->timer( after => 5, cb => sub {
-  diag "timeout!";
-  exit 2;
-});
+testlib::Server->set_timeout;
 
-my $hdl;
+my $uri = testlib::Server->start_echo;
 
-my $server_cv = AnyEvent->condvar;
-
-tcp_server undef, undef, sub {
-  my $handshake = Protocol::WebSocket::Handshake::Server->new;
-  my $frame     = Protocol::WebSocket::Frame->new;
-  
-  $hdl = AnyEvent::Handle->new( fh => shift );
-  
-  $hdl->on_read(
-    sub {
-      my $chunk = $_[0]{rbuf};
-      $_[0]{rbuf} = '';
-
-      unless($handshake->is_done) {
-        $handshake->parse($chunk);
-        if($handshake->is_done)
-        {
-          $hdl->push_write($handshake->to_string);
-        }
-        return;
-      }
-      
-      $frame->append($chunk);
-      
-      while(defined(my $message = $frame->next)) {
-        # lalalalala not listening
-      }
-    }
-  );
-}, sub {
-  my($fh, $host, $port) = @_;
-  $server_cv->send($port);
-};
-
-my $port = $server_cv->recv;
-note "port = $port";
-
-my $client = AnyEvent::WebSocket::Client->new;
-
-my $connection = $client->connect("ws://127.0.0.1:$port/echo")->recv;
+my $connection = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 warning_like { $connection->on_next_message(sub { }) } qr{on_next_message is deprecated}, "deprecation warning for on_next_message";

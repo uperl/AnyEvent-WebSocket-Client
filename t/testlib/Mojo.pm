@@ -13,7 +13,6 @@ sub start_mojo
   my $server = Mojo::Server::Daemon->new;
   my $port = $server->ioloop->generate_port;
   note "port = $port";
-  note($app);
   $server->app($app);
   $server->listen(["$scheme://127.0.0.1:$port"]);
   $server->start;

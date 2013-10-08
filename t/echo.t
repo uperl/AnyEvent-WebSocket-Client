@@ -3,70 +3,18 @@ use warnings;
 use v5.10;
 use utf8;
 BEGIN { eval q{ use EV } }
-use AnyEvent::Handle;
-use AnyEvent::Socket qw( tcp_server);
 use AnyEvent::WebSocket::Client;
 use AnyEvent::WebSocket::Message;
-use Protocol::WebSocket::Handshake::Server;
-use Protocol::WebSocket::Frame;
 use Test::More tests => 4;
+use FindBin ();
+use lib $FindBin::Bin;
+use testlib::Server;
 
-our $timeout = AnyEvent->timer( after => 5, cb => sub {
-  diag "timeout!";
-  exit 2;
-});
+testlib::Server->set_timeout;
 
-my $hdl;
+my $uri = testlib::Server->start_echo;
 
-my $server_cv = AnyEvent->condvar;
-
-tcp_server undef, undef, sub {
-  my $handshake = Protocol::WebSocket::Handshake::Server->new;
-  my $frame     = Protocol::WebSocket::Frame->new;
-  
-  $hdl = AnyEvent::Handle->new( fh => shift );
-  
-  $hdl->on_read(
-    sub {
-      my $chunk = $_[0]{rbuf};
-      $_[0]{rbuf} = '';
-
-      unless($handshake->is_done) {
-        $handshake->parse($chunk);
-        if($handshake->is_done)
-        {
-          $hdl->push_write($handshake->to_string);
-        }
-        return;
-      }
-      
-      $frame->append($chunk);
-      
-      while(defined(my $message = $frame->next)) {
-        next if !$frame->is_text && !$frame->is_binary;
-        $DB::single = 1;
-
-        $hdl->push_write($frame->new("$message")->to_bytes);
-        
-        if($message eq 'quit')
-        {
-          $hdl->push_write($frame->new(type => 'close')->to_bytes);
-          $hdl->push_shutdown;
-        }
-      }
-    }
-  );
-}, sub {
-  my($fh, $host, $port) = @_;
-  $server_cv->send($port);
-};
-
-my $port = $server_cv->recv;
-note "port = $port";
-
-my $client = AnyEvent::WebSocket::Client->new;
-
-my $connection = $client->connect("ws://127.0.0.1:$port/echo")->recv;
+my $connection = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 my $done = AnyEvent->condvar;
