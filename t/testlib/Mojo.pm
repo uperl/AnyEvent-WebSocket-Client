@@ -2,15 +2,12 @@ package testlib::Mojo;
 
 use strict;
 use warnings;
-use Exporter qw(import);
 use Mojo::Server::Daemon;
 use Test::More;
 
-our @EXPORT_OK = qw(start_mojo);
-
 sub start_mojo
 {
-  my (%args) = @_;
+  my ($class, %args) = @_;
   my $app = $args{app};
   my $scheme = $args{ssl} ? "https" : "http";
   my $server = Mojo::Server::Daemon->new;
