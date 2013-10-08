@@ -21,8 +21,9 @@ sub set_timeout
   });
 }
 
-sub start_echo
+sub start_server
 {
+  my($class, $message_cb, $handshake_cb) = @_;
   my $server_cv = AnyEvent->condvar;
 
   tcp_server undef, undef, sub {
@@ -41,22 +42,17 @@ sub start_echo
           if($handshake->is_done)
           {
             $hdl->push_write($handshake->to_string);
+            $handshake_cb->($handshake)
+              if $handshake_cb;
           }
           return;
         }
       
         $frame->append($chunk);
       
-        while(defined(my $message = $frame->next)) {
-          next if !$frame->is_text && !$frame->is_binary;
-
-          $hdl->push_write($frame->new("$message")->to_bytes);
-        
-          if($message eq 'quit')
-          {
-            $hdl->push_write($frame->new(type => 'close')->to_bytes);
-            $hdl->push_shutdown;
-          }
+        while(defined(my $message = $frame->next))
+        {
+          $message_cb->($frame, $message, $hdl);
         }
       }
     );
@@ -71,6 +67,23 @@ sub start_echo
   $uri->port($port);
   note "$uri";
   $uri;
+}
+
+sub start_echo
+{
+  shift->start_server(sub {
+    my($frame, $message, $hdl) = @_;
+    
+    return if !$frame->is_text && !$frame->is_binary;
+
+    $hdl->push_write($frame->new("$message")->to_bytes);
+        
+    if($message eq 'quit')
+    {
+      $hdl->push_write($frame->new(type => 'close')->to_bytes);
+      $hdl->push_shutdown;
+    }
+  });
 }
 
 1;

@@ -3,73 +3,44 @@ use warnings;
 no warnings 'deprecated';
 use v5.10;
 BEGIN { eval q{ use EV } }
-use AnyEvent::Handle;
-use AnyEvent::Socket qw( tcp_server);
 use AnyEvent::WebSocket::Client;
-use Protocol::WebSocket::Handshake::Server;
-use Protocol::WebSocket::Frame;
 use Test::More tests => 3;
+use FindBin ();
+use lib $FindBin::Bin;
+use testlib::Server;
 
-our $timeout = AnyEvent->timer( after => 5, cb => sub {
-  diag "timeout!";
-  exit 2;
-});
+testlib::Server->set_timeout;
 
-my $hdl;
+my $counter;
+my $max;
 
-my $server_cv = AnyEvent->condvar;
-
-tcp_server undef, undef, sub {
-  my $handshake = Protocol::WebSocket::Handshake::Server->new;
-  my $frame     = Protocol::WebSocket::Frame->new;
-  
-  my $counter = 1;
-  my $max = 15;
-  
-  $hdl = AnyEvent::Handle->new( fh => shift );
-  
-  $hdl->on_read(
-    sub {
-      my $chunk = $_[0]{rbuf};
-      $_[0]{rbuf} = '';
-
-      unless($handshake->is_done) {
-        $handshake->parse($chunk);
-        if($handshake->is_done)
-        {
-          $hdl->push_write($handshake->to_string);
-          note "max = $max";
-          note "resource = " . $handshake->req->resource_name;
-          if($handshake->req->resource_name =~ /\/count\/(\d+)/)
-          { $max = $1 }
-          note "max = $max";
-        }
-        return;
-      }
-      
-      $frame->append($chunk);
-      
-      while(defined(my $message = $frame->next)) {
-        note "send $counter";
-        $hdl->push_write($frame->new($counter++)->to_bytes);
-        if($counter >= $max)
-        {
-          undef $hdl;
-        }
-      }
+my $uri = testlib::Server->start_server(
+  sub {  # message
+    my($frame, $message, $hdl) = @_;
+    note "send $counter";
+    $hdl->push_write($frame->new($counter++)->to_bytes);
+    if($counter >= $max)
+    {
+      $hdl->push_write($frame->new(type => 'close')->to_bytes);
+      $hdl->push_shutdown;
     }
-  );
-}, sub {
-  my($fh, $host, $port) = @_;
-  $server_cv->send($port);
-};
+  },
+  sub {  # handshake
+    my($handshake) = @_;
+    $counter = 1;
+    $max = 15;
+    note "max = $max";
+    note "resource = " . $handshake->req->resource_name;
+    if($handshake->req->resource_name =~ /\/count\/(\d+)/)
+    { $max = $1 }
+    note "max = $max";
+  },
+);
 
-my $port = $server_cv->recv;
-note "port = $port";
+$uri->path('/count/10');
+note $uri;
 
-my $client = AnyEvent::WebSocket::Client->new;
-
-my $connection = $client->connect("ws://127.0.0.1:$port/count/10")->recv;
+my $connection = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 my $done = AnyEvent->condvar;
