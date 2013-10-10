@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - actually require moo 1.001000, and use scalar default value
+    that feature should have been there to begin with.
 
 0.14      2013-10-10 13:09:42 -0400
   - fix older Moo compat
