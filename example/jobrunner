@@ -5,7 +5,7 @@ use warnings;
 use v5.10;
 use JSON qw( to_json );
 use AnyEvent::Open3::Simple;
-use AnyEvent::WebSocket::Client;
+use AnyEvent::WebSocket::Client 0.12;
 
 unless(@ARGV > 0)
 {

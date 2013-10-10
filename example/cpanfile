@@ -1,6 +1,6 @@
 requires 'AnyEvent';
 requires 'AnyEvent::Open3::Simple';
-requires 'AnyEvent::WebSocket::Client';
+requires 'AnyEvent::WebSocket::Client', '0.12';
 requires 'JSON';
 requires 'LWP::UserAgent';
 requires 'Mojo::JSON';

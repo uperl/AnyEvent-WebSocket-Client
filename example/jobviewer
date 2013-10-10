@@ -5,7 +5,7 @@ use warnings;
 use v5.10;
 use AnyEvent;
 use JSON qw( from_json );
-use AnyEvent::WebSocket::Client;
+use AnyEvent::WebSocket::Client 0.12;
 use LWP::UserAgent;
 use URI;
 use Text::Table;
