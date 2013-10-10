@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - fix older Moo compat
 
 0.12      2013-10-10 07:07:42 -0400
   - deprecate on_next_message, on_each_message and on_finish

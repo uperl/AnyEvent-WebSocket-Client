@@ -42,7 +42,7 @@ The integer code for the type of message.
 =cut
 
 has body => ( is => 'ro', required => 1 );
-has opcode => ( is => 'ro', default => 1 );
+has opcode => ( is => 'ro', default => sub { 1 } );
 
 =head1 METHODS
 
