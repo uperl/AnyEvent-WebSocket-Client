@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.14      2013-10-10 13:09:42 -0400
   - fix older Moo compat
 
 0.12      2013-10-10 07:07:42 -0400
