@@ -164,7 +164,7 @@ sub connect
                                                       },
     );
     my $connection = AnyEvent::WebSocket::Connection->new(
-      _handle => $hdl,
+      handle => $hdl,
     );
     
     $hdl->push_write($handshake->to_string);
