@@ -152,9 +152,9 @@ sub connect
         provided $uri->secure,                          tls      => 'connect',
         provided $uri->secure && !$self->ssl_no_verify, peername => $uri->host,
         provided $uri->secure && !$self->ssl_no_verify, tls_ctx  => {
-                                                                                       verify => 1,
-                                                                                       verify_peername => "https",
-                                                          provided $self->ssl_ca_file, ca_file => $self->ssl_ca_file,
+                                                                verify => 1,
+                                                                verify_peername => "https",
+                                                          maybe ca_file => $self->ssl_ca_file,
                                                         },
                                                         on_error => sub {
                                                           my ($hdl, $fatal, $msg) = @_;
