@@ -146,30 +146,30 @@ sub connect
       url => $uri->as_string,
     );
     
-    my $stream = AnyEvent::WebSocket::Client::Stream->new(
-      handle => AnyEvent::Handle->new(
-                                                        fh       => $fh,
-        provided $uri->secure,                          tls      => 'connect',
-        provided $uri->secure && !$self->ssl_no_verify, peername => $uri->host,
-        provided $uri->secure && !$self->ssl_no_verify, tls_ctx  => {
-                                                                verify => 1,
-                                                                verify_peername => "https",
-                                                          maybe ca_file => $self->ssl_ca_file,
-                                                        },
-                                                        on_error => sub {
-                                                          my ($hdl, $fatal, $msg) = @_;
-                                                          if($fatal)
-                                                          { $done->croak("connect error: " . $msg) }
-                                                          else
-                                                          { warn $msg }
-                                                        },
-      ),
+    my $hdl = AnyEvent::Handle->new(
+                                                      fh       => $fh,
+      provided $uri->secure,                          tls      => 'connect',
+      provided $uri->secure && !$self->ssl_no_verify, peername => $uri->host,
+      provided $uri->secure && !$self->ssl_no_verify, tls_ctx  => {
+                                                              verify => 1,
+                                                              verify_peername => "https",
+                                                        maybe ca_file => $self->ssl_ca_file,
+                                                      },
+                                                      on_error => sub {
+                                                        my ($hdl, $fatal, $msg) = @_;
+                                                        if($fatal)
+                                                        { $done->croak("connect error: " . $msg) }
+                                                        else
+                                                        { warn $msg }
+                                                      },
     );
-    my $hdl = $stream->handle;
+    my $connection = AnyEvent::WebSocket::Connection->new(
+      _handle => $hdl,
+    );
     
     $hdl->push_write($handshake->to_string);
 
-    $stream->read_cb(sub {
+    $connection->read_cb(sub {
       $handshake->parse($_[0]{rbuf});
       if($handshake->error)
       {
@@ -177,50 +177,20 @@ sub connect
         undef $hdl;
         undef $handshake;
         undef $done;
-        undef $stream;
+        undef $connection;
       }
       elsif($handshake->is_done)
       {
         undef $handshake;
-        $done->send(AnyEvent::WebSocket::Connection->new(
-          _stream => $stream,
-        ));
+        $connection->post_handshake;
+        $done->send($connection);
         undef $hdl;
         undef $done;
-        undef $stream;
+        undef $connection;
       }
     });   
   }, sub { $self->timeout };
   $done;
-}
-
-package
-  AnyEvent::WebSocket::Client::Stream;
-
-use Moo;
-use warnings NONFATAL => 'all';
-use Scalar::Util qw( weaken );
-
-has handle => (
-  is       => 'ro',
-  required => 1,
-);
-
-has read_cb => (
-  is       => 'rw',
-  lazy     => 1,
-  default  => sub { sub { } },
-);
-
-sub BUILD
-{
-  my $self = shift;
-  weaken $self;
-  $self->handle->on_read(sub {
-    $self->handle->push_read(sub {
-      $self->read_cb->(@_) if $self->read_cb;
-    });
-  });
 }
 
 1;

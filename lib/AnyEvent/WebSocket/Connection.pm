@@ -57,18 +57,29 @@ C<AnyEvent::WebSocket::Server> is ever created (after the
 handshake is complete, the client and server look pretty
 much the same).
 
+=head1 ATTRIBUTES
+
+=head2 handle
+
+FIXME
+
 =cut
 
-has _stream => (
-  is => 'ro',
+has handle => (
+  is       => 'ro',
   required => 1,
 );
 
-has _handle => (
-  is       => 'ro',
+=head2 read_cb
+
+FIXME
+
+=cut
+
+has read_cb => (
+  is       => 'rw',
   lazy     => 1,
-  default  => sub { shift->_stream->handle },
-  weak_ref => 1,
+  default  => sub { sub { } },
 );
 
 foreach my $type (qw( each_message next_message finish ))
@@ -84,15 +95,34 @@ sub BUILD
 {
   my $self = shift;
   weaken $self;
+  $self->handle->on_read(sub {
+    $self->handle->push_read(sub {
+      $self->read_cb->(@_) if $self->read_cb;
+    });
+  });
+}
+
+=head1 METHODS
+
+=head2 $connection-E<gt>post_handshake
+
+FIXME
+
+=cut
+
+sub post_handshake
+{
+  my $self = shift;
+  weaken $self;
   my $finish = sub {
     $_->($self) for @{ $self->_finish_cb };
   };
-  $self->_handle->on_error($finish);
-  $self->_handle->on_eof($finish);
+  $self->handle->on_error($finish);
+  $self->handle->on_eof($finish);
 
   my $frame = Protocol::WebSocket::Frame->new;
   
-  $self->_stream->read_cb(sub {
+  $self->read_cb(sub {
     $frame->append($_[0]{rbuf});
     while(defined(my $body = $frame->next_bytes))
     {
@@ -110,8 +140,6 @@ sub BUILD
     }
   });
 }
-
-=head1 METHODS
 
 =head2 $connection-E<gt>send($message)
 
@@ -135,7 +163,7 @@ sub send
   {
     $frame = Protocol::WebSocket::Frame->new($message);
   }
-  $self->_handle->push_write($frame->to_bytes);
+  $self->handle->push_write($frame->to_bytes);
   $self;
 }
 
@@ -201,8 +229,8 @@ sub close
 {
   my($self) = @_;
 
-  $self->_handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
-  $self->_handle->push_shutdown;
+  $self->handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
+  $self->handle->push_shutdown;
 }
 
 =head1 DEPRECATED METHODS
