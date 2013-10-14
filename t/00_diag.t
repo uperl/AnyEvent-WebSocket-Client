@@ -34,7 +34,7 @@ require(File::Spec->catfile($FindBin::Bin, '00_diag.pl'))
 
 foreach my $module (@modules)
 {
-  if(eval qq{ use $module; 1 })
+  if(eval qq{ require $module; 1 })
   {
     my $ver = eval qq{ \$$module\::VERSION };
     $ver = 'undef' unless defined $ver;
