@@ -61,7 +61,9 @@ much the same).
 
 =head2 handle
 
-FIXME
+The underlying AnyEvent::Handle object used for the connection.
+
+Usually only useful for creating server connections, see below.
 
 =cut
 
@@ -72,7 +74,9 @@ has handle => (
 
 =head2 read_cb
 
-FIXME
+The callback called when raw data arrives on the connection.
+
+Usually only useful for creating server connections, see below.
 
 =cut
 
@@ -103,43 +107,6 @@ sub BUILD
 }
 
 =head1 METHODS
-
-=head2 $connection-E<gt>post_handshake
-
-FIXME
-
-=cut
-
-sub post_handshake
-{
-  my $self = shift;
-  weaken $self;
-  my $finish = sub {
-    $_->($self) for @{ $self->_finish_cb };
-  };
-  $self->handle->on_error($finish);
-  $self->handle->on_eof($finish);
-
-  my $frame = Protocol::WebSocket::Frame->new;
-  
-  $self->read_cb(sub {
-    $frame->append($_[0]{rbuf});
-    while(defined(my $body = $frame->next_bytes))
-    {
-      if($frame->is_text || $frame->is_binary)
-      {
-        my $message = AnyEvent::WebSocket::Message->new(
-          body   => $body,
-          opcode => $frame->opcode,
-        );
-      
-        $_->($self, $message) for @{ $self->_next_message_cb };
-        @{ $self->_next_message_cb } = ();
-        $_->($self, $message) for @{ $self->_each_message_cb };
-      }
-    }
-  });
-}
 
 =head2 $connection-E<gt>send($message)
 
@@ -232,6 +199,54 @@ sub close
   $self->handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
   $self->handle->push_shutdown;
 }
+
+=head2 $connection-E<gt>post_handshake
+
+The enables Connection to take over processing of new data sent through the
+connection.
+
+Usually only useful for creating server connections, see below.
+
+=cut
+
+sub post_handshake
+{
+  my $self = shift;
+  weaken $self;
+  my $finish = sub {
+    $_->($self) for @{ $self->_finish_cb };
+  };
+  $self->handle->on_error($finish);
+  $self->handle->on_eof($finish);
+
+  my $frame = Protocol::WebSocket::Frame->new;
+  
+  $self->read_cb(sub {
+    $frame->append($_[0]{rbuf});
+    while(defined(my $body = $frame->next_bytes))
+    {
+      if($frame->is_text || $frame->is_binary)
+      {
+        my $message = AnyEvent::WebSocket::Message->new(
+          body   => $body,
+          opcode => $frame->opcode,
+        );
+      
+        $_->($self, $message) for @{ $self->_next_message_cb };
+        @{ $self->_next_message_cb } = ();
+        $_->($self, $message) for @{ $self->_each_message_cb };
+      }
+    }
+  });
+}
+
+=head1 SERVER CONNECTIONS
+
+Although written originally to work with L<AnyEvent::WebSocket::Client>,
+this class was designed to be used for either client or server WebSocket
+connections.  For details, contact the author and/or take a look at the
+source for L<AnyEvent::WebSocket::Client> and the examples that come with
+L<Protocol::WebSocket>.
 
 =head1 DEPRECATED METHODS
 
