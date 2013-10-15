@@ -163,13 +163,9 @@ sub connect
                                                         { warn $msg }
                                                       },
     );
-    my $connection = AnyEvent::WebSocket::Connection->new(
-      handle => $hdl,
-    );
     
     $hdl->push_write($handshake->to_string);
-
-    $connection->read_cb(sub {
+    $hdl->on_read(sub {
       $handshake->parse($_[0]{rbuf});
       if($handshake->error)
       {
@@ -177,18 +173,15 @@ sub connect
         undef $hdl;
         undef $handshake;
         undef $done;
-        undef $connection;
       }
       elsif($handshake->is_done)
       {
         undef $handshake;
-        $connection->post_handshake;
-        $done->send($connection);
+        $done->send(AnyEvent::WebSocket::Connection->new(handle => $hdl));
         undef $hdl;
         undef $done;
-        undef $connection;
       }
-    });   
+    });
   }, sub { $self->timeout };
   $done;
 }

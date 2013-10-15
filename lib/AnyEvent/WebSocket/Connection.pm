@@ -61,7 +61,9 @@ much the same).
 
 =head2 handle
 
-The underlying AnyEvent::Handle object used for the connection.
+The underlying L<AnyEvent::Handle> object used for the connection.
+WebSocket handshake MUST be already completed using this handle.
+You should not use the handle directly after creating L<AnyEvent::WebSocket::Connection> object.
 
 Usually only useful for creating server connections, see below.
 
@@ -70,20 +72,6 @@ Usually only useful for creating server connections, see below.
 has handle => (
   is       => 'ro',
   required => 1,
-);
-
-=head2 read_cb
-
-The callback called when raw data arrives on the connection.
-
-Usually only useful for creating server connections, see below.
-
-=cut
-
-has read_cb => (
-  is       => 'rw',
-  lazy     => 1,
-  default  => sub { sub { } },
 );
 
 foreach my $type (qw( each_message next_message finish ))
@@ -99,10 +87,30 @@ sub BUILD
 {
   my $self = shift;
   weaken $self;
+  my $finish = sub {
+    $_->($self) for @{ $self->_finish_cb };
+  };
+  $self->handle->on_error($finish);
+  $self->handle->on_eof($finish);
+
+  my $frame = Protocol::WebSocket::Frame->new;
+  
   $self->handle->on_read(sub {
-    $self->handle->push_read(sub {
-      $self->read_cb->(@_) if $self->read_cb;
-    });
+    $frame->append($_[0]{rbuf});
+    while(defined(my $body = $frame->next_bytes))
+    {
+      if($frame->is_text || $frame->is_binary)
+      {
+        my $message = AnyEvent::WebSocket::Message->new(
+          body   => $body,
+          opcode => $frame->opcode,
+        );
+      
+        $_->($self, $message) for @{ $self->_next_message_cb };
+        @{ $self->_next_message_cb } = ();
+        $_->($self, $message) for @{ $self->_each_message_cb };
+      }
+    }
   });
 }
 
@@ -200,45 +208,6 @@ sub close
   $self->handle->push_shutdown;
 }
 
-=head2 $connection-E<gt>post_handshake
-
-The enables Connection to take over processing of new data sent through the
-connection.
-
-Usually only useful for creating server connections, see below.
-
-=cut
-
-sub post_handshake
-{
-  my $self = shift;
-  weaken $self;
-  my $finish = sub {
-    $_->($self) for @{ $self->_finish_cb };
-  };
-  $self->handle->on_error($finish);
-  $self->handle->on_eof($finish);
-
-  my $frame = Protocol::WebSocket::Frame->new;
-  
-  $self->read_cb(sub {
-    $frame->append($_[0]{rbuf});
-    while(defined(my $body = $frame->next_bytes))
-    {
-      if($frame->is_text || $frame->is_binary)
-      {
-        my $message = AnyEvent::WebSocket::Message->new(
-          body   => $body,
-          opcode => $frame->opcode,
-        );
-      
-        $_->($self, $message) for @{ $self->_next_message_cb };
-        @{ $self->_next_message_cb } = ();
-        $_->($self, $message) for @{ $self->_each_message_cb };
-      }
-    }
-  });
-}
 
 =head1 SERVER CONNECTIONS
 
