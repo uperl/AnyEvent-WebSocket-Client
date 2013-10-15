@@ -1,8 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
-  - internal changes to Connection class means that we private
-    Client::Stream class is no longer necessary
+  - public API for creating Connection instance
 
 0.15      2013-10-10 13:20:00 -0400
   - actually require moo 1.001000, and use scalar default value
