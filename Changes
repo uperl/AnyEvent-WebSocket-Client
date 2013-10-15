@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.16      2013-10-15 13:05:36 -0400
+  - skip ssl test if you have a bad combination of Mojolicious and Net::SSLeay
+
 0.15      2013-10-10 13:20:00 -0400
   - actually require moo 1.001000, and use scalar default value
     that feature should have been there to begin with.
