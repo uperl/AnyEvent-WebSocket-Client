@@ -21,9 +21,9 @@ sub set_timeout
   });
 }
 
-sub start_server_with_initial_messages
+sub start_server
 {
-  my($class, $messages_ref, $message_cb, $handshake_cb) = @_;
+  my($class, $message_cb, $handshake_cb) = @_;
   my $server_cv = AnyEvent->condvar;
 
   tcp_server undef, undef, sub {
@@ -42,11 +42,7 @@ sub start_server_with_initial_messages
           if($handshake->is_done)
           {
             $hdl->push_write($handshake->to_string);
-            for my $message (@$messages_ref)
-            {
-              $hdl->push_write(Protocol::WebSocket::Frame->new($message)->to_bytes);
-            }
-            $handshake_cb->($handshake)
+            $handshake_cb->($handshake, $hdl)
               if $handshake_cb;
           }
           return;
@@ -71,12 +67,6 @@ sub start_server_with_initial_messages
   $uri->port($port);
   note "$uri";
   $uri;
-}
-
-sub start_server
-{
-  my($class, $message_cb, $handshake_cb) = @_;
-  return $class->start_server_with_initial_messages([], $message_cb, $handshake_cb);
 }
 
 sub start_echo

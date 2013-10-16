@@ -12,12 +12,15 @@ use testlib::Server;
 
 testlib::Server->set_timeout;
 
-my $url = testlib::Server->start_server_with_initial_messages(
-  ["initial message from server"],
+my $url = testlib::Server->start_server(
   sub {
     ## message callback
     my ($frame, $message, $handle) = @_;
     $handle->push_shutdown;
+  },
+  sub {
+    my ($handshake, $hdl) = @_;
+    $hdl->push_write(Protocol::WebSocket::Frame->new("initial message from server")->to_bytes);
   }
 );
 
