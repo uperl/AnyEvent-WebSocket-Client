@@ -23,7 +23,9 @@ sub set_timeout
 
 sub start_server
 {
-  my($class, $message_cb, $handshake_cb) = @_;
+  my $class = shift;
+  my $opt = { @_ };
+  $opt->{handshake} //= sub {};
   my $server_cv = AnyEvent->condvar;
 
   tcp_server undef, undef, sub {
@@ -42,8 +44,7 @@ sub start_server
           if($handshake->is_done)
           {
             $hdl->push_write($handshake->to_string);
-            $handshake_cb->($handshake, $hdl)
-              if $handshake_cb;
+            $opt->{handshake}->(handshake => $handshake, hdl => $hdl);
           }
           return;
         }
@@ -52,7 +53,7 @@ sub start_server
       
         while(defined(my $message = $frame->next))
         {
-          $message_cb->($frame, $message, $hdl);
+          $opt->{message}->(frame => $frame, message => $message, hdl => $hdl);
         }
       }
     );
@@ -71,17 +72,17 @@ sub start_server
 
 sub start_echo
 {
-  shift->start_server(sub {
-    my($frame, $message, $hdl) = @_;
+  shift->start_server(message => sub {
+    my $opt = { @_ };
     
-    return if !$frame->is_text && !$frame->is_binary;
+    return if !$opt->{frame}->is_text && !$opt->{frame}->is_binary;
 
-    $hdl->push_write($frame->new("$message")->to_bytes);
+    $opt->{hdl}->push_write($opt->{frame}->new($opt->{message})->to_bytes);
         
-    if($message eq 'quit')
+    if($opt->{message} eq 'quit')
     {
-      $hdl->push_write($frame->new(type => 'close')->to_bytes);
-      $hdl->push_shutdown;
+      $opt->{hdl}->push_write($opt->{frame}->new(type => 'close')->to_bytes);
+      $opt->{hdl}->push_shutdown;
     }
   });
 }

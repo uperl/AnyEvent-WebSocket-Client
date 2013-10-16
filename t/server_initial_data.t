@@ -13,15 +13,14 @@ use testlib::Server;
 testlib::Server->set_timeout;
 
 my $url = testlib::Server->start_server(
-  sub {
-    ## message callback
-    my ($frame, $message, $handle) = @_;
-    $handle->push_shutdown;
+  handshake => sub {
+    my $opt = { @_ };
+    $opt->{hdl}->push_write(Protocol::WebSocket::Frame->new("initial message from server")->to_bytes);
   },
-  sub {
-    my ($handshake, $hdl) = @_;
-    $hdl->push_write(Protocol::WebSocket::Frame->new("initial message from server")->to_bytes);
-  }
+  message => sub {
+    my $opt = { @_ };
+    $opt->{hdl}->push_shutdown;
+  },
 );
 
 my $conn = AnyEvent::WebSocket::Client->new->connect($url)->recv;

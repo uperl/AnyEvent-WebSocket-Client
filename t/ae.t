@@ -15,27 +15,27 @@ my $counter;
 my $max;
 
 my $uri = testlib::Server->start_server(
-  sub {  # message
-    my($frame, $message, $hdl) = @_;
-    eval q{
-      note "send $counter";
-      $hdl->push_write($frame->new($counter++)->to_bytes);
-      if($counter >= $max)
-      {
-        $hdl->push_write($frame->new(type => 'close')->to_bytes);
-        $hdl->push_shutdown;
-      }
-    };
-  },
-  sub {  # handshake
-    my($handshake) = @_;
+  handshake => sub {  # handshake
+    my $opt = { @_ };
     $counter = 1;
     $max = 15;
     note "max = $max";
-    note "resource = " . $handshake->req->resource_name;
-    if($handshake->req->resource_name =~ /\/count\/(\d+)/)
+    note "resource = " . $opt->{handshake}->req->resource_name;
+    if($opt->{handshake}->req->resource_name =~ /\/count\/(\d+)/)
     { $max = $1 }
     note "max = $max";
+  },
+  message => sub {  # message
+    my $opt = { @_ };
+    eval q{
+      note "send $counter";
+      $opt->{hdl}->push_write($opt->{frame}->new($counter++)->to_bytes);
+      if($counter >= $max)
+      {
+        $opt->{hdl}->push_write($opt->{frame}->new(type => 'close')->to_bytes);
+        $opt->{hdl}->push_shutdown;
+      }
+    };
   },
 );
 
