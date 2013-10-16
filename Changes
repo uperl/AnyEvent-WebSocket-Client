@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.17      2013-10-16 10:58:41 -0400
   - public API for creating Connection instance (thanks Toshio Ito gh#10)
   - bug fix messages sent by server immediately after connect may have been lost (thanks Toshio Ito gh#12)
 
