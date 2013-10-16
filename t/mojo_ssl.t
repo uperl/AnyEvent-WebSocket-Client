@@ -12,9 +12,9 @@ use lib $FindBin::Bin;
 use testlib::Mojo;
 use testlib::Server;
 
-if($Mojolicious::VERSION >= 4.47 && $IO::Socket::SSL::VERSION >= 1.955 && $Net::SSLeay::VERSION < 1.56)
+if($Mojolicious::VERSION eq '4.47' && $IO::Socket::SSL::VERSION >= 1.955 && $Net::SSLeay::VERSION < 1.56)
 {
-  plan skip_all => 'Combination of Mojolicious >= 4.47, IO::Socket::SSL >= 1.955 and Net::SSLeay < 1.56 breaks this test';
+  plan skip_all => 'Combination of Mojolicious == 4.47, IO::Socket::SSL >= 1.955 and Net::SSLeay < 1.56 breaks this test';
 }
 
 testlib::Server->set_timeout;
