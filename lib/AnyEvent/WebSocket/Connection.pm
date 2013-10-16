@@ -8,6 +8,7 @@ use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
 use Scalar::Util qw( weaken );
 use Encode ();
+use AnyEvent;
 use AnyEvent::WebSocket::Message;
 use Carp qw( croak carp );
 
@@ -94,8 +95,8 @@ sub BUILD
   $self->handle->on_eof($finish);
 
   my $frame = Protocol::WebSocket::Frame->new;
-  
-  $self->handle->on_read(sub {
+
+  my $read_cb = sub {
     $frame->append($_[0]{rbuf});
     while(defined(my $body = $frame->next_bytes))
     {
@@ -110,6 +111,21 @@ sub BUILD
         @{ $self->_next_message_cb } = ();
         $_->($self, $message) for @{ $self->_each_message_cb };
       }
+    }
+  };
+
+  # Delay setting on_read callback. This is necessary to make sure all
+  # received data are handled by each_message and/or next_message
+  # callbacks. If there is some data in rbuf, changing the on_read
+  # callback makes the callback fire, but there is of course no
+  # each_message/next_message callback to receive the message yet.
+  $self->handle->on_read(undef);
+  my $idle_w; $idle_w = AnyEvent->idle(cb => sub {
+    undef $idle_w;
+    if(defined($self))
+    {
+      $read_cb->($self->handle); # make sure to read remaining data in rbuf.
+      $self->handle->on_read($read_cb);
     }
   });
 }
