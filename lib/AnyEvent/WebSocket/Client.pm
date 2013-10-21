@@ -208,6 +208,10 @@ L<AnyEvent::WebSocket::Message>
 
 =item *
 
+L<AnyEvent::WebSocket::Server>
+
+=item *
+
 L<AnyEvent>
 
 =item *

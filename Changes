@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - documentation
 
 0.17      2013-10-16 10:58:41 -0400
   - public API for creating Connection instance (thanks Toshio Ito gh#10)

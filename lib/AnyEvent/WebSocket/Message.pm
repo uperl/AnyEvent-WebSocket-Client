@@ -101,6 +101,10 @@ L<AnyEvent::WebSocket::Connection>
 
 =item *
 
+L<AnyEvent::WebSocket::Server>
+
+=item *
+
 L<AnyEvent>
 
 =item *

@@ -92,6 +92,7 @@ Patches are encouraged to improve it.
 
 - [AnyEvent::WebSocket::Connection](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Connection)
 - [AnyEvent::WebSocket::Message](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Message)
+- [AnyEvent::WebSocket::Server](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Server)
 - [AnyEvent](http://search.cpan.org/perldoc?AnyEvent)
 - [URI::ws](http://search.cpan.org/perldoc?URI::ws)
 - [URI::wss](http://search.cpan.org/perldoc?URI::wss)
