@@ -111,6 +111,10 @@ sub BUILD
         @{ $self->_next_message_cb } = ();
         $_->($self, $message) for @{ $self->_each_message_cb };
       }
+      elsif($frame->is_close)
+      {
+        $self->close();
+      }
     }
   };
 
