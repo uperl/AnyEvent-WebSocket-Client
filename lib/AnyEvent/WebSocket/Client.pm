@@ -228,6 +228,14 @@ L<Protocol::WebSocket>
 
 =item *
 
+L<Net::WebSocket::Server>
+
+=item *
+
+L<Net::Async::WebSocket>
+
+=item *
+
 L<RFC 6455 The WebSocket Protocol|http://tools.ietf.org/html/rfc6455>
 
 =back

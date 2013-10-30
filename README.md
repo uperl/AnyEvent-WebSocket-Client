@@ -97,6 +97,8 @@ Patches are encouraged to improve it.
 - [URI::ws](http://search.cpan.org/perldoc?URI::ws)
 - [URI::wss](http://search.cpan.org/perldoc?URI::wss)
 - [Protocol::WebSocket](http://search.cpan.org/perldoc?Protocol::WebSocket)
+- [Net::WebSocket::Server](http://search.cpan.org/perldoc?Net::WebSocket::Server)
+- [Net::Async::WebSocket](http://search.cpan.org/perldoc?Net::Async::WebSocket)
 - [RFC 6455 The WebSocket Protocol](http://tools.ietf.org/html/rfc6455)
 
 # AUTHOR
