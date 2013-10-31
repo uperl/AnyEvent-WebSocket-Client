@@ -28,6 +28,7 @@ sub test_case
     $conns[0]->send("foo");
     $conns[0]->send("bar");
     is $finish_count, 1;
+    done_testing;
   };
 }
 

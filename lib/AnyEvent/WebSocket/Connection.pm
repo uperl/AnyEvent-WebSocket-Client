@@ -91,6 +91,7 @@ sub BUILD
   my $finish = sub {
     $_->($self) for @{ $self->_finish_cb };
     @{ $self->_finish_cb } = ();
+    $self->handle->push_shutdown;
   };
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
