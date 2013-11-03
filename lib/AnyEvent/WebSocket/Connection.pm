@@ -134,6 +134,10 @@ sub BUILD
           $self->_is_read_open(0);
           $self->close();
         }
+        elsif($frame->is_ping)
+        {
+          $self->send(AnyEvent::WebSocket::Message->new(opcode => 10, body => $body));
+        }
       }
       1; # succeed to parse.
     };
