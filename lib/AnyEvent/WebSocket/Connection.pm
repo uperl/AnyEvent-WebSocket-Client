@@ -84,6 +84,15 @@ foreach my $type (qw( each_message next_message finish ))
   );
 }
 
+foreach my $flag (qw( _is_read_open _is_write_open ))
+{
+  has $flag => (
+    is       => 'rw',
+    init_arg => undef,
+    default  => 1
+  );
+}
+
 sub BUILD
 {
   my $self = shift;
@@ -92,6 +101,8 @@ sub BUILD
     $_->($self) for @{ $self->_finish_cb };
     @{ $self->_finish_cb } = ();
     $self->handle->push_shutdown;
+    $self->_is_read_open(0);
+    $self->_is_write_open(0);
   };
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
@@ -102,6 +113,7 @@ sub BUILD
     $frame->append($_[0]{rbuf});
     while(defined(my $body = $frame->next_bytes))
     {
+      next if !$self->_is_read_open;
       if($frame->is_text || $frame->is_binary)
       {
         my $message = AnyEvent::WebSocket::Message->new(
@@ -115,6 +127,7 @@ sub BUILD
       }
       elsif($frame->is_close)
       {
+        $self->_is_read_open(0);
         $self->close();
       }
     }
@@ -150,6 +163,9 @@ sub send
 {
   my($self, $message) = @_;
   my $frame;
+  
+  return $self if !$self->_is_write_open;
+  
   if(ref $message)
   {
     $DB::single = 1;
@@ -226,8 +242,9 @@ sub close
 {
   my($self) = @_;
 
-  $self->handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
+  $self->send(AnyEvent::WebSocket::Message->new(opcode => 8, body => ""));
   $self->handle->push_shutdown;
+  $self->_is_write_open(0);
 }
 
 
