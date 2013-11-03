@@ -34,7 +34,6 @@ sub test_case
     $code->($a_conn, $b_handle);
     $cv_finish->recv;
     pass "OK";
-    done_testing;
   };
 }
 
