@@ -13,9 +13,7 @@ testlib::Server->set_timeout();
 
 note("Connection should respond with close frame to close frame");
 
-my ($a_handle, $b_handle) = testlib::Connection->create_handle_pair();
-my $a_conn = AnyEvent::WebSocket::Connection->new(handle => $a_handle);
-undef $a_handle;
+my ($a_conn, $b_handle) = testlib::Connection->create_connection_and_handle();
 
 my $cv_b_recv = AnyEvent->condvar;
 $b_handle->on_error(sub {

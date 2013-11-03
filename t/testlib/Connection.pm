@@ -41,4 +41,14 @@ sub create_connection_pair
   );
 }
 
+sub create_connection_and_handle
+{
+  my ($class, $a_options_ref) = @_;
+  my ($a_handle, $b_handle) = $class->create_handle_pair();
+  return (
+    AnyEvent::WebSocket::Connection->new(%$a_options_ref, handle => $a_handle),
+    $b_handle
+  );
+}
+
 1;

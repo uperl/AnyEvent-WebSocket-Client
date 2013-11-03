@@ -18,9 +18,7 @@ sub make_frame {
 testlib::Server->set_timeout;
 
 subtest "it should not send after sending close frame", sub {
-  my ($a_handle, $b_handle) = testlib::Connection->create_handle_pair();
-  my $a_conn = AnyEvent::WebSocket::Connection->new(handle => $a_handle);
-  undef $a_handle;
+  my ($a_conn, $b_handle) = testlib::Connection->create_connection_and_handle();
 
   my $b_received;
   my $cv_finish = AnyEvent->condvar;
@@ -47,9 +45,7 @@ subtest "it should not send after sending close frame", sub {
 };
 
 subtest "it should not receive after receiving close frame", sub {
-  my ($a_handle, $b_handle) = testlib::Connection->create_handle_pair();
-  my $a_conn = AnyEvent::WebSocket::Connection->new(handle => $a_handle);
-  undef $a_handle;
+  my ($a_conn, $b_handle) = testlib::Connection->create_connection_and_handle();
 
   my @received_messages = ();
   my $cv_finish = AnyEvent->condvar;
