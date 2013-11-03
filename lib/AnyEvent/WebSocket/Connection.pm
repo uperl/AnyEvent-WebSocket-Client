@@ -46,17 +46,16 @@ a connection)
 =head1 DESCRIPTION
 
 This class represents a WebSocket connection with a remote
-server (or in the future perhaps a client).
+server or a client.
 
 If the connection object falls out of scope then the connection
 will be closed gracefully.
 
 This class was created for a client to connect to a server 
 via L<AnyEvent::WebSocket::Client>, but it may be useful to
-reuse it for a server to interact with a client if a
-C<AnyEvent::WebSocket::Server> is ever created (after the
+reuse it for a server to interact with a client. After the
 handshake is complete, the client and server look pretty
-much the same).
+much the same.
 
 =head1 ATTRIBUTES
 
