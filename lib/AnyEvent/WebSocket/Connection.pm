@@ -75,6 +75,17 @@ has handle => (
   required => 1,
 );
 
+=head2 masked
+
+If set to true, it masks outgoing frames. The default is false.
+
+=cut
+
+has masked => (
+  is      => 'ro',
+  default => sub { 0 },
+);
+
 foreach my $type (qw( each_message next_message finish ))
 {
   has "_${type}_cb" => (
@@ -89,7 +100,7 @@ foreach my $flag (qw( _is_read_open _is_write_open ))
   has $flag => (
     is       => 'rw',
     init_arg => undef,
-    default  => 1
+    default  => sub { 1 },
   );
 }
 
@@ -185,12 +196,12 @@ sub send
   if(ref $message)
   {
     $DB::single = 1;
-    $frame = Protocol::WebSocket::Frame->new($message->body);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked);
     $frame->opcode($message->opcode);
   }
   else
   {
-    $frame = Protocol::WebSocket::Frame->new($message);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $self->masked);
   }
   $self->handle->push_write($frame->to_bytes);
   $self;
