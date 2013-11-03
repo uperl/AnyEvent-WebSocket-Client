@@ -110,26 +110,38 @@ sub BUILD
   my $frame = Protocol::WebSocket::Frame->new;
 
   my $read_cb = sub {
-    $frame->append($_[0]{rbuf});
-    while(defined(my $body = $frame->next_bytes))
+    my ($handle) = @_;
+    local $@;
+    my $success = eval
     {
-      next if !$self->_is_read_open;
-      if($frame->is_text || $frame->is_binary)
+      $frame->append($handle->{rbuf});
+      while(defined(my $body = $frame->next_bytes))
       {
-        my $message = AnyEvent::WebSocket::Message->new(
-          body   => $body,
-          opcode => $frame->opcode,
-        );
-      
-        $_->($self, $message) for @{ $self->_next_message_cb };
-        @{ $self->_next_message_cb } = ();
-        $_->($self, $message) for @{ $self->_each_message_cb };
+        next if !$self->_is_read_open; # not 'last' but 'next' in order to consume data in $frame buffer.
+        if($frame->is_text || $frame->is_binary)
+        {
+          my $message = AnyEvent::WebSocket::Message->new(
+            body   => $body,
+            opcode => $frame->opcode,
+          );
+          
+          $_->($self, $message) for @{ $self->_next_message_cb };
+          @{ $self->_next_message_cb } = ();
+          $_->($self, $message) for @{ $self->_each_message_cb };
+        }
+        elsif($frame->is_close)
+        {
+          $self->_is_read_open(0);
+          $self->close();
+        }
       }
-      elsif($frame->is_close)
-      {
-        $self->_is_read_open(0);
-        $self->close();
-      }
+      1; # succeed to parse.
+    };
+    if(!$success)
+    {
+      $self->handle->push_shutdown;
+      $self->_is_write_open(0);
+      $self->_is_read_open(0);
     }
   };
 
