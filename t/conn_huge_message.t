@@ -7,7 +7,7 @@ use FindBin ();
 use lib $FindBin::Bin;
 use testlib::Server;
 use testlib::Connection;
-use Protocol::WebSocket 0.13;  ## 0.13 required to use "fin" attribute in Frame.
+use Protocol::WebSocket 0.13;  # 0.13 required to use "fin" attribute in Frame.
 use Protocol::WebSocket::Frame;
 
 note("Connection should refuse extremely huge messages.");
@@ -31,8 +31,8 @@ subtest "Connection should refuse huge frames", sub {
   });
   $b_handle->on_read(sub { });
 
-  my $frame_header = pack("H*", "827f00000000ffffffff"); ## frame payload size = 2**32 - 1 bytes
-  my $MAX_SEND_PAYLOAD = 1024; ## for safety
+  my $frame_header = pack("H*", "827f00000000ffffffff"); # frame payload size = 2**32 - 1 bytes
+  my $MAX_SEND_PAYLOAD = 1024; # for safety
   my $count_send_payload = 0;
   $b_handle->push_write($frame_header);
   $b_handle->on_drain(sub {
