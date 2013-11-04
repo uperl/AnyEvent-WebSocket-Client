@@ -3,7 +3,7 @@ use warnings;
 use v5.10;
 use utf8;
 BEGIN { eval q{ use EV } }
-use Protocol::WebSocket 0.15; # 0.15 required for bug fix
+use Protocol::WebSocket;
 use AnyEvent::WebSocket::Client;
 use AnyEvent::WebSocket::Message;
 use Test::More tests => 4;
