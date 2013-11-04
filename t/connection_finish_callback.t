@@ -1,5 +1,6 @@
 use strict;
 use warnings;
+BEGIN { eval q{ use EV } }
 use Test::More;
 use AnyEvent;
 use AnyEvent::WebSocket::Connection;
