@@ -108,6 +108,7 @@ sub BUILD
   my $self = shift;
   weaken $self;
   my $finish = sub {
+    my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
     $_->($self) for @{ $self->_finish_cb };
     @{ $self->_finish_cb } = ();
     $self->handle->push_shutdown;
@@ -122,6 +123,7 @@ sub BUILD
   my $read_cb = sub {
     my ($handle) = @_;
     local $@;
+    my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks
     my $success = eval
     {
       $frame->append($handle->{rbuf});
