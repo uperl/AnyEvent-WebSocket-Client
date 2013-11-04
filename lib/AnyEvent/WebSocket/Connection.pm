@@ -46,17 +46,16 @@ a connection)
 =head1 DESCRIPTION
 
 This class represents a WebSocket connection with a remote
-server (or in the future perhaps a client).
+server or a client.
 
 If the connection object falls out of scope then the connection
 will be closed gracefully.
 
 This class was created for a client to connect to a server 
 via L<AnyEvent::WebSocket::Client>, but it may be useful to
-reuse it for a server to interact with a client if a
-C<AnyEvent::WebSocket::Server> is ever created (after the
+reuse it for a server to interact with a client. After the
 handshake is complete, the client and server look pretty
-much the same).
+much the same.
 
 =head1 ATTRIBUTES
 
@@ -75,6 +74,17 @@ has handle => (
   required => 1,
 );
 
+=head2 masked
+
+If set to true, it masks outgoing frames. The default is false.
+
+=cut
+
+has masked => (
+  is      => 'ro',
+  default => sub { 0 },
+);
+
 foreach my $type (qw( each_message next_message finish ))
 {
   has "_${type}_cb" => (
@@ -84,12 +94,26 @@ foreach my $type (qw( each_message next_message finish ))
   );
 }
 
+foreach my $flag (qw( _is_read_open _is_write_open ))
+{
+  has $flag => (
+    is       => 'rw',
+    init_arg => undef,
+    default  => sub { 1 },
+  );
+}
+
 sub BUILD
 {
   my $self = shift;
   weaken $self;
   my $finish = sub {
+    my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
     $_->($self) for @{ $self->_finish_cb };
+    @{ $self->_finish_cb } = ();
+    $self->handle->push_shutdown;
+    $self->_is_read_open(0);
+    $self->_is_write_open(0);
   };
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
@@ -97,20 +121,43 @@ sub BUILD
   my $frame = Protocol::WebSocket::Frame->new;
 
   my $read_cb = sub {
-    $frame->append($_[0]{rbuf});
-    while(defined(my $body = $frame->next_bytes))
+    my ($handle) = @_;
+    local $@;
+    my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks
+    my $success = eval
     {
-      if($frame->is_text || $frame->is_binary)
+      $frame->append($handle->{rbuf});
+      while(defined(my $body = $frame->next_bytes))
       {
-        my $message = AnyEvent::WebSocket::Message->new(
-          body   => $body,
-          opcode => $frame->opcode,
-        );
-      
-        $_->($self, $message) for @{ $self->_next_message_cb };
-        @{ $self->_next_message_cb } = ();
-        $_->($self, $message) for @{ $self->_each_message_cb };
+        next if !$self->_is_read_open; # not 'last' but 'next' in order to consume data in $frame buffer.
+        if($frame->is_text || $frame->is_binary)
+        {
+          my $message = AnyEvent::WebSocket::Message->new(
+            body   => $body,
+            opcode => $frame->opcode,
+          );
+          
+          $_->($self, $message) for @{ $self->_next_message_cb };
+          @{ $self->_next_message_cb } = ();
+          $_->($self, $message) for @{ $self->_each_message_cb };
+        }
+        elsif($frame->is_close)
+        {
+          $self->_is_read_open(0);
+          $self->close();
+        }
+        elsif($frame->is_ping)
+        {
+          $self->send(AnyEvent::WebSocket::Message->new(opcode => 10, body => $body));
+        }
       }
+      1; # succeed to parse.
+    };
+    if(!$success)
+    {
+      $self->handle->push_shutdown;
+      $self->_is_write_open(0);
+      $self->_is_read_open(0);
     }
   };
 
@@ -144,15 +191,18 @@ sub send
 {
   my($self, $message) = @_;
   my $frame;
+  
+  return $self if !$self->_is_write_open;
+  
   if(ref $message)
   {
     $DB::single = 1;
-    $frame = Protocol::WebSocket::Frame->new($message->body);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked);
     $frame->opcode($message->opcode);
   }
   else
   {
-    $frame = Protocol::WebSocket::Frame->new($message);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $self->masked);
   }
   $self->handle->push_write($frame->to_bytes);
   $self;
@@ -220,8 +270,9 @@ sub close
 {
   my($self) = @_;
 
-  $self->handle->push_write(Protocol::WebSocket::Frame->new(type => 'close')->to_bytes);
+  $self->send(AnyEvent::WebSocket::Message->new(opcode => 8, body => ""));
   $self->handle->push_shutdown;
+  $self->_is_write_open(0);
 }
 
 

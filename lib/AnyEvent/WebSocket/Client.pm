@@ -177,7 +177,7 @@ sub connect
       elsif($handshake->is_done)
       {
         undef $handshake;
-        $done->send(AnyEvent::WebSocket::Connection->new(handle => $hdl));
+        $done->send(AnyEvent::WebSocket::Connection->new(handle => $hdl, masked => 1));
         undef $hdl;
         undef $done;
       }
