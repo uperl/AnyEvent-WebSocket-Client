@@ -47,4 +47,15 @@ test_case "close conn 0", sub {
   $conns->[0]->close();
 };
 
+test_case "recursively fire on_error event (in AE::Handle sense) while in on_eof handler", sub {
+  my $conns = shift;
+  $conns->[0]->on(finish => sub {
+    # It is very rude and unusual to use the handle directly. We don't
+    # have to support it, but it may happen.
+    $conns->[0]->handle->push_shutdown;
+    $conns->[0]->send("FOO"); # sending via a shutdown socket fires on_error ("Broken Pipe")
+  });
+  undef $conns->[1];
+};
+
 done_testing;

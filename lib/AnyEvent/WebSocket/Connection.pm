@@ -103,17 +103,24 @@ foreach my $flag (qw( _is_read_open _is_write_open ))
   );
 }
 
+has "_is_finished" => (
+  is       => 'rw',
+  init_arg => undef,
+  default  => sub { 0 },
+);
+
 sub BUILD
 {
   my $self = shift;
   weaken $self;
   my $finish = sub {
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
-    $_->($self) for @{ $self->_finish_cb };
-    @{ $self->_finish_cb } = ();
+    return if $self->_is_finished;
+    $self->_is_finished(1);
     $self->handle->push_shutdown;
     $self->_is_read_open(0);
     $self->_is_write_open(0);
+    $_->($self) for @{ $self->_finish_cb };
   };
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
