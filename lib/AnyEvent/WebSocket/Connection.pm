@@ -203,7 +203,6 @@ sub send
   
   if(ref $message)
   {
-    $DB::single = 1;
     $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked);
     $frame->opcode($message->opcode);
   }
