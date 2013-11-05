@@ -1,10 +1,9 @@
-package AnyEvent::WebSocket::Client;
+package AnyEvent::WebSocket;
 
 use strict;
 use warnings;
 use v5.10;
-use Moo;
-use warnings NONFATAL => 'all';
+use mop;
 use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket qw( tcp_connect );
@@ -73,10 +72,9 @@ is 30.
 
 =cut
 
-has timeout => (
-  is      => 'ro',
-  default => sub { 30 },
-);
+class Client {
+
+  has $!timeout is ro = 30;
 
 =head2 ssl_no_verify
 
@@ -85,9 +83,7 @@ not be verified.  The default is false.
 
 =cut
 
-has ssl_no_verify => (
-  is => 'ro',
-);
+  has $!ssl_no_verify is ro;
 
 =head2 ssl_ca_file
 
@@ -96,9 +92,7 @@ SSL/TLS verification.
 
 =cut
 
-has ssl_ca_file => (
-  is => 'ro',
-);
+  has $!ssl_ca_file is ro;
 
 =head1 METHODS
 
@@ -116,9 +110,8 @@ such errors using C<eval>.
 
 =cut
 
-sub connect
+method connect($uri)
 {
-  my($self, $uri) = @_;
   unless(ref $uri)
   {
     require URI;
@@ -149,11 +142,11 @@ sub connect
     my $hdl = AnyEvent::Handle->new(
                                                       fh       => $fh,
       provided $uri->secure,                          tls      => 'connect',
-      provided $uri->secure && !$self->ssl_no_verify, peername => $uri->host,
-      provided $uri->secure && !$self->ssl_no_verify, tls_ctx  => {
+      provided $uri->secure && !$!ssl_no_verify,      peername => $uri->host,
+      provided $uri->secure && !$!ssl_no_verify,      tls_ctx  => {
                                                               verify => 1,
                                                               verify_peername => "https",
-                                                        maybe ca_file => $self->ssl_ca_file,
+                                                        maybe ca_file => $!ssl_ca_file,
                                                       },
                                                       on_error => sub {
                                                         my ($hdl, $fatal, $msg) = @_;
@@ -182,9 +175,11 @@ sub connect
         undef $done;
       }
     });
-  }, sub { $self->timeout };
+  }, sub { $!timeout };
   $done;
 }
+
+} # end class
 
 1;
 

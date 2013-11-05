@@ -1,10 +1,9 @@
-package AnyEvent::WebSocket::Message;
+package AnyEvent::WebSocket;
 
 use strict;
 use warnings;
 use v5.10;
-use Moo;
-use warnings NONFATAL => 'all';
+use mop;
 use Encode ();
 
 # ABSTRACT: WebSocket message for AnyEvent
@@ -41,8 +40,10 @@ The integer code for the type of message.
 
 =cut
 
-has body => ( is => 'ro', required => 1 );
-has opcode => ( is => 'ro', default => 1 );
+class Message {
+
+  has $!body is ro = die "body is required";
+  has $!opcode is ro = 1;
 
 =head1 METHODS
 
@@ -52,10 +53,10 @@ Returns the body decoded from UTF-8.
 
 =cut
 
-sub decoded_body
-{
-  Encode::decode("UTF-8", shift->body)
-}
+  method decoded_body
+  {
+    Encode::decode("UTF-8", $self->body)
+  }
 
 =head2  $message-E<gt>is_text
 
@@ -79,11 +80,13 @@ True if the message is a pong.
 
 =cut
 
-sub is_text   { $_[0]->opcode == 1 }
-sub is_binary { $_[0]->opcode == 2 }
-sub is_close  { $_[0]->opcode == 8 }
-sub is_ping   { $_[0]->opcode == 9 }
-sub is_pong   { $_[0]->opcode == 10 }
+  method is_text   { $!opcode == 1 }
+  method is_binary { $!opcode == 2 }
+  method is_close  { $!opcode == 8 }
+  method is_ping   { $!opcode == 9 }
+  method is_pong   { $!opcode == 10 }
+
+} # end class
 
 1;
 
