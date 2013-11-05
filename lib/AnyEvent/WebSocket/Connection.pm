@@ -89,11 +89,8 @@ If set to true, it masks outgoing frames. The default is false.
   has $!_is_write_open is rw = 1;
   has $!_is_finished is rw = 0;
 
-  method BUILD { $self->_legacy_build }
-
-sub ::AnyEvent::WebSocket::Connection::_legacy_build
+method BUILD
 {
-  my $self = shift;
   weaken $self;
   my $finish = sub {
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
