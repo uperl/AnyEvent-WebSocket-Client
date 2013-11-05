@@ -1,10 +1,9 @@
-package AnyEvent::WebSocket::Connection;
+package AnyEvent::WebSocket;
 
 use strict;
 use warnings;
 use v5.10;
-use Moo;
-use warnings NONFATAL => 'all';
+use mop;
 use Protocol::WebSocket::Frame;
 use Scalar::Util qw( weaken );
 use Encode ();
@@ -69,10 +68,9 @@ Usually only useful for creating server connections, see below.
 
 =cut
 
-has handle => (
-  is       => 'ro',
-  required => 1,
-);
+class Connection {
+
+  has $!handle is ro = die "handle is required";
 
 =head2 masked
 
@@ -80,36 +78,20 @@ If set to true, it masks outgoing frames. The default is false.
 
 =cut
 
-has masked => (
-  is      => 'ro',
-  default => sub { 0 },
-);
+  has $!masked is ro = 0;
 
-foreach my $type (qw( each_message next_message finish ))
-{
-  has "_${type}_cb" => (
-    is       => 'ro',
-    init_arg => undef,
-    default  => sub { [] },
-  );
-}
+  # init_arg = undef ??
+  has $!_each_message_cb is ro = [];
+  has $!_next_message_cb is ro = [];
+  has $!_finish_cb is ro = [];
 
-foreach my $flag (qw( _is_read_open _is_write_open ))
-{
-  has $flag => (
-    is       => 'rw',
-    init_arg => undef,
-    default  => sub { 1 },
-  );
-}
+  has $!_is_read_open is rw = 1;
+  has $!_is_write_open is rw = 1;
+  has $!_is_finished is rw = 0;
 
-has "_is_finished" => (
-  is       => 'rw',
-  init_arg => undef,
-  default  => sub { 0 },
-);
+  method BUILD { $self->_legacy_build }
 
-sub BUILD
+sub ::AnyEvent::WebSocket::Connection::_legacy_build
 {
   my $self = shift;
   weaken $self;
@@ -194,24 +176,22 @@ L<AnyEvent::WebSocket::Message>.
 
 =cut
 
-sub send
+method send($message)
 {
-  my($self, $message) = @_;
   my $frame;
   
-  return $self if !$self->_is_write_open;
+  return $self if !$!_is_write_open;
   
   if(ref $message)
   {
-    $DB::single = 1;
-    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $!masked);
     $frame->opcode($message->opcode);
   }
   else
   {
-    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $self->masked);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $!masked);
   }
-  $self->handle->push_write($frame->to_bytes);
+  $!handle->push_write($frame->to_bytes);
   $self;
 }
 
@@ -244,21 +224,19 @@ Called when the connection is terminated
 
 =cut
 
-sub on
+method on($event, $cb)
 {
-  my($self, $event, $cb) = @_;
-  
   if($event eq 'next_message')
   {
-    push @{ $self->_next_message_cb }, $cb;
+    push @{ $!_next_message_cb }, $cb;
   }
   elsif($event eq 'each_message')
   {
-    push @{ $self->_each_message_cb }, $cb;
+    push @{ $!_each_message_cb }, $cb;
   }
   elsif($event eq 'finish')
   {
-    push @{ $self->_finish_cb }, $cb;
+    push @{ $!_finish_cb }, $cb;
   }
   else
   {
@@ -273,13 +251,11 @@ Close the connection.
 
 =cut
 
-sub close
+method close
 {
-  my($self) = @_;
-
   $self->send(AnyEvent::WebSocket::Message->new(opcode => 8, body => ""));
-  $self->handle->push_shutdown;
-  $self->_is_write_open(0);
+  $!handle->push_shutdown;
+  $!_is_write_open = 0;
 }
 
 
@@ -307,9 +283,8 @@ The message is a decoded text string.
 
 =cut
 
-sub on_each_message
+method on_each_message($cb)
 {
-  my($self, $cb) = @_;
   carp "on_each_message is deprecated" if warnings::enabled('deprecated');
   $self->on(each_message => sub {
     $cb->(Encode::decode("UTF-8",pop->body));
@@ -326,9 +301,8 @@ The message is a decoded text string.
 
 =cut
 
-sub on_next_message
+method on_next_message($cb)
 {
-  my($self, $cb) = @_;
   carp "on_next_message is deprecated" if warnings::enabled('deprecated');
   $self->on(next_message => sub {
     $cb->(Encode::decode("UTF-8",pop->body));
@@ -342,13 +316,14 @@ Register a callback to be called when the connection is closed.
 
 =cut
 
-sub on_finish
+method on_finish($cb)
 {
-  my($self, $cb) = @_;
   carp "on_finish is deprecated" if warnings::enabled('deprecated');
   $self->on(finish => $cb);
   $self;
 }
+
+} # end class
 
 1;
 
