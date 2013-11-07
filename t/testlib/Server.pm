@@ -15,7 +15,7 @@ my $timeout;
 sub set_timeout
 {
   return if defined $timeout;
-  $timeout = AnyEvent->timer( after => 5, cb => sub {
+  $timeout = AnyEvent->timer( after => 30, cb => sub {
     diag "timeout!";
     exit 2;
   });
