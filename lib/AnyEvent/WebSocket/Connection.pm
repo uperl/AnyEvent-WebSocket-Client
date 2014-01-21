@@ -40,22 +40,22 @@ use Carp qw( croak carp );
  # a callback)
  $connection->close;
 
-(See L<AnyEvent::WebSocket::Client> on how to create
-a connection)
+(See L<AnyEvent::WebSocket::Client> or L<AnyEvent::WebSocket::Server> on 
+how to create a connection)
 
 =head1 DESCRIPTION
 
-This class represents a WebSocket connection with a remote
-server or a client.
+This class represents a WebSocket connection with a remote server or a 
+client.
 
-If the connection object falls out of scope then the connection
-will be closed gracefully.
+If the connection object falls out of scope then the connection will be 
+closed gracefully.
 
-This class was created for a client to connect to a server 
-via L<AnyEvent::WebSocket::Client>, but it may be useful to
-reuse it for a server to interact with a client. After the
-handshake is complete, the client and server look pretty
-much the same.
+This class was created for a client to connect to a server via 
+L<AnyEvent::WebSocket::Client>, and was later extended to work on the 
+server side via L<AnyEvent::WebSocket::Server>.  Once a WebSocket 
+connection is established, the API for both client and server is 
+identical.
 
 =head1 ATTRIBUTES
 
