@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.21      2014-04-08 12:52:51 -0400
   - Perl 5.8 support
     Only useful if you force install Protocol::WebSocket, since it
     has a failing test on 5.8
