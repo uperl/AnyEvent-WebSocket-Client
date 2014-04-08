@@ -2,7 +2,6 @@
 
 use strict;
 use warnings;
-use v5.10;
 use AnyEvent;
 use JSON qw( from_json );
 use AnyEvent::WebSocket::Client 0.12;
@@ -51,7 +50,7 @@ my $job = from_json($res->decoded_content);
 
 my $done = AnyEvent->condvar;
 
-say join(' ', '%', @{ $job->{command} });
+print(join(' ', '%', @{ $job->{command} }), "\n");
 process_message($_) for @{ $job->{events} };
 
 sub process_message
@@ -59,11 +58,11 @@ sub process_message
   my $msg = shift;
   if($msg->{type} eq 'out')
   {
-    say $msg->{data};
+    print $msg->{data}, "\n";
   }
   elsif($msg->{type} eq 'err')
   {
-    say $msg->{data};
+    print $msg->{data}, "\n";
   }
   elsif($msg->{type} eq 'exit')
   {
@@ -73,11 +72,11 @@ sub process_message
   }
   elsif($msg->{type} eq 'error')
   {
-    say "ERROR: " . $msg->{data};
+    print "ERROR: " . $msg->{data}, "\n";
   }
   elsif($msg->{type} eq 'closed')
   {
-    say "CONNECTION CLOSED";
+    print "CONNECTION CLOSED", "\n";
     $done->send;
   }
 }

@@ -2,7 +2,6 @@ package testlib::Server;
 
 use strict;
 use warnings;
-use v5.10;
 use URI;
 use Test::More;
 use AnyEvent::Handle;
@@ -25,7 +24,7 @@ sub start_server
 {
   my $class = shift;
   my $opt = { @_ };
-  $opt->{handshake} //= sub {};
+  $opt->{handshake} ||= sub {};
   my $server_cv = AnyEvent->condvar;
 
   tcp_server undef, undef, sub {

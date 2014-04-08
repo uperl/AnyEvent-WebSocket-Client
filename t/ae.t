@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 no warnings 'deprecated';
-use v5.10;
 BEGIN { eval q{ use EV } }
 use AnyEvent::WebSocket::Client;
 use Test::More tests => 3;

@@ -2,7 +2,6 @@ package AnyEvent::WebSocket::Connection;
 
 use strict;
 use warnings;
-use v5.10;
 use Moo;
 use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
