@@ -11,7 +11,7 @@ sub start_mojo
   my $app = $args{app};
   my $scheme = $args{ssl} ? "https" : "http";
   my $server = Mojo::Server::Daemon->new;
-  my $port = $server->ioloop->generate_port;
+  my $port = generate_port();
   note "port = $port";
   $server->app($app);
   $server->listen(["$scheme://127.0.0.1:$port"]);
@@ -19,5 +19,9 @@ sub start_mojo
   return ($server, $port);
 }
 
+sub generate_port
+{
+  IO::Socket::INET->new(Listen => 5, LocalAddr => '127.0.0.1')->sockport
+}
 
 1;

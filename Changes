@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Mojo 5.x compat (testing only)
 
 0.21      2014-04-08 12:52:51 -0400
   - Perl 5.8 support
