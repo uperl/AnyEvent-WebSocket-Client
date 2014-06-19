@@ -4,10 +4,12 @@ Devel::Cycle
 EV
 Encode
 FindBin
+IO::Socket::SSL
 Math::Random::Secure
 Module::Build
 Mojolicious
 Moo
+Net::SSLeay
 PerlX::Maybe
 PerlX::Maybe::XS
 Protocol::WebSocket
