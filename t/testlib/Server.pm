@@ -2,7 +2,6 @@ package testlib::Server;
 
 use strict;
 use warnings;
-use v5.10;
 use URI;
 use Test::More;
 use AnyEvent::Handle;
@@ -15,7 +14,7 @@ my $timeout;
 sub set_timeout
 {
   return if defined $timeout;
-  $timeout = AnyEvent->timer( after => 5, cb => sub {
+  $timeout = AnyEvent->timer( after => 30, cb => sub {
     diag "timeout!";
     exit 2;
   });
@@ -25,7 +24,7 @@ sub start_server
 {
   my $class = shift;
   my $opt = { @_ };
-  $opt->{handshake} //= sub {};
+  $opt->{handshake} ||= sub {};
   my $server_cv = AnyEvent->condvar;
 
   tcp_server undef, undef, sub {

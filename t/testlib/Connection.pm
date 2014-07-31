@@ -1,4 +1,5 @@
 package testlib::Connection;
+
 use strict;
 use warnings;
 use AnyEvent::WebSocket::Connection;

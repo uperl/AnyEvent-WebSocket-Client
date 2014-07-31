@@ -2,6 +2,17 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.22      2014-06-19 15:33:56 -0400
+  - Mojo 5.x compat (testing only)
+
+0.21      2014-04-08 12:52:51 -0400
+  - Perl 5.8 support
+    Only useful if you force install Protocol::WebSocket, since it
+    has a failing test on 5.8
+
+0.20      2013-11-05 10:19:20 -0500
+  - prevent multiple finish callbacks in unusual cases (Toshio Ito gh#15)
+
 0.19      2013-11-04 07:26:19 -0500
   [AE::WS::Connection enhacements (thanks Toshio Ito)]
   - Automatically respond to a close frame with a close frame (RFC6455 5.5.1)

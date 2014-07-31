@@ -3,7 +3,6 @@
 use autodie;
 use strict;
 use warnings;
-use v5.10;
 use Mojo::Redis;
 use Mojo::JSON;
 use Mojolicious::Lite;

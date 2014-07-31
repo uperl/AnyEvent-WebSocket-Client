@@ -2,7 +2,6 @@ package AnyEvent::WebSocket::Connection;
 
 use strict;
 use warnings;
-use v5.10;
 use Moo;
 use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
@@ -40,22 +39,22 @@ use Carp qw( croak carp );
  # a callback)
  $connection->close;
 
-(See L<AnyEvent::WebSocket::Client> on how to create
-a connection)
+(See L<AnyEvent::WebSocket::Client> or L<AnyEvent::WebSocket::Server> on 
+how to create a connection)
 
 =head1 DESCRIPTION
 
-This class represents a WebSocket connection with a remote
-server or a client.
+This class represents a WebSocket connection with a remote server or a 
+client.
 
-If the connection object falls out of scope then the connection
-will be closed gracefully.
+If the connection object falls out of scope then the connection will be 
+closed gracefully.
 
-This class was created for a client to connect to a server 
-via L<AnyEvent::WebSocket::Client>, but it may be useful to
-reuse it for a server to interact with a client. After the
-handshake is complete, the client and server look pretty
-much the same.
+This class was created for a client to connect to a server via 
+L<AnyEvent::WebSocket::Client>, and was later extended to work on the 
+server side via L<AnyEvent::WebSocket::Server>.  Once a WebSocket 
+connection is established, the API for both client and server is 
+identical.
 
 =head1 ATTRIBUTES
 
@@ -103,17 +102,24 @@ foreach my $flag (qw( _is_read_open _is_write_open ))
   );
 }
 
+has "_is_finished" => (
+  is       => 'rw',
+  init_arg => undef,
+  default  => sub { 0 },
+);
+
 sub BUILD
 {
   my $self = shift;
   weaken $self;
   my $finish = sub {
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
-    $_->($self) for @{ $self->_finish_cb };
-    @{ $self->_finish_cb } = ();
+    return if $self->_is_finished;
+    $self->_is_finished(1);
     $self->handle->push_shutdown;
     $self->_is_read_open(0);
     $self->_is_write_open(0);
+    $_->($self) for @{ $self->_finish_cb };
   };
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
@@ -196,7 +202,6 @@ sub send
   
   if(ref $message)
   {
-    $DB::single = 1;
     $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked);
     $frame->opcode($message->opcode);
   }

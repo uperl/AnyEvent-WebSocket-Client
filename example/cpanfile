@@ -9,4 +9,4 @@ requires 'Mojolicious::Lite';
 requires 'Text::Table';
 requires 'URI';
 requires 'autodie';
-requires 'perl', 'v5.10.0';
+requires 'perl', 'v5.8.0';

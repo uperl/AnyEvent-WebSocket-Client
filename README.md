@@ -14,23 +14,23 @@ WebSocket client for AnyEvent
         # handle error...
       }
       
-    # send a message through the websocket...
-    $connection->send('a message');
-    
-    # recieve message from the websocket...
-    $connection->on(each_message => sub {
-      # $connection is the same connection object
-      # $message isa AnyEvent::WebSocket::Message
-      my($connection, $message) = @_;
-      ...
-    });
-    
-    # handle a closed connection...
-    $connection->on(finish => sub {
-      # $connection is the same connection object
-      my($connection) = @_;
-      ...
-    });
+      # send a message through the websocket...
+      $connection->send('a message');
+      
+      # recieve message from the websocket...
+      $connection->on(each_message => sub {
+        # $connection is the same connection object
+        # $message isa AnyEvent::WebSocket::Message
+        my($connection, $message) = @_;
+        ...
+      });
+      
+      # handle a closed connection...
+      $connection->on(finish => sub {
+        # $connection is the same connection object
+        my($connection) = @_;
+        ...
+      });
 
       # close the connection (either inside or
       # outside another callback)
@@ -41,12 +41,12 @@ WebSocket client for AnyEvent
 # DESCRIPTION
 
 This class provides an interface to interact with a web server that provides
-services via the WebSocket protocol in an [AnyEvent](http://search.cpan.org/perldoc?AnyEvent) context.  It uses
-[Protocol::WebSocket](http://search.cpan.org/perldoc?Protocol::WebSocket) rather than reinventing the wheel.  You could use 
-[AnyEvent](http://search.cpan.org/perldoc?AnyEvent) and [Protocol::WebSocket](http://search.cpan.org/perldoc?Protocol::WebSocket) directly if you wanted finer grain
+services via the WebSocket protocol in an [AnyEvent](https://metacpan.org/pod/AnyEvent) context.  It uses
+[Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) rather than reinventing the wheel.  You could use 
+[AnyEvent](https://metacpan.org/pod/AnyEvent) and [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) directly if you wanted finer grain
 control, but if that is not necessary then this class may save you some time.
 
-The recommended API was added to the [AnyEvent::WebSocket::Connection](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Connection)
+The recommended API was added to the [AnyEvent::WebSocket::Connection](https://metacpan.org/pod/AnyEvent::WebSocket::Connection)
 class with version 0.12, so it is recommended that you include that version
 when using this module.  The older API will continue to work for now with
 deprecation warnings.
@@ -73,12 +73,12 @@ SSL/TLS verification.
 ## $client->connect($uri)
 
 Open a connection to the web server and open a WebSocket to the resource
-defined by the given URL.  The URL may be either an instance of [URI::ws](http://search.cpan.org/perldoc?URI::ws),
-[URI::wss](http://search.cpan.org/perldoc?URI::wss), or a string that represents a legal WebSocket URL.
+defined by the given URL.  The URL may be either an instance of [URI::ws](https://metacpan.org/pod/URI::ws),
+[URI::wss](https://metacpan.org/pod/URI::wss), or a string that represents a legal WebSocket URL.
 
-This method will return an [AnyEvent](http://search.cpan.org/perldoc?AnyEvent) condition variable which you can 
+This method will return an [AnyEvent](https://metacpan.org/pod/AnyEvent) condition variable which you can 
 attach a callback to.  The value sent through the condition variable will
-be either an instance of [AnyEvent::WebSocket::Connection](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Connection) or a croak
+be either an instance of [AnyEvent::WebSocket::Connection](https://metacpan.org/pod/AnyEvent::WebSocket::Connection) or a croak
 message indicating a failure.  The synopsis above shows how to catch
 such errors using `eval`.
 
@@ -90,15 +90,15 @@ Patches are encouraged to improve it.
 
 # SEE ALSO
 
-- [AnyEvent::WebSocket::Connection](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Connection)
-- [AnyEvent::WebSocket::Message](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Message)
-- [AnyEvent::WebSocket::Server](http://search.cpan.org/perldoc?AnyEvent::WebSocket::Server)
-- [AnyEvent](http://search.cpan.org/perldoc?AnyEvent)
-- [URI::ws](http://search.cpan.org/perldoc?URI::ws)
-- [URI::wss](http://search.cpan.org/perldoc?URI::wss)
-- [Protocol::WebSocket](http://search.cpan.org/perldoc?Protocol::WebSocket)
-- [Net::WebSocket::Server](http://search.cpan.org/perldoc?Net::WebSocket::Server)
-- [Net::Async::WebSocket](http://search.cpan.org/perldoc?Net::Async::WebSocket)
+- [AnyEvent::WebSocket::Connection](https://metacpan.org/pod/AnyEvent::WebSocket::Connection)
+- [AnyEvent::WebSocket::Message](https://metacpan.org/pod/AnyEvent::WebSocket::Message)
+- [AnyEvent::WebSocket::Server](https://metacpan.org/pod/AnyEvent::WebSocket::Server)
+- [AnyEvent](https://metacpan.org/pod/AnyEvent)
+- [URI::ws](https://metacpan.org/pod/URI::ws)
+- [URI::wss](https://metacpan.org/pod/URI::wss)
+- [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket)
+- [Net::WebSocket::Server](https://metacpan.org/pod/Net::WebSocket::Server)
+- [Net::Async::WebSocket](https://metacpan.org/pod/Net::Async::WebSocket)
 - [RFC 6455 The WebSocket Protocol](http://tools.ietf.org/html/rfc6455)
 
 # AUTHOR
