@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.23      2014-08-04 12:41:07 -0400
   - documentation improvements
   - use AE:: instead of AnyEvent-> for performance
 
