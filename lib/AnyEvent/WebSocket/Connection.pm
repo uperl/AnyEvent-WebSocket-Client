@@ -7,6 +7,7 @@ use warnings NONFATAL => 'all';
 use Protocol::WebSocket::Frame;
 use Scalar::Util qw( weaken );
 use Encode ();
+use AE;
 use AnyEvent;
 use AnyEvent::WebSocket::Message;
 use Carp qw( croak carp );
@@ -173,14 +174,14 @@ sub BUILD
   # callback makes the callback fire, but there is of course no
   # each_message/next_message callback to receive the message yet.
   $self->handle->on_read(undef);
-  my $idle_w; $idle_w = AnyEvent->idle(cb => sub {
+  my $idle_w; $idle_w = AE::idle sub {
     undef $idle_w;
     if(defined($self))
     {
       $read_cb->($self->handle); # make sure to read remaining data in rbuf.
       $self->handle->on_read($read_cb);
     }
-  });
+  };
 }
 
 =head1 METHODS

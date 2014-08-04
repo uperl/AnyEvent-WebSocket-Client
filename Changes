@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - documentation improvements
+  - use AE:: instead of AnyEvent-> for performance
 
 0.22      2014-06-19 15:33:56 -0400
   - Mojo 5.x compat (testing only)
