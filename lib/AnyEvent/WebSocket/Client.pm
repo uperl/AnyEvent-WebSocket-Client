@@ -207,7 +207,7 @@ been reported here:
 
 https://rt.cpan.org/Ticket/Display.html?id=93163&results=822cf3902026ad4a64ae94b0175207d6
 
-You can use the patch provided there to silence the warings.
+You can use the patch provided there to silence the warnings.
 
 
 =head1 SEE ALSO

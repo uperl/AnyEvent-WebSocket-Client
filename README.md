@@ -12,6 +12,8 @@ WebSocket client for AnyEvent
       my $connection = eval { shift->recv };
       if($@) {
         # handle error...
+        warn $@;
+        return;
       }
       
       # send a message through the websocket...
@@ -87,6 +89,19 @@ such errors using `eval`.
 This is pretty simple minded and there are probably WebSocket features
 that you might like to use that aren't supported by this distribution.
 Patches are encouraged to improve it.
+
+If you see warnings like this:
+
+    Class::MOP::load_class is deprecated at /home/ollisg/.perlbrew/libs/perl-5.18.2c34@dev/lib/perl5/x86_64-linux/Class/MOP.pm line 71.
+    Class::MOP::load_class("Crypt::Random::Source::Weak::devurandom") called at /home/ollisg/.perlbrew/libs/perl-5.18.2c34@dev/lib/perl5/Crypt/Random/Source/Factory.pm line 137
+    ...
+
+The problem is in the optional [Crypt::Random::Source](https://metacpan.org/pod/Crypt::Random::Source) module, and has
+been reported here:
+
+https://rt.cpan.org/Ticket/Display.html?id=93163&results=822cf3902026ad4a64ae94b0175207d6
+
+You can use the patch provided there to silence the warnings.
 
 # SEE ALSO
 
