@@ -8,6 +8,7 @@ use AnyEvent::Handle;
 use AnyEvent::Socket qw( tcp_server);
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
+use PerlX::Maybe qw( maybe );
 
 my $timeout;
 
@@ -31,7 +32,10 @@ sub start_server
     my $handshake = Protocol::WebSocket::Handshake::Server->new;
     my $frame     = Protocol::WebSocket::Frame->new;
   
-    my $hdl = AnyEvent::Handle->new( fh => shift );
+    my $hdl = AnyEvent::Handle->new(
+      $opt->{tls} ? (tls => 'accept', tls_ctx => $opt->{tls}) : (),
+      fh => shift,
+    );
   
     $hdl->on_read(
       sub {
@@ -65,6 +69,7 @@ sub start_server
   
   my $uri = URI->new('ws://127.0.0.1/echo');
   $uri->port($port);
+  $uri->scheme('wss') if $opt->{tls};
   note "$uri";
   $uri;
 }
