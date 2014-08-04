@@ -24,6 +24,8 @@ use PerlX::Maybe qw( maybe provided );
    my $connection = eval { shift->recv };
    if($@) {
      # handle error...
+     warn $@;
+     return;
    }
    
    # send a message through the websocket...
