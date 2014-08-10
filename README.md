@@ -39,6 +39,10 @@ WebSocket client for AnyEvent
       $connection->close;
     
     });
+    
+    ## uncomment this for simple scripts that
+    ## do not otherwise enter the event loop:
+    #EV::loop();
 
 # DESCRIPTION
 
@@ -83,6 +87,16 @@ attach a callback to.  The value sent through the condition variable will
 be either an instance of [AnyEvent::WebSocket::Connection](https://metacpan.org/pod/AnyEvent::WebSocket::Connection) or a croak
 message indicating a failure.  The synopsis above shows how to catch
 such errors using `eval`.
+
+# FAQ
+
+## My program exits before doing anything, what is up with that?
+
+See this FAQ from [AnyEvent](https://metacpan.org/pod/AnyEvent): 
+[AnyEvent#My-program-exits-before-doing-anything-whats-going-on](https://metacpan.org/pod/AnyEvent#My-program-exits-before-doing-anything-whats-going-on).
+
+It is probably also a good idea to review the [AnyEvent](https://metacpan.org/pod/AnyEvent) documentation
+if you are new to [AnyEvent](https://metacpan.org/pod/AnyEvent) or event-based programming.
 
 # CAVEATS
 
