@@ -39,10 +39,11 @@ WebSocket client for AnyEvent
       $connection->close;
     
     });
-    
-    ## uncomment this for simple scripts that
-    ## do not otherwise enter the event loop:
-    #EV::loop();
+
+    ## uncomment to enter the event loop before exiting.
+    ## Note that calling recv on a condition variable before
+    ## it has been triggered does not work on all event loops
+    #AnyEvent->condvar->recv;
 
 # DESCRIPTION
 
