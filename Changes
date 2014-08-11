@@ -2,6 +2,12 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.24      2014-08-11 07:29:49 -0400
+  - documentation
+    (add a FAQ about AnyEvent that I keep getting)
+  - testing ssl
+    (without Mojo)
+
 0.23      2014-08-04 12:41:07 -0400
   - documentation improvements
   - use AE:: instead of AnyEvent-> for performance
