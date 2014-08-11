@@ -200,7 +200,7 @@ sub connect
 =head2 My program exits before doing anything, what is up with that?
 
 See this FAQ from L<AnyEvent>: 
-L<AnyEvent#My-program-exits-before-doing-anything-whats-going-on>.
+L<AnyEvent::FAQ#My-program-exits-before-doing-anything-whats-going-on>.
 
 It is probably also a good idea to review the L<AnyEvent> documentation
 if you are new to L<AnyEvent> or event-based programming.

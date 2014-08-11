@@ -94,7 +94,7 @@ such errors using `eval`.
 ## My program exits before doing anything, what is up with that?
 
 See this FAQ from [AnyEvent](https://metacpan.org/pod/AnyEvent): 
-[AnyEvent#My-program-exits-before-doing-anything-whats-going-on](https://metacpan.org/pod/AnyEvent#My-program-exits-before-doing-anything-whats-going-on).
+[AnyEvent::FAQ#My-program-exits-before-doing-anything-whats-going-on](https://metacpan.org/pod/AnyEvent::FAQ#My-program-exits-before-doing-anything-whats-going-on).
 
 It is probably also a good idea to review the [AnyEvent](https://metacpan.org/pod/AnyEvent) documentation
 if you are new to [AnyEvent](https://metacpan.org/pod/AnyEvent) or event-based programming.
