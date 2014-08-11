@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.25      2014-08-11 14:35:11 -0400
   - fix broken link in documentation
 
 0.24      2014-08-11 07:29:49 -0400
