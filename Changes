@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - if Crypt::Random::Source is already installed, require at least
+    version 0.08 to avoid Class::MOP deprecation warnings
 
 0.25      2014-08-11 14:35:11 -0400
   - fix broken link in documentation
