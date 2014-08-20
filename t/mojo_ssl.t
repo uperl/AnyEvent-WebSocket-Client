@@ -19,6 +19,9 @@ if($Mojolicious::VERSION eq '4.47' && $IO::Socket::SSL::VERSION >= 1.955 && $Net
 
 testlib::Server->set_timeout;
 
+plan skip_all => 'set ANYEVENT_WEBSOCKET_CLIENT_TEST_MOJO_SSL to enable this test'
+  unless $ENV{ANYEVENT_WEBSOCKET_CLIENT_TEST_MOJO_SSL};
+
 plan tests => 3;
 
 app->log->level('fatal');
