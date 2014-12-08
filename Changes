@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - make confusing documentation less confusing.
 
 0.27      2014-08-20 03:54:14 -0400
   - disable t/mojo_ssl.t since it is unreliable and we test the 

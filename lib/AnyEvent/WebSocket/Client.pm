@@ -22,7 +22,12 @@ use PerlX::Maybe qw( maybe provided );
  my $client = AnyEvent::WebSocket::Client->new;
  
  $client->connect("ws://localhost:1234/service")->cb(sub {
-   my $connection = eval { shift->recv };
+ 
+   # make $connection an our variable rather than
+   # my so that it will stick around.  Once the
+   # connection falls out of scope any callbacks
+   # tied to it will be destroyed.
+   our $connection = eval { shift->recv };
    if($@) {
      # handle error...
      warn $@;
@@ -204,6 +209,31 @@ L<AnyEvent::FAQ#My-program-exits-before-doing-anything-whats-going-on>.
 
 It is probably also a good idea to review the L<AnyEvent> documentation
 if you are new to L<AnyEvent> or event-based programming.
+
+=head2 My callbacks aren't being called!
+
+Make sure that the connection object is still in scope.  This often happens
+if you use a C<my $connection> variable and don't save it somewhere.  For
+example:
+
+ $client->connect("ws://foo/service")->cb(sub {
+ 
+   my $connection = eval { shift->recv };
+   
+   if($@)
+   {
+     warn $@;
+     return;
+   }
+   
+   ...
+ });
+
+Unless C<$connection> is saved somewhere it will get deallocated along with
+any associated message callbacks will also get deallocated once the connect
+callback is executed.  One way to make sure that the connection doesn't
+get deallocated is to make it a C<our> variable (as in the synopsis above)
+instead.
 
 =head1 CAVEATS
 
