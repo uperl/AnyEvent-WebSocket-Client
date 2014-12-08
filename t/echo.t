@@ -17,8 +17,6 @@ my $uri = testlib::Server->start_echo;
 my $connection = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
-my $done = AnyEvent->condvar;
-
 my $quit_cv = AnyEvent->condvar;
 $connection->on(finish => sub {
   $quit_cv->send("finished");
