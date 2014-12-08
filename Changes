@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.28      2014-12-08 12:43:53 -0500
   - make confusing documentation less confusing.
 
 0.27      2014-08-20 03:54:14 -0400
