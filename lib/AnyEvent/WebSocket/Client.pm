@@ -247,13 +247,8 @@ If you see warnings like this:
  Class::MOP::load_class("Crypt::Random::Source::Weak::devurandom") called at .../Crypt/Random/Source/Factory.pm line 137
  ...
 
-The problem is in the optional L<Crypt::Random::Source> module, and has
-been reported here:
-
-L<https://rt.cpan.org/Ticket/Display.html?id=93163&results=822cf3902026ad4a64ae94b0175207d6>
-
-You can use the patch provided there to silence the warnings.
-
+The problem is in the optional L<Crypt::Random::Source> module, and 
+reportedly been fixed in its version 0.08.
 
 =head1 SEE ALSO
 
