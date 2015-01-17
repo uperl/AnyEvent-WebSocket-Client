@@ -292,10 +292,11 @@ L<Protocol::WebSocket>.
 
 =head1 DEPRECATED METHODS
 
-The methods in this section are deprecated and may be removed from a
-future version of this class.  They should not be used for new code,
-and are only remain documented here to aid in understanding legacy
-code that use them.
+The methods in this section are deprecated and will be removed on or
+after 11 October 2015, at which point they will have been deprecated
+for two years.   They should not be used for new code, and are only
+remain documented here to aid in understanding legacy code that use
+them.
 
 =head2 $connection-E<gt>on_each_message($cb)
 
