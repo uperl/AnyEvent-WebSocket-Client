@@ -1,9 +1,7 @@
 AE
 AnyEvent
-Carp
 Devel::Cycle
 EV
-Encode
 FindBin
 IO::Socket::SSL
 Math::Random::Secure
