@@ -3,7 +3,6 @@ package AnyEvent::WebSocket::Client;
 use strict;
 use warnings;
 use Moo;
-use warnings NONFATAL => 'all';
 use AE;
 use AnyEvent;
 use AnyEvent::Handle;

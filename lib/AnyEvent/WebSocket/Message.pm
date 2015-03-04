@@ -3,7 +3,6 @@ package AnyEvent::WebSocket::Message;
 use strict;
 use warnings;
 use Moo;
-use warnings NONFATAL => 'all';
 use Encode ();
 
 # ABSTRACT: WebSocket message for AnyEvent
