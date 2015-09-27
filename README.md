@@ -159,7 +159,7 @@ reportedly been fixed in its version 0.08.
 
 # AUTHOR
 
-Author: Graham Ollis <plicease@cpan.org>
+Author: Graham Ollis &lt;plicease@cpan.org>
 
 Contributors:
 
