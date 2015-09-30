@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-no warnings 'deprecated';
 use utf8;
 use AnyEvent::WebSocket::Client;
 use Test::More;
@@ -39,7 +38,7 @@ my $connection = $client->connect("ws://127.0.0.1:$port/echo")->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 my $quit_cv = AnyEvent->condvar;
-$connection->on_finish(sub {
+$connection->on(finish => sub {
   $quit_cv->send("finished");
 });
 
@@ -49,13 +48,12 @@ for my $testcase (
   {label => "empty", data => ""},
   {label => "0", data => 0},
   {label => "utf8 charaters", data => 'ＵＴＦ８ ＷＩＤＥ ＣＨＡＲＡＣＴＥＲＳ'},
-
   {label => "quit", data => "quit"},
 )
 {
   my $cv = AnyEvent->condvar;
-  $connection->on_next_message(sub {
-    my ($message) = @_;
+  $connection->on(next_message => sub {
+    my $message = pop->decoded_body;
     $cv->send($message);
   });
   $connection->send($testcase->{data});

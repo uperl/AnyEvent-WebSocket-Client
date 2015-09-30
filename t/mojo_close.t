@@ -1,7 +1,6 @@
 use strict;
 use warnings;
 use utf8;
-no warnings 'deprecated';
 use AnyEvent::WebSocket::Client;
 use Test::More;
 BEGIN { plan skip_all => 'Requires EV' unless eval q{ use EV; 1 } }
@@ -42,7 +41,7 @@ my $connection = $client->connect("ws://127.0.0.1:$port/echo")->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 my $quit_cv = AnyEvent->condvar;
-$connection->on_finish(sub {
+$connection->on(finish => sub {
   $quit_cv->send("finished");
 });
 
@@ -52,8 +51,8 @@ for my $testcase (
 )
 {
   my $cv = AnyEvent->condvar;
-  $connection->on_next_message(sub {
-    my ($message) = @_;
+  $connection->on(next_message => sub {
+    my $message = pop->decoded_body;
     $cv->send($message);
   });
   $connection->send($testcase->{data});

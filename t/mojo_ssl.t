@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-no warnings 'deprecated';
 use AnyEvent::WebSocket::Client;
 use Test::More;
 BEGIN { plan skip_all => 'Requires IO::Socket::SSL 1.75' unless eval q{ use IO::Socket::SSL 1.75; 1 } }

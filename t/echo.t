@@ -31,11 +31,10 @@ my @test_data = (
 );
 
 subtest legacy => sub {
-  no warnings 'deprecated';
   foreach my $testcase (@test_data) {
     my $cv = AnyEvent->condvar;
-    $connection->on_next_message(sub {
-      my ($message) = @_;
+    $connection->on(next_message => sub {
+      my $message = pop->decoded_body;
       $cv->send($message);
     });
     $connection->send($testcase->{data});
