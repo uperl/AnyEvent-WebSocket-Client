@@ -280,6 +280,7 @@ sub close
   $self->_is_write_open(0);
 }
 
+1;
 
 =head1 SERVER CONNECTIONS
 
@@ -288,68 +289,6 @@ this class was designed to be used for either client or server WebSocket
 connections.  For details, contact the author and/or take a look at the
 source for L<AnyEvent::WebSocket::Client> and the examples that come with
 L<Protocol::WebSocket>.
-
-=head1 DEPRECATED METHODS
-
-The methods in this section are deprecated and will be removed on or
-after 11 October 2015, at which point they will have been deprecated
-for two years.   They should not be used for new code, and are only
-remain documented here to aid in understanding legacy code that use
-them.
-
-=head2 $connection-E<gt>on_each_message($cb)
-
-Register a callback to be called on each subsequent message received.
-The message itself will be passed in as the only parameter to the
-callback.
-The message is a decoded text string.
-
-=cut
-
-sub on_each_message
-{
-  my($self, $cb) = @_;
-  carp "on_each_message is deprecated" if warnings::enabled('deprecated');
-  $self->on(each_message => sub {
-    $cb->(Encode::decode("UTF-8",pop->body));
-  });
-  $self;
-}
-
-=head2 $connection-E<gt>on_next_message($cb)
-
-Register a callback to be called the next message received.
-The message itself will be passed in as the only parameter to the
-callback.
-The message is a decoded text string.
-
-=cut
-
-sub on_next_message
-{
-  my($self, $cb) = @_;
-  carp "on_next_message is deprecated" if warnings::enabled('deprecated');
-  $self->on(next_message => sub {
-    $cb->(Encode::decode("UTF-8",pop->body));
-  });
-  $self;
-}
-
-=head2 $connection-E<gt>on_finish($cb)
-
-Register a callback to be called when the connection is closed.
-
-=cut
-
-sub on_finish
-{
-  my($self, $cb) = @_;
-  carp "on_finish is deprecated" if warnings::enabled('deprecated');
-  $self->on(finish => $cb);
-  $self;
-}
-
-1;
 
 =head1 SEE ALSO
 
