@@ -1,6 +1,10 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Removed deprecated methods for AnyEvent::WebSocket::Connection class:
+    on_each_message
+    on_next_message
+    on_finish
 
 0.30      2015-03-03 23:33:03 -0500
   - Require Moo 2.0, as older versions inadvertently turn on
