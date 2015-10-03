@@ -55,14 +55,14 @@ $connection->send('ping');
 
 my $last;
 
-$connection->on_each_message(sub {
-  my $message = shift;
+$connection->on(each_message => sub {
+  my $message = pop->decoded_body;
   note "recv $message";
   $connection->send('ping');
   $last = $message;
 });
 
-$connection->on_finish(sub {
+$connection->on(finish => sub {
   $done->send(1);
 });
 
