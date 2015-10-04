@@ -240,15 +240,6 @@ This is pretty simple minded and there are probably WebSocket features
 that you might like to use that aren't supported by this distribution.
 Patches are encouraged to improve it.
 
-If you see warnings like this:
-
- Class::MOP::load_class is deprecated at .../Class/MOP.pm line 71.
- Class::MOP::load_class("Crypt::Random::Source::Weak::devurandom") called at .../Crypt/Random/Source/Factory.pm line 137
- ...
-
-The problem is in the optional L<Crypt::Random::Source> module, and 
-reportedly been fixed in its version 0.08.
-
 =head1 SEE ALSO
 
 =over 4
