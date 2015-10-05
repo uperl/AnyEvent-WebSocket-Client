@@ -113,7 +113,9 @@ has ssl_ca_file => (
 
 =head1 METHODS
 
-=head2 $client-E<gt>connect($uri)
+=head2 connect
+
+ my $cv = $client->connect($uri)
 
 Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of L<URI::ws>,

@@ -82,7 +82,9 @@ SSL/TLS verification.
 
 # METHODS
 
-## $client->connect($uri)
+## connect
+
+    my $cv = $client->connect($uri)
 
 Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of [URI::ws](https://metacpan.org/pod/URI::ws),
