@@ -185,7 +185,9 @@ sub BUILD
 
 =head1 METHODS
 
-=head2 $connection-E<gt>send($message)
+=head2 send
+
+ $connection->send($message);
 
 Send a message to the other side.  C<$message> may either be a string
 (in which case a text message will be sent), or an instance of
@@ -213,7 +215,11 @@ sub send
   $self;
 }
 
-=head2 $connection-E<gt>on($event => $cb)
+=head2 on
+
+ $connection->on(each_message => $cb);
+ $connection->on(each_message => $cb);
+ $connection->on(finish => $cb);
 
 Register a callback to a particular event.
 
@@ -265,7 +271,9 @@ sub on
   $self;
 }
 
-=head2 $connection-E<gt>close
+=head2 close
+
+ $connection->close;
 
 Close the connection.
 
