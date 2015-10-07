@@ -286,6 +286,7 @@ sub close
   $self->send(AnyEvent::WebSocket::Message->new(opcode => 8, body => ""));
   $self->handle->push_shutdown;
   $self->_is_write_open(0);
+  $self;
 }
 
 1;
