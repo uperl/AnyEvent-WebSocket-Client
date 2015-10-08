@@ -44,7 +44,9 @@ has opcode => ( is => 'ro', default => 1 );
 
 =head1 METHODS
 
-=head2 $message-E<gt>decoded_body
+=head2 decoded_body
+
+ my $body = $message->decoded_body;
 
 Returns the body decoded from UTF-8.
 
@@ -55,23 +57,33 @@ sub decoded_body
   Encode::decode("UTF-8", shift->body)
 }
 
-=head2  $message-E<gt>is_text
+=head2 is_text
+
+ my $bool = $message->is_text;
 
 True if the message is text.
 
-=head2  $message-E<gt>is_binary
+=head2 is_binary
+
+ my $bool = $message->is_binary;
 
 True if the message is binary.
 
-=head2  $message-E<gt>is_close
+=head2 is_close
+
+ my $bool = $message->is_close;
 
 True if the message is a close message.
 
-=head2  $message-E<gt>is_ping
+=head2 is_ping
+
+ my $bool = $message->is_ping
 
 True if the message is a ping.
 
-=head2  $message-E<gt>is_pong
+=head2 is_pong
+
+ my $bool = $message->is_pong;
 
 True if the message is a pong.
 
