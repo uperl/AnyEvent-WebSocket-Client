@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.31      2015-10-11 06:21:29 -0400
   - Removed deprecated methods for AnyEvent::WebSocket::Connection class:
     on_each_message
     on_next_message
