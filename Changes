@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.32      2015-12-17 14:02:36 -0500
   - URI 1.53 or better has been required for a while (if not since 0.01)
     This is now reflected in the module metadata.
     Thanks to Fabien Wernli (faxm0dem) for the report.
