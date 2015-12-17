@@ -60,8 +60,8 @@ control, but if that is not necessary then this class may save you some time.
 
 The recommended API was added to the [AnyEvent::WebSocket::Connection](https://metacpan.org/pod/AnyEvent::WebSocket::Connection)
 class with version 0.12, so it is recommended that you include that version
-when using this module.  The older API will continue to work for now with
-deprecation warnings.
+when using this module.  The older version of the API has since been
+deprecated and removed.
 
 # ATTRIBUTES
 
