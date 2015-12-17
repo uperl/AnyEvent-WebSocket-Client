@@ -1,6 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - URI 1.53 or better has been required for a while (if not since 0.01)
+    This is now reflected in the module metadata.
+    Thanks to Fabien Wernli (faxm0dem) for the report.
 
 0.31      2015-10-11 06:21:29 -0400
   - Removed deprecated methods for AnyEvent::WebSocket::Connection class:
