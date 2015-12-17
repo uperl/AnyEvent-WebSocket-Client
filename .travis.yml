@@ -1,15 +1,10 @@
 language: perl
-
 sudo: false
 
 install:
-  - cpanm -n URI
-  - cpanm -n URI::ws
-  - cpanm -n Moo
-  - cpanm -n PerlX::Maybe
-  - cpanm -n Protocol::WebSocket
-  - cpanm -n Scalar::Util
-  - cpanm -n AnyEvent
+  - perlbrew list
+  - dzil authordeps --missing | cpanm -n
+  - dzil listdeps --missing | cpanm -n
 
 perl:
 #  - "5.8"
@@ -19,5 +14,7 @@ perl:
   - "5.16"
   - "5.18"
   - "5.20"
+  - "5.22"
 
-script: HARNESS_IS_VERBOSE=1 prove -lv t xt
+script:
+  - dzil test -v
