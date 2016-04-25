@@ -152,7 +152,7 @@ Patches are encouraged to improve it.
 
 # AUTHOR
 
-Author: Graham Ollis &lt;plicease@cpan.org>
+Author: Graham Ollis <plicease@cpan.org>
 
 Contributors:
 
