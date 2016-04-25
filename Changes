@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.33      2016-04-25 12:12:12 -0400
+  - t/ae_ssl.t may now be skipped by setting ANYEVENT_WEBSOCKET_TEST_SKIP_SSL
+
 0.32      2015-12-17 14:02:36 -0500
   - URI 1.53 or better has been required for a while (if not since 0.01)
     This is now reflected in the module metadata.
