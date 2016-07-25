@@ -18,7 +18,7 @@ use Carp qw( croak carp );
 
  # send a message through the websocket...
  $connection->send('a message');
- 
+
  # recieve message from the websocket...
  $connection->on(each_message => sub {
    # $connection is the same connection object
@@ -26,34 +26,34 @@ use Carp qw( croak carp );
    my($connection, $message) = @_;
    ...
  });
- 
+
  # handle a closed connection...
  $connection->on(finish => sub {
    # $connection is the same connection object
    my($connection) = @_;
    ...
  });
- 
+
  # close an opened connection
  # (can do this either inside or outside of
  # a callback)
  $connection->close;
 
-(See L<AnyEvent::WebSocket::Client> or L<AnyEvent::WebSocket::Server> on 
+(See L<AnyEvent::WebSocket::Client> or L<AnyEvent::WebSocket::Server> on
 how to create a connection)
 
 =head1 DESCRIPTION
 
-This class represents a WebSocket connection with a remote server or a 
+This class represents a WebSocket connection with a remote server or a
 client.
 
-If the connection object falls out of scope then the connection will be 
+If the connection object falls out of scope then the connection will be
 closed gracefully.
 
-This class was created for a client to connect to a server via 
-L<AnyEvent::WebSocket::Client>, and was later extended to work on the 
-server side via L<AnyEvent::WebSocket::Server>.  Once a WebSocket 
-connection is established, the API for both client and server is 
+This class was created for a client to connect to a server via
+L<AnyEvent::WebSocket::Client>, and was later extended to work on the
+server side via L<AnyEvent::WebSocket::Server>.  Once a WebSocket
+connection is established, the API for both client and server is
 identical.
 
 =head1 ATTRIBUTES
@@ -142,7 +142,7 @@ sub BUILD
             body   => $body,
             opcode => $frame->opcode,
           );
-          
+
           $_->($self, $message) for @{ $self->_next_message_cb };
           @{ $self->_next_message_cb } = ();
           $_->($self, $message) for @{ $self->_each_message_cb };
@@ -199,9 +199,9 @@ sub send
 {
   my($self, $message) = @_;
   my $frame;
-  
+
   return $self if !$self->_is_write_open;
-  
+
   if(ref $message)
   {
     $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked);
@@ -244,14 +244,14 @@ Called only for the next message received from the WebSocket.
 
 Called when the connection is terminated
 
-=head3 
+=head3
 
 =cut
 
 sub on
 {
   my($self, $event, $cb) = @_;
-  
+
   if($event eq 'next_message')
   {
     push @{ $self->_next_message_cb }, $cb;
@@ -281,9 +281,17 @@ Close the connection.
 
 sub close
 {
-  my($self) = @_;
+  my($self, $code, $reason) = @_;
 
-  $self->send(AnyEvent::WebSocket::Message->new(opcode => 8, body => ""));
+  use Encode qw( encode );
+  my $body = pack('n', ($code) ? $code : '1005');
+
+  $body .= encode 'UTF-8', $reason if defined $reason;
+
+  $self->send(AnyEvent::WebSocket::Message->new(
+    opcode => 8,
+    body => $body,
+  ));
   $self->handle->push_shutdown;
   $self->_is_write_open(0);
   $self;
