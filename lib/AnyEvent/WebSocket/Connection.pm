@@ -281,9 +281,17 @@ Close the connection.
 
 sub close
 {
-  my($self) = @_;
+  my($self, $code, $reason) = @_;
 
-  $self->send(AnyEvent::WebSocket::Message->new(opcode => 8, body => ""));
+  use Encode qw( encode );
+  my $body = pack('n', ($code) ? $code : '1005');
+
+  $body .= encode 'UTF-8', $reason if defined $reason;
+
+  $self->send(AnyEvent::WebSocket::Message->new(
+    opcode => 8,
+    body => $body,
+  ));
   $self->handle->push_shutdown;
   $self->_is_write_open(0);
   $self;
