@@ -272,8 +272,11 @@ sub on
 =head2 close
 
  $connection->close;
+ $connection->close($code);
+ $connection->close($code, $reason);
 
-Close the connection.
+Close the connection.  You may optionally provide a code and a reason.
+By default the code 1005 is used with an empty string as the reason.
 
 =cut
 
