@@ -4,12 +4,11 @@ use strict;
 use warnings;
 use Moo;
 use Protocol::WebSocket::Frame;
-use Scalar::Util qw( weaken );
+use Scalar::Util ();
 use Encode ();
 use AE;
-use AnyEvent;
 use AnyEvent::WebSocket::Message;
-use Carp qw( croak carp );
+use Carp ();
 
 # ABSTRACT: WebSocket connection for AnyEvent
 # VERSION
@@ -111,7 +110,7 @@ has "_is_finished" => (
 sub BUILD
 {
   my $self = shift;
-  weaken $self;
+  Scalar::Util::weaken $self;
   my $finish = sub {
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
     return if $self->_is_finished;
@@ -264,7 +263,7 @@ sub on
   }
   else
   {
-    croak "unrecongized event: $event";
+    Carp::croak "unrecongized event: $event";
   }
   $self;
 }
