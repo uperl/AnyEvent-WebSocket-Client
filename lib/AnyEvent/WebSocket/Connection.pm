@@ -275,7 +275,11 @@ sub on
  $connection->close($code, $reason);
 
 Close the connection.  You may optionally provide a code and a reason.
-By default the code 1005 is used with an empty string as the reason.
+See L<section 5.5.1|https://tools.ietf.org/html/rfc6455#section-5.5.1> and L<section 7.4.1|https://tools.ietf.org/html/rfc6455#section-7.4.1> of RFC6455.
+
+The code is a 16-bit unsigned integer value that indicates why you close the connection. By default the code is 1005.
+
+The reason is a character string (not an octet string) that further describes why you close the connection. By default the reason is an empty string.
 
 =cut
 
