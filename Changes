@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.33_01   2016-07-25 22:48:06 -0400
+  - Added optional code and reason arguments to $connection->close (gh#23 thanks José Joaquín Atria)
+
 0.33      2016-04-25 12:12:12 -0400
   - t/ae_ssl.t may now be skipped by setting ANYEVENT_WEBSOCKET_TEST_SKIP_SSL
 
