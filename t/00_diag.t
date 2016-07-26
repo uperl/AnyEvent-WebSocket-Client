@@ -11,11 +11,9 @@ my $post_diag;
 
 BEGIN { eval q{ use EV; } }
 $modules{$_} = $_ for qw(
-  AE
   AnyEvent
   Devel::Cycle
   EV
-  FindBin
   IO::Socket::SSL
   Math::Random::Secure
   Module::Build
