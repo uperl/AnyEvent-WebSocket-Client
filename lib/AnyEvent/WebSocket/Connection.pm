@@ -244,8 +244,6 @@ Called only for the next message received from the WebSocket.
 
 Called when the connection is terminated
 
-=head3 
-
 =cut
 
 sub on
