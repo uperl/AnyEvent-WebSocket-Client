@@ -336,5 +336,11 @@ L<RFC 6455 The WebSocket Protocol|http://tools.ietf.org/html/rfc6455>
 
 =back
 
+=begin stopwords
+
+Joaquín José
+
+=end stopwords
+
 =cut
 
