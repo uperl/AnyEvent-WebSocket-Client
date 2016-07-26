@@ -284,10 +284,9 @@ sub close
 {
   my($self, $code, $reason) = @_;
 
-  use Encode qw( encode );
   my $body = pack('n', ($code) ? $code : '1005');
 
-  $body .= encode 'UTF-8', $reason if defined $reason;
+  $body .= Encode::encode 'UTF-8', $reason if defined $reason;
 
   $self->send(AnyEvent::WebSocket::Message->new(
     opcode => 8,
