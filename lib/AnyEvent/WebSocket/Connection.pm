@@ -118,7 +118,10 @@ sub BUILD
   my $finish = sub {
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
     return if $self->_is_finished;
-    $self->_process_message($_) foreach @temp_messages;
+    eval
+    {
+      $self->_process_message($_) foreach @temp_messages;
+    };
     @temp_messages = ();
     $self->_is_finished(1);
     $self->handle->push_shutdown;
