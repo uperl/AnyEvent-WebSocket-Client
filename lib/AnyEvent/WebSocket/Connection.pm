@@ -135,34 +135,17 @@ sub BUILD
       while(defined(my $body = $frame->next_bytes))
       {
         next if !$self->_is_read_open; # not 'last' but 'next' in order to consume data in $frame buffer.
-        if($frame->is_text || $frame->is_binary)
-        {
-          my $message = AnyEvent::WebSocket::Message->new(
-            body   => $body,
-            opcode => $frame->opcode,
-          );
-          
-          $_->($self, $message) for @{ $self->_next_message_cb };
-          @{ $self->_next_message_cb } = ();
-          $_->($self, $message) for @{ $self->_each_message_cb };
-        }
-        elsif($frame->is_close)
-        {
-          $self->_is_read_open(0);
-          $self->close();
-        }
-        elsif($frame->is_ping)
-        {
-          $self->send(AnyEvent::WebSocket::Message->new(opcode => 10, body => $body));
-        }
-      }
+        my $message = AnyEvent::WebSocket::Message->new(
+          body   => $body,
+          opcode => $frame->opcode,
+        );
+        $self->_process_message($message);
+      };
       1; # succeed to parse.
     };
     if(!$success)
     {
-      $self->handle->push_shutdown;
-      $self->_is_write_open(0);
-      $self->_is_read_open(0);
+      $self->_force_shutdown();
     }
   };
 
@@ -180,6 +163,34 @@ sub BUILD
       $self->handle->on_read($read_cb);
     }
   };
+}
+
+sub _process_message
+{
+  my ($self, $received_message) = @_;
+  if($received_message->is_text || $received_message->is_binary)
+  {
+    $_->($self, $received_message) for @{ $self->_next_message_cb };
+    @{ $self->_next_message_cb } = ();
+    $_->($self, $received_message) for @{ $self->_each_message_cb };
+  }
+  elsif($received_message->is_close)
+  {
+    $self->_is_read_open(0);
+    $self->close();
+  }
+  elsif($received_message->is_ping)
+  {
+    $self->send(AnyEvent::WebSocket::Message->new(opcode => 10, body => $received_message->body));
+  }
+}
+
+sub _force_shutdown
+{
+  my ($self) = @_;
+  $self->handle->push_shutdown;
+  $self->_is_write_open(0);
+  $self->_is_read_open(0);
 }
 
 =head1 METHODS
