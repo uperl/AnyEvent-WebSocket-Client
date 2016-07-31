@@ -111,9 +111,15 @@ sub BUILD
 {
   my $self = shift;
   Scalar::Util::weaken $self;
+  
+  my @temp_messages = ();
+  my $are_callbacks_supposed_to_be_ready = 0;
+  
   my $finish = sub {
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
     return if $self->_is_finished;
+    $self->_process_message($_) foreach @temp_messages;
+    @temp_messages = ();
     $self->_is_finished(1);
     $self->handle->push_shutdown;
     $self->_is_read_open(0);
@@ -139,7 +145,14 @@ sub BUILD
           body   => $body,
           opcode => $frame->opcode,
         );
-        $self->_process_message($message);
+        if($are_callbacks_supposed_to_be_ready)
+        {
+          $self->_process_message($message);
+        }
+        else
+        {
+          push(@temp_messages, $message);
+        }
       };
       1; # succeed to parse.
     };
@@ -149,18 +162,41 @@ sub BUILD
     }
   };
 
-  # Delay setting on_read callback. This is necessary to make sure all
-  # received data are handled by each_message and/or next_message
-  # callbacks. If there is some data in rbuf, changing the on_read
-  # callback makes the callback fire, but there is of course no
-  # each_message/next_message callback to receive the message yet.
-  $self->handle->on_read(undef);
+
+  # Message processing (calling _process_message) is delayed by
+  # $are_callbacks_supposed_to_be_ready flag. This is necessary to
+  # make sure all received messages are delivered to each_message and
+  # next_message callbacks. If there is some data in rbuf, changing
+  # the on_read callback makes the callback fire, but there is of
+  # course no each_message/next_message callback to receive the
+  # message yet. So we put messages to @temp_messages for a
+  # while. After the control is returned to the user, who sets up
+  # each_message/next_message callbacks, @temp_messages are processed.
+
+  # An alternative approach would be temporarily disabling on_read by
+  # $self->handle->on_read(undef). However, this can cause a weird
+  # situation in TLS mode, because on_eof can fire even if we don't
+  # have any on_read (
+  # https://metacpan.org/pod/AnyEvent::Handle#I-get-different-callback-invocations-in-TLS-mode-Why-cant-I-pause-reading
+  # )   
+  $self->handle->on_read($read_cb);
   my $idle_w; $idle_w = AE::idle sub {
     undef $idle_w;
     if(defined($self))
     {
-      $read_cb->($self->handle); # make sure to read remaining data in rbuf.
-      $self->handle->on_read($read_cb);
+      my $strong_self = $self;
+      $are_callbacks_supposed_to_be_ready = 1;
+      local $@;
+      my $success = eval
+      {
+        $self->_process_message($_) foreach @temp_messages;
+        1;
+      };
+      @temp_messages = ();
+      if(!$success)
+      {
+        $self->_force_shutdown();
+      }
     }
   };
 }
@@ -168,6 +204,8 @@ sub BUILD
 sub _process_message
 {
   my ($self, $received_message) = @_;
+  return if !$self->_is_read_open;
+  
   if($received_message->is_text || $received_message->is_binary)
   {
     $_->($self, $received_message) for @{ $self->_next_message_cb };
