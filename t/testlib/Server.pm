@@ -35,6 +35,9 @@ sub start_server
     my $hdl = AnyEvent::Handle->new(
       $opt->{tls} ? (tls => 'accept', tls_ctx => $opt->{tls}) : (),
       fh => shift,
+      on_eof => sub {
+        note("testlib::Server: on_eof called.");
+      }
     );
   
     $hdl->on_read(
