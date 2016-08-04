@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.35      2016-08-04 13:47:36 -0400
+  - Production version functionally identical to the 0.34_01 release.
+
 0.34_01   2016-07-31 08:42:40 -0400
   - Fixed bug where read data could be discarded when in TLS mode.
     (gh#25 thanks Toshio Ito)
