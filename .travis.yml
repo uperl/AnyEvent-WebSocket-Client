@@ -18,4 +18,6 @@ env:
   - ANYEVENT_WEBSOCKET_TEST_SKIP_SSL=1
 
 script:
+  # see GH#26
+  - cpanm -v https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Socket-2.021.tar.gz
   - dzil test -v
