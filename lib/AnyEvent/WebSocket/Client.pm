@@ -111,6 +111,17 @@ has ssl_ca_file => (
   is => 'ro',
 );
 
+=head2 protocol_version
+
+The protocol version.  See L<Protocol::WebSocket> for the list of supported
+WebSocket protocol versions.
+
+=cut
+
+has protocol_version => (
+  is => 'ro',
+);
+
 =head1 METHODS
 
 =head2 connect
@@ -156,7 +167,8 @@ sub connect
       return;
     }
     my $handshake = Protocol::WebSocket::Handshake::Client->new(
-      url => $uri->as_string,
+            url     => $uri->as_string,
+      maybe version => $self->protocol_version,
     );
     
     my $hdl = AnyEvent::Handle->new(

@@ -2,7 +2,7 @@ use strict;
 use warnings;
 BEGIN { eval q{ use EV } }
 use AnyEvent::WebSocket::Client;
-use Test::More tests => 3;
+use Test::More;
 use FindBin ();
 use lib $FindBin::Bin;
 use testlib::Server;
@@ -11,6 +11,7 @@ testlib::Server->set_timeout;
 
 my $counter;
 my $max;
+my $last_handshake;
 
 my $uri = testlib::Server->start_server(
   handshake => sub {  # handshake
@@ -18,7 +19,9 @@ my $uri = testlib::Server->start_server(
     $counter = 1;
     $max = 15;
     note "max = $max";
+    $last_handshake = $opt->{handshake};
     note "resource = " . $opt->{handshake}->req->resource_name;
+    note "version  = " . $opt->{handshake}->version;
     if($opt->{handshake}->req->resource_name =~ /\/count\/(\d+)/)
     { $max = $1 }
     note "max = $max";
@@ -63,3 +66,14 @@ $connection->on(finish => sub {
 is $done->recv, '1', 'friendly disconnect';
 
 is $last, 9, 'last = 9';
+
+subtest 'version' => sub {
+
+  my $connection = AnyEvent::WebSocket::Client->new(
+    protocol_version => 'draft-ietf-hybi-10',
+  )->connect($uri)->recv;
+  
+  is $last_handshake->version, 'draft-ietf-hybi-10', 'server side protool_version = draft-ietf-hybi-10';
+};
+
+done_testing;
