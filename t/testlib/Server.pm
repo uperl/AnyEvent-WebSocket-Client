@@ -26,6 +26,7 @@ sub start_server
   my $class = shift;
   my $opt = { @_ };
   $opt->{handshake} ||= sub {};
+  $opt->{customize_server_response} ||= sub {};
   my $server_cv = AnyEvent->condvar;
 
   tcp_server undef, undef, sub {
@@ -49,6 +50,7 @@ sub start_server
           $handshake->parse($chunk);
           if($handshake->is_done)
           {
+            $opt->{customize_server_response}->($handshake);
             $hdl->push_write($handshake->to_string);
             $opt->{handshake}->(handshake => $handshake, hdl => $hdl);
           }

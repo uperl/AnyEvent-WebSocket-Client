@@ -14,18 +14,38 @@ my $max;
 my $last_handshake;
 
 my $uri = testlib::Server->start_server(
+  customize_server_response => sub {
+    my($handshake) = @_;
+    if($handshake->req->subprotocol)
+    {
+      note "sub protocols requested: @{[ $handshake->req->subprotocol ]}";
+      my %sb = map { $_ => 1 } split(/,/, $handshake->req->subprotocol);
+      if($sb{bar})
+      {
+        $handshake->res->subprotocol('bar');
+      }
+      if($sb{klingon})
+      {
+        $handshake->res->subprotocol('romulan');
+      }
+    }
+  },
+
   handshake => sub {  # handshake
     my $opt = { @_ };
     $counter = 1;
     $max = 15;
     note "max = $max";
     $last_handshake = $opt->{handshake};
+    #note $opt->{handshake}->req->to_string;
+    #note $opt->{handshake}->to_string;
     note "resource = " . $opt->{handshake}->req->resource_name;
     note "version  = " . $opt->{handshake}->version;
     if($opt->{handshake}->req->resource_name =~ /\/count\/(\d+)/)
     { $max = $1 }
     note "max = $max";
   },
+
   message => sub {  # message
     my $opt = { @_ };
     eval q{
@@ -77,6 +97,37 @@ subtest 'version' => sub {
   )->connect($uri)->recv;
 
   is $last_handshake->version, 'draft-ietf-hybi-10', 'server side protool_version = draft-ietf-hybi-10';
+};
+
+subtest 'subprotocol' => sub {
+
+  is_deeply(
+    AnyEvent::WebSocket::Client->new( subprotocol => ['foo','bar','baz'] )->subprotocol,
+    ['foo','bar','baz'],
+  );
+
+  is_deeply(
+    AnyEvent::WebSocket::Client->new( subprotocol => ['foo'] )->subprotocol,
+    ['foo'],
+  );
+
+  is_deeply(
+    AnyEvent::WebSocket::Client->new( subprotocol => 'foo' )->subprotocol,
+    ['foo'],
+  );
+  
+  my $connection = AnyEvent::WebSocket::Client->new(subprotocol => ['foo','bar','baz'])->connect($uri)->recv;  
+  is($last_handshake->res->subprotocol, 'bar', 'server agreed to bar');
+  is($connection->subprotocol, 'bar', 'connection also has bar');
+
+  eval { AnyEvent::WebSocket::Client->new(subprotocol => ['foo','baz'])->connect($uri)->recv };
+  my $error = $@;
+  like $error, qr{no subprotocol in response}, 'bad protocol throws an exception';
+
+  eval { AnyEvent::WebSocket::Client->new(subprotocol => ['klingon','cardasian'])->connect($uri)->recv };
+  $error = $@;
+  like $error, qr{subprotocol mismatch, requested: klingon, cardasian, got: romulan}, 'bad protocol throws an exception';
+
 };
 
 done_testing;

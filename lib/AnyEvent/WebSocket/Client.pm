@@ -122,6 +122,18 @@ has protocol_version => (
   is => 'ro',
 );
 
+=head2 subprotocol
+
+List of subprotocols to request from the server.  This class will throw an
+exception if none of the protocols are supported by the server.
+
+=cut
+
+has subprotocol => (
+  is     => 'ro',
+  coerce => sub { ref $_[0] ? $_[0] : [$_[0]] },
+);
+
 =head1 METHODS
 
 =head2 connect
@@ -171,6 +183,13 @@ sub connect
       maybe version => $self->protocol_version,
     );
     
+    my %subprotocol;
+    if($self->subprotocol)
+    {
+      %subprotocol = map { $_ => 1 } @{ $self->subprotocol };
+      $handshake->req->subprotocol(join(',', @{ $self->subprotocol }));
+    }
+    
     my $hdl = AnyEvent::Handle->new(
                                                       fh       => $fh,
       provided $uri->secure,                          tls      => 'connect',
@@ -188,7 +207,7 @@ sub connect
                                                         { warn $msg }
                                                       },
     );
-    
+
     $hdl->push_write($handshake->to_string);
     $hdl->on_read(sub {
       $handshake->parse($_[0]{rbuf});
@@ -201,8 +220,30 @@ sub connect
       }
       elsif($handshake->is_done)
       {
+        my $sb;
+        if($self->subprotocol)
+        {
+          $sb = $handshake->res->subprotocol;
+          if(defined $sb)
+          {
+            unless($subprotocol{$sb})
+            {
+              $done->croak("subprotocol mismatch, requested: @{[ join ', ', @{ $self->subprotocol } ]}, got: $sb");
+            }
+          }
+          else
+          {
+            $done->croak("no subprotocol in response");
+          }
+        }
         undef $handshake;
-        $done->send(AnyEvent::WebSocket::Connection->new(handle => $hdl, masked => 1));
+        $done->send(
+          AnyEvent::WebSocket::Connection->new(
+                  handle      => $hdl,
+                  masked      => 1,
+            maybe subprotocol => $sb,
+          )
+        );
         undef $hdl;
         undef $done;
       }

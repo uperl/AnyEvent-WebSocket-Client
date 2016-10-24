@@ -4,6 +4,7 @@ Revision history for {{$dist->name}}
   - You may now specify the protocol version using the protocol_version
     attribute for AnyEvent::WebSocket::Client.  All protocol versions
     supported by Protocol::WebSocket should work.
+  - Added subprotocol attribute for AnyEvent::WebSocket::Client
 
 0.35      2016-08-04 13:47:36 -0400
   - Production version functionally identical to the 0.34_01 release.

@@ -83,6 +83,17 @@ has masked => (
   default => sub { 0 },
 );
 
+=head2 subprotocol
+
+The subprotocol returned by the server.  If no subprotocol was requested, it
+may be C<undef>.
+
+=cut
+
+has subprotocol => (
+  is => 'ro',
+);
+
 foreach my $type (qw( each_message next_message finish ))
 {
   has "_${type}_cb" => (
