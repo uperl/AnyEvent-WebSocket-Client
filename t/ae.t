@@ -43,36 +43,39 @@ my $uri = testlib::Server->start_server(
 $uri->path('/count/10');
 note $uri;
 
-my $connection = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
-isa_ok $connection, 'AnyEvent::WebSocket::Connection';
+subtest basic => sub {
 
-my $done = AnyEvent->condvar;
+  my $connection = AnyEvent::WebSocket::Client->new->connect($uri)->recv;
+  isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
-$connection->send('ping');
+  my $done = AnyEvent->condvar;
 
-my $last;
-
-$connection->on(each_message => sub {
-  my $message = pop->body;
-  note "recv $message";
   $connection->send('ping');
-  $last = $message;
-});
 
-$connection->on(finish => sub {
-  $done->send(1);
-});
+  my $last;
 
-is $done->recv, '1', 'friendly disconnect';
+  $connection->on(each_message => sub {
+    my $message = pop->body;
+    note "recv $message";
+    $connection->send('ping');
+    $last = $message;
+  });
 
-is $last, 9, 'last = 9';
+  $connection->on(finish => sub {
+    $done->send(1);
+  });
+
+  is $done->recv, '1', 'friendly disconnect';
+
+  is $last, 9, 'last = 9';
+};
 
 subtest 'version' => sub {
 
   my $connection = AnyEvent::WebSocket::Client->new(
     protocol_version => 'draft-ietf-hybi-10',
   )->connect($uri)->recv;
-  
+
   is $last_handshake->version, 'draft-ietf-hybi-10', 'server side protool_version = draft-ietf-hybi-10';
 };
 
