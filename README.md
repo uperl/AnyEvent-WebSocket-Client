@@ -80,6 +80,16 @@ not be verified.  The default is false.
 Provide your own CA certificates file instead of using the system default for
 SSL/TLS verification.
 
+## protocol\_version
+
+The protocol version.  See [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) for the list of supported
+WebSocket protocol versions.
+
+## subprotocol
+
+List of subprotocols to request from the server.  This class will throw an
+exception if none of the protocols are supported by the server.
+
 # METHODS
 
 ## connect
