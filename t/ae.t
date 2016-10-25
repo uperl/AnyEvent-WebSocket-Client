@@ -130,4 +130,32 @@ subtest 'subprotocol' => sub {
 
 };
 
+subtest http_headers => sub {
+
+  is_deeply(
+    AnyEvent::WebSocket::Client->new( http_headers => { 'X-Foo' => 'bar', 'X-Baz' => [ 'abc', 'def' ] } )->http_headers,
+    [ 'X-Baz' => 'abc',
+      'X-Baz' => 'def',
+      'X-Foo' => 'bar', ]
+  );
+
+  my $client = AnyEvent::WebSocket::Client->new( http_headers => [ 'X-Foo' => 'bar', 'X-Baz' => 'abc', 'X-Baz' => 'def' ] );
+
+  is_deeply(
+    $client->http_headers,
+    [  'X-Foo' => 'bar', 
+       'X-Baz' => 'abc', 
+       'X-Baz' => 'def',  ]
+  );
+  
+  # Note: Protocol::WebSocket does not currently support headers with multiple instances of the same
+  # key, so we just won't test that.
+  $client = AnyEvent::WebSocket::Client->new( http_headers => [ 'X-Foo' => 'bar', 'X-Baz' => 'abc' ] );
+  my $connection = $client->connect($uri)->recv;
+
+  is($last_handshake->req->fields->{'x-foo'}, 'bar');
+  is($last_handshake->req->fields->{'x-baz'}, 'abc');
+
+};
+
 done_testing;

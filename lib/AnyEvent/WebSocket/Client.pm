@@ -7,6 +7,7 @@ use AE;
 use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket qw( tcp_connect );
+use Protocol::WebSocket::Request;
 use Protocol::WebSocket::Handshake::Client;
 use AnyEvent::WebSocket::Connection;
 use PerlX::Maybe qw( maybe provided );
@@ -134,6 +135,55 @@ has subprotocol => (
   coerce => sub { ref $_[0] ? $_[0] : [$_[0]] },
 );
 
+=head2 http_headers
+
+Extra headers to include in the initial request.  May be either specified
+as a hash reference, or an array reference.  For example:
+
+ AnyEvent::WebSocket::Client->new(
+   http_headers => {
+     'X-Foo' => 'bar',
+     'X-Baz' => [ 'abc', 'def' ],
+   },
+ );
+ 
+ AnyEvent::WebSocket::Client->new(
+   http_headers => [
+     'X-Foo' => 'bar',
+     'X-Baz' => 'abc',
+     'X-Baz' => 'def',
+   ],
+ );
+
+Will generate:
+
+ X-Foo: bar
+ X-Baz: abc
+ X-Baz: def
+
+Although, the order cannot be guaranteed when using the hash style.
+
+=cut
+
+has http_headers => (
+  is => 'ro',
+  coerce => sub {
+    ref $_[0] eq 'ARRAY' ? $_[0] : do {
+      my $h = shift;
+      [
+        map {
+          my($k,$v) = ($_, $h->{$_});
+          $v = [$v] unless ref $v;
+          map { $k => $_ } @$v;
+          # sorted to make testing easier.
+          # may be removed in the future
+          # so do not depend on it.
+        } sort keys %$h
+      ],
+    };
+  },
+);
+
 =head1 METHODS
 
 =head2 connect
@@ -178,9 +228,11 @@ sub connect
       $done->croak("unable to connect");
       return;
     }
+    my $req = Protocol::WebSocket::Request->new( maybe headers => $self->http_headers );
     my $handshake = Protocol::WebSocket::Handshake::Client->new(
             url     => $uri->as_string,
       maybe version => $self->protocol_version,
+            req     => $req,
     );
     
     my %subprotocol;

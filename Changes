@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Added http_headers attribute which allows you to provide additional
+    arbitrary headers
 
 0.35_01   2016-10-24 18:28:00 -0400
   - You may now specify the protocol version using the protocol_version
