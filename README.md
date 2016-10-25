@@ -90,6 +90,34 @@ WebSocket protocol versions.
 List of subprotocols to request from the server.  This class will throw an
 exception if none of the protocols are supported by the server.
 
+## http\_headers
+
+Extra headers to include in the initial request.  May be either specified
+as a hash reference, or an array reference.  For example:
+
+    AnyEvent::WebSocket::Client->new(
+      http_headers => {
+        'X-Foo' => 'bar',
+        'X-Baz' => [ 'abc', 'def' ],
+      },
+    );
+    
+    AnyEvent::WebSocket::Client->new(
+      http_headers => [
+        'X-Foo' => 'bar',
+        'X-Baz' => 'abc',
+        'X-Baz' => 'def',
+      ],
+    );
+
+Will generate:
+
+    X-Foo: bar
+    X-Baz: abc
+    X-Baz: def
+
+Although, the order cannot be guaranteed when using the hash style.
+
 # METHODS
 
 ## connect
