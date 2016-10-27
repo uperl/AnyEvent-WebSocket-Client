@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.36      2016-10-27 11:57:12 -0400
+  - Production version functionally identical to the 0.35_02 release.
+
 0.35_02   2016-10-25 13:04:54 -0400
   - Added http_headers attribute which allows you to provide additional
     arbitrary headers
