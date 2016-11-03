@@ -106,7 +106,7 @@ has max_payload_size => (
   is => 'ro',
 );
 
-foreach my $type (qw( each_message next_message finish ))
+foreach my $type (qw( each_message next_message finish parse_error ))
 {
   has "_${type}_cb" => (
     is       => 'ro',
@@ -185,6 +185,7 @@ sub BUILD
     if(!$success)
     {
       $self->_force_shutdown();
+      $_->($self, $@) for @{ $self->_parse_error_cb };
     }
   };
 
@@ -312,6 +313,15 @@ Called each time a message is received from the WebSocket.
 
 Called only for the next message received from the WebSocket.
 
+=head3 parse_error
+
+ $cb->($connection, $text_error_message)
+
+Called if there is an error parsing a message sent from the remote end.
+After this callback is called, the connection will be closed.
+Among other possible errors, this event will trigger if a frame has a
+payload which is larger that C<max_payload_size>.
+
 =head3 finish
 
  $cb->($connection)
@@ -335,6 +345,10 @@ sub on
   elsif($event eq 'finish')
   {
     push @{ $self->_finish_cb }, $cb;
+  }
+  elsif($event eq 'parse_error')
+  {
+    push @{ $self->_parse_error_cb }, $cb;
   }
   else
   {

@@ -4,6 +4,7 @@ Revision history for {{$dist->name}}
   - Added max_payload_size to AnyEvent::WebSocket::Connection for limiting
     the size of received frames
   - Sending payloads larger than 65536 no longer causes an exception
+  - Added parse_error to AnyEvent::WebSocket::Connection
 
 0.36      2016-10-27 11:57:12 -0400
   - Production version functionally identical to the 0.35_02 release.

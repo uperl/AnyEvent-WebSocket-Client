@@ -44,16 +44,19 @@ my $connection;
   {
     my($body,$cb) = @_;
     my $cv = AE::cv;
-    $connection->on(next_message => sub {
-      $cb->(@_) if $cb;
-      $cv->send;
-    });
+    if($cb)
+    {
+      $connection->on(next_message => sub {
+        $cb->(@_);
+        $cv->send;
+      });
+    }
     my $frame = Protocol::WebSocket::Frame->new(
       max_payload_size => 9223372036854775807,
       buffer => $body,
     );
     $handle->push_write($frame->to_bytes);
-    $cv->recv;
+    $cv->recv if $cb;
   }
 
 }
@@ -94,6 +97,24 @@ subtest 'receive payload with size > 65536' => sub {
   
   });
   
+};
+
+subtest 'receieve payload with size > max_payload_size' => sub {
+
+  my $data = 'x' x 65540;
+  my $here = 1;
+  my $cv = AE::cv;
+  
+  $connection->on(parse_error => sub {
+    my($connection, $error) = @_;
+    return unless $here;
+    ok $error, "error is: $error";
+    $cv->send;
+  });
+  send_message($data);
+  $cv->recv;
+
+  $here = 0;
 };
 
 done_testing;
