@@ -118,6 +118,11 @@ Will generate:
 
 Although, the order cannot be guaranteed when using the hash style.
 
+## max\_payload\_size
+
+The maximum payload size for received frames.  Currently defaults to whatever
+[Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) defaults to.
+
 # METHODS
 
 ## connect

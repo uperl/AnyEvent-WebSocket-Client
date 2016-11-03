@@ -1,8 +1,9 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
-  - Added max_payload_size to AnyEvent::WebSocket::Connection for limiting
-    the size of received frames
+  - Added max_payload_size to AnyEvent::WebSocket::Client and 
+    AnyEvent::WebSocket::Connection for limiting the size of
+    received frames
   - Sending payloads larger than 65536 no longer causes an exception
   - Added parse_error to AnyEvent::WebSocket::Connection
 

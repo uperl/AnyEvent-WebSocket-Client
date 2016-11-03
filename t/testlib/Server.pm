@@ -31,7 +31,7 @@ sub start_server
 
   tcp_server undef, undef, sub {
     my $handshake = Protocol::WebSocket::Handshake::Server->new;
-    my $frame     = Protocol::WebSocket::Frame->new;
+    my $frame     = Protocol::WebSocket::Frame->new( max_payload_size => 9223372036854775807 );
   
     my $hdl = AnyEvent::Handle->new(
       $opt->{tls} ? (tls => 'accept', tls_ctx => $opt->{tls}) : (),
@@ -86,7 +86,8 @@ sub start_echo
     
     return if !$opt->{frame}->is_text && !$opt->{frame}->is_binary;
 
-    $opt->{hdl}->push_write($opt->{frame}->new($opt->{message})->to_bytes);
+    
+    $opt->{hdl}->push_write($opt->{frame}->new(buffer => $opt->{message}, max_payload_size => 9223372036854775807 )->to_bytes);
         
     if($opt->{message} eq 'quit')
     {

@@ -184,6 +184,17 @@ has http_headers => (
   },
 );
 
+=head2 max_payload_size
+
+The maximum payload size for received frames.  Currently defaults to whatever
+L<Protocol::WebSocket> defaults to.
+
+=cut
+
+has max_payload_size => (
+  is => 'ro',
+);
+
 =head1 METHODS
 
 =head2 connect
@@ -291,9 +302,10 @@ sub connect
         undef $handshake;
         $done->send(
           AnyEvent::WebSocket::Connection->new(
-                  handle      => $hdl,
-                  masked      => 1,
-            maybe subprotocol => $sb,
+                  handle           => $hdl,
+                  masked           => 1,
+            maybe subprotocol      => $sb,
+            maybe max_payload_size => $self->max_payload_size,
           )
         );
         undef $hdl;
