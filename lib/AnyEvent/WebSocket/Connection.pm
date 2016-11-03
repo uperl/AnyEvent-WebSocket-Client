@@ -8,6 +8,7 @@ use Scalar::Util ();
 use Encode ();
 use AE;
 use AnyEvent::WebSocket::Message;
+use PerlX::Maybe qw( maybe provided );
 use Carp ();
 
 # ABSTRACT: WebSocket connection for AnyEvent
@@ -94,6 +95,17 @@ has subprotocol => (
   is => 'ro',
 );
 
+=head2 max_payload_size
+
+The maximum payload size for received frames.  Currently defaults to whatever
+L<Protocol::WebSocket> defaults to.
+
+=cut
+
+has max_payload_size => (
+  is => 'ro',
+);
+
 foreach my $type (qw( each_message next_message finish ))
 {
   has "_${type}_cb" => (
@@ -143,7 +155,7 @@ sub BUILD
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
 
-  my $frame = Protocol::WebSocket::Frame->new;
+  my $frame = Protocol::WebSocket::Frame->new( maybe max_payload_size => $self->max_payload_size );
 
   my $read_cb = sub {
     my ($handle) = @_;
@@ -167,7 +179,7 @@ sub BUILD
         {
           push(@temp_messages, $message);
         }
-      };
+      }
       1; # succeed to parse.
     };
     if(!$success)
@@ -266,12 +278,12 @@ sub send
   
   if(ref $message)
   {
-    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked, max_payload_size => 9223372036854775807);
     $frame->opcode($message->opcode);
   }
   else
   {
-    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $self->masked);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $self->masked, max_payload_size => 9223372036854775807);
   }
   $self->handle->push_write($frame->to_bytes);
   $self;
