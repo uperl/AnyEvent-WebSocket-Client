@@ -24,8 +24,10 @@ use Encode ();
 
 =head1 DESCRIPTION
 
-Instances of this class represent a message passed through the WebSocket
-from the other end.
+Instances of this class represent a single WebSocket message.  They are
+the objects that come through from the other end of your
+L<AnyEvent::WebSocket::Connection> instance.  They can also be sent through
+that class using its C<send> method.
 
 =head1 ATTRIBUTES
 
