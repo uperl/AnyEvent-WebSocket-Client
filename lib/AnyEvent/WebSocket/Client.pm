@@ -6,7 +6,7 @@ use Moo;
 use AE;
 use AnyEvent;
 use AnyEvent::Handle;
-use AnyEvent::Socket qw( tcp_connect );
+use AnyEvent::Socket ();
 use Protocol::WebSocket::Request;
 use Protocol::WebSocket::Handshake::Client;
 use AnyEvent::WebSocket::Connection;
@@ -232,7 +232,7 @@ sub connect
     return $done;
   }
     
-  tcp_connect $uri->host, $uri->port, sub {
+  AnyEvent::Socket::tcp_connect $uri->host, $uri->port, sub {
     my $fh = shift;
     unless($fh)
     {
