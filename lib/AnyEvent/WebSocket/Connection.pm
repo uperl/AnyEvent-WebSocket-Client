@@ -279,12 +279,12 @@ sub send
   
   if(ref $message)
   {
-    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked, max_payload_size => 9223372036854775807);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked, max_payload_size => 0);
     $frame->opcode($message->opcode);
   }
   else
   {
-    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $self->masked, max_payload_size => 9223372036854775807);
+    $frame = Protocol::WebSocket::Frame->new(buffer => $message, masked => $self->masked, max_payload_size => 0);
   }
   $self->handle->push_write($frame->to_bytes);
   $self;

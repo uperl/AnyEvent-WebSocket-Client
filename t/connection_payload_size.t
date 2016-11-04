@@ -22,7 +22,7 @@ my $connection;
   ($connection, $handle) = testlib::Connection->create_connection_and_handle({ max_payload_size => 65538});
   note "connection.max_payload_size = @{[ $connection->max_payload_size ]}";
 
-  my $frame = Protocol::WebSocket::Frame->new( max_payload_size => 9223372036854775807 );
+  my $frame = Protocol::WebSocket::Frame->new( max_payload_size => 0 );
   $handle->on_read(sub {
     #my($handle) = @_;
     $frame->append($handle->{rbuf});
@@ -55,7 +55,7 @@ my $connection;
       });
     }
     my $frame = Protocol::WebSocket::Frame->new(
-      max_payload_size => 9223372036854775807,
+      max_payload_size => 0,
       buffer => $body,
     );
     $handle->push_write($frame->to_bytes);
