@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.37      2016-11-04 22:24:11 -0400
   - Added max_payload_size to AnyEvent::WebSocket::Client and 
     AnyEvent::WebSocket::Connection for limiting the size of
     received frames
