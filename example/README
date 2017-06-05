@@ -28,6 +28,10 @@ Instructions:
 
     % cpanm --installdeps .
 
+  - start redis (if it isn't already started):
+  
+    % redis-server
+
   - start the jobserver
 
     % ./jobserver daemon
