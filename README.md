@@ -203,6 +203,8 @@ Toshio Ito
 
 José Joaquín Atria
 
+Kivanc Yazan
+
 # COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2013 by Graham Ollis.
