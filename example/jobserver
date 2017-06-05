@@ -56,7 +56,7 @@ get '/server/:server' => sub {
     }
     else
     {
-      $self->render('not_found');
+      $self->reply->not_found;
     }
   });
 } => 'server';
