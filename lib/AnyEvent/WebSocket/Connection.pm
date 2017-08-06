@@ -106,6 +106,38 @@ has max_payload_size => (
   is => 'ro',
 );
 
+=head2 close_code
+
+If provided by the other side, the code that was provided when the 
+connection was closed.
+
+=cut
+
+has close_code => (
+  is => 'rw',
+);
+
+=head2 close_reason
+
+If provided by the other side, the reason for closing the connection.
+
+=cut
+
+has close_reason => (
+  is => 'rw',
+);
+
+=head2 close_error
+
+If the connection is closed due to a network error, this will hold the
+message.
+
+=cut
+
+has close_error => (
+  is => 'rw',
+);
+
 foreach my $type (qw( each_message next_message finish parse_error ))
 {
   has "_${type}_cb" => (
@@ -151,6 +183,7 @@ sub BUILD
     $self->handle->push_shutdown;
     $self->_is_read_open(0);
     $self->_is_write_open(0);
+    $self->close_error($message) if defined $message;
     $_->($self, $message) for @{ $self->_finish_cb };
   };
   $self->handle->on_error($finish);
@@ -242,6 +275,13 @@ sub _process_message
   }
   elsif($received_message->is_close)
   {
+    my $body = $received_message->body;
+    if($body)
+    {
+      my($code, $reason) = unpack 'na*', $body;
+      $self->close_code($code);
+      $self->close_reason(Encode::decode('UTF-8', $reason));
+    }
     $self->_is_read_open(0);
     $self->close();
   }

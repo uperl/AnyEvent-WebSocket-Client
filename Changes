@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Add close_code, close_reason and close_error properties to AnyEvent::Connection
 
 0.39      2017-07-07 18:32:02 -0400
   - Require AnyEvent 7.13 or better to address SSL/TLS error (gh#22)

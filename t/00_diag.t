@@ -23,6 +23,8 @@ $modules{$_} = $_ for qw(
   PerlX::Maybe
   PerlX::Maybe::XS
   Protocol::WebSocket
+  Test2::API
+  Test2::V0
   Test::Memory::Cycle
   Test::More
   Test::Warn
