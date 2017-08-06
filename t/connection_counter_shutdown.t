@@ -27,7 +27,11 @@ sub test_case
     my $cv_finish = AnyEvent->condvar;
     $cv_finish->begin;
     $cv_finish->begin;
-    $a_conn->on(finish => sub { $cv_finish->end });
+    $a_conn->on(finish => sub {
+      my(undef, $message) = @_;
+      note "finish with message: $message" if $message;
+      $cv_finish->end;
+    });
     $b_handle->on_read(sub {});
     $b_handle->on_eof(sub { $cv_finish->end });
     $code->($a_conn, $b_handle);

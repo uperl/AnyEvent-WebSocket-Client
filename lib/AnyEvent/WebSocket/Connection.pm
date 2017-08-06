@@ -139,6 +139,7 @@ sub BUILD
   my $are_callbacks_supposed_to_be_ready = 0;
   
   my $finish = sub {
+    my(undef, undef, $message) = @_;
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
     return if $self->_is_finished;
     eval
@@ -150,7 +151,7 @@ sub BUILD
     $self->handle->push_shutdown;
     $self->_is_read_open(0);
     $self->_is_write_open(0);
-    $_->($self) for @{ $self->_finish_cb };
+    $_->($self, $message) for @{ $self->_finish_cb };
   };
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
