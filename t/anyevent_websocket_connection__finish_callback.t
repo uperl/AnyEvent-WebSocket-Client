@@ -1,15 +1,9 @@
-use strict;
-use warnings;
-BEGIN { eval q{ use EV } }
-use Test::More;
-use AnyEvent;
+use lib 't/lib';
+use Test2::Plugin::EV;
+use Test2::Plugin::AnyEvent::Timeout;
+use Test2::V0 -no_srand => 1;
+use Test2::Tools::WebSocket::Connection qw( create_connection_pair );
 use AnyEvent::WebSocket::Connection;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib::Server;
-use testlib::Connection;
-
-testlib::Server->set_timeout();
 
 note("finish callback should be called only once");
 
@@ -17,7 +11,7 @@ sub test_case
 {
   my ($label, $code) = @_;
   subtest $label, sub {
-    my @conns = testlib::Connection->create_connection_pair();
+    my @conns = create_connection_pair;
     my $finish_count = 0;
     my $cv_finish = AnyEvent->condvar;
     $conns[0]->on(finish => sub { $finish_count++; $cv_finish->send });

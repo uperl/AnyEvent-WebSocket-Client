@@ -1,18 +1,12 @@
-use strict;
-use warnings;
-BEGIN { eval q{ use EV } }
-use Test::More;
-use AnyEvent;
+use lib 't/lib';
+use Test2::Plugin::EV;
+use Test2::Plugin::AnyEvent::Timeout;
+use Test2::V0 -no_srand => 1;
+use Test2::Tools::WebSocket::Connection qw( create_connection_pair );
 use AnyEvent::WebSocket::Connection;
 use Scalar::Util qw(weaken);
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib::Server;
-use testlib::Connection;
 
 note("It should be safe (exception-free) to destroy the Connection object in callbacks.");
-
-testlib::Server->set_timeout;
 
 sub test_case
 {
@@ -25,7 +19,7 @@ sub test_case
     $cv_finish->begin;
     {
       my $a_conn;
-      ($a_conn, $b_conn) = testlib::Connection->create_connection_pair();
+      ($a_conn, $b_conn) = create_connection_pair;
       $a_conn_weak = $a_conn;
       weaken($a_conn_weak);
       

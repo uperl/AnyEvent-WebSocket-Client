@@ -1,6 +1,4 @@
-use strict;
-use warnings;
-use Test::More tests => 6;
+use Test2::V0 -no_srand => 1;
 use AnyEvent::WebSocket::Message;
 
 my %ops = qw(
@@ -41,3 +39,5 @@ subtest default => sub {
   is $message->opcode, 1, 'message.opcode = 1';
   ok $message->is_text, 'message.is_text is true';
 };
+
+done_testing;

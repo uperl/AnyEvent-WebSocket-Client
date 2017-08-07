@@ -1,15 +1,9 @@
-use strict;
-use warnings;
-BEGIN { eval q{ use EV } }
-use Test::More;
-use AnyEvent;
+use lib 't/lib';
+use Test2::Plugin::EV;
+use Test2::Plugin::AnyEvent::Timeout;
+use Test2::V0 -no_srand => 1;
 use AnyEvent::WebSocket::Connection;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib::Server;
-use testlib::Connection;
-
-testlib::Server->set_timeout();
+use Test2::Tools::WebSocket::Connection qw( create_connection_and_handle );
 
 note(<<ENDNOTE);
 Connection should shutdown its socket when the peer shuts down.
@@ -22,7 +16,7 @@ sub test_case
 {
   my ($label, $code) = @_;
   subtest $label, sub {
-    my ($a_conn, $b_handle) = testlib::Connection->create_connection_and_handle();
+    my ($a_conn, $b_handle) = create_connection_and_handle;
 
     my $cv_finish = AnyEvent->condvar;
     $cv_finish->begin;

@@ -1,16 +1,12 @@
-use strict;
-use warnings;
-BEGIN { eval q{ use EV } }
+use lib 't/lib';
+use Test2::Plugin::EV;
+use Test2::Plugin::AnyEvent::Timeout;
+use Test2::V0 -no_srand => 1;
+use Test2::Tools::WebSocket::Connection qw( create_connection_and_handle );
+use AnyEvent::WebSocket::Connection;
 use AE;
 use AnyEvent::WebSocket::Connection;
 use Protocol::WebSocket::Frame;
-use Test::More;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib::Server;
-use testlib::Connection;
-
-testlib::Server->set_timeout;
 
 my $connection;
 
@@ -19,7 +15,7 @@ my $connection;
   my $message_cv = AE::cv;
   my $handle;
 
-  ($connection, $handle) = testlib::Connection->create_connection_and_handle({ max_payload_size => 65538});
+  ($connection, $handle) = create_connection_and_handle({ max_payload_size => 65538});
   note "connection.max_payload_size = @{[ $connection->max_payload_size ]}";
 
   my $frame = Protocol::WebSocket::Frame->new( max_payload_size => 0 );

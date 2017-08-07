@@ -47,6 +47,7 @@ sub create_connection_pair
   $a_options_ref ||= {};
   $b_options_ref ||= {};
   my ($a_handle, $b_handle) = create_handle_pair();
+  require AnyEvent::WebSocket::Connection;
   return (
     AnyEvent::WebSocket::Connection->new(%$a_options_ref, handle => $a_handle),
     AnyEvent::WebSocket::Connection->new(%$b_options_ref, handle => $b_handle),
@@ -57,6 +58,7 @@ sub create_connection_and_handle
 {
   my ($a_options_ref) = @_;
   my ($a_handle, $b_handle) = create_handle_pair();
+  require AnyEvent::WebSocket::Connection;
   return (
     AnyEvent::WebSocket::Connection->new(%$a_options_ref, handle => $a_handle),
     $b_handle
