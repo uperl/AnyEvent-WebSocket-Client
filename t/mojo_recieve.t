@@ -11,6 +11,11 @@ use Mojolicious::Lite;
 use Protocol::WebSocket;
 use Encode qw(encode);
 
+# NOTE: The mojo_* tests are to test interoperability with a really
+# good implementation that is also written in Perl.  Mojolicious
+# tests should not be written for new features and to test bugs,
+# unless they are also accompanied by a non-Mojolicious test as well!
+
 my @test_cases = (
   { send => { binary => "hoge"}, recv_exp => ["hoge", "is_binary"] },
   { send => { text   => "foobar"}, recv_exp => ["foobar", "is_text"] },

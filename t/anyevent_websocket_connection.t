@@ -432,4 +432,96 @@ subtest 'Connection should refuse extremely huge messages' => sub {
   };
 };
 
+subtest 'other end is closed' => sub {
+
+  my($a,$b) = create_connection_pair;
+
+  my $round_trip = sub {
+  
+    my($message) = @_;
+    
+    my $done = AnyEvent->condvar;
+    
+    $b->on(next_message => sub {
+      my(undef, $message) = @_;
+      $done->send($message);
+    });
+    
+    $a->send($message);
+    
+    $done->recv;
+  
+  };
+
+  my $closed = 0;
+
+  my $quit_cv = AnyEvent->condvar;
+  $b->on(finish => sub {
+    $closed = 1;
+    $quit_cv->send("finished");
+  });
+
+  is(
+    $round_trip->('a'),
+    object {
+      call decoded_body => 'a';
+    },
+    'single character',
+  );
+
+  is(
+    $round_trip->('quit'),
+    object {
+      call decoded_body => 'quit';
+    },
+    'quit',
+  );
+  
+  $a->close;
+  
+  $quit_cv->recv;
+  
+  is $closed, 1, "closed";
+
+};
+
+subtest 'close codes' => sub {
+
+  my @test_data = (
+    [ [],                 [1005, ''],         'empty list defaults to 1005'     ],
+    [ [undef, undef],     [1005, ''] ,        'both undef'                      ],
+    [ [undef, 'error'],   [1005, 'error'] ,   'undef code with explicit reason' ],
+    [ [1003, undef],      [1003, ''] ,        'other code with undef reason'    ],
+    [ [1000],             [1000, ''],         'normal close code'               ],
+    [ [1000, 'a reason'], [1000, 'a reason'], 'normal close code with reason'   ],
+  );
+  
+  foreach my $test_data (@test_data)
+  {
+    my($args, $expected, $label) = @$test_data;
+    subtest $label => sub {
+    
+      my($a,$b) = create_connection_pair;
+      
+      my $done = AnyEvent->condvar;
+      
+      $b->on(finish => sub { $done->send });
+      
+      $a->close(@$args);
+      
+      $done->recv;
+      
+      is(
+        $b,
+        object {
+          call close_code   => $expected->[0];
+          call close_reason => $expected->[1];
+        },
+      );
+    
+    };
+  }
+
+};
+
 done_testing;

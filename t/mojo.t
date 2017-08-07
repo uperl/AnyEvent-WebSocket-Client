@@ -8,6 +8,11 @@ use Test2::Tools::WebSocket::Mojo qw( start_mojo );
 use AnyEvent::WebSocket::Client;
 use Mojolicious::Lite;
 
+# NOTE: The mojo_* tests are to test interoperability with a really
+# good implementation that is also written in Perl.  Mojolicious
+# tests should not be written for new features and to test bugs,
+# unless they are also accompanied by a non-Mojolicious test as well!
+
 app->log->level('fatal');
 
 websocket '/count/:num' => sub {
