@@ -1,23 +1,15 @@
-use strict;
-use warnings;
-BEGIN { eval q{ use EV } }
+use lib 't/lib';
+use Test2::Require::SSL;
+use Test2::Plugin::EV;
+use Test2::Plugin::AnyEvent::Timeout;
+use Test2::V0 -no_srand => 1;
+use Test2::Tools::WebSocket::Server qw( start_server );
 use AnyEvent::WebSocket::Client;
-use Test::More;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib::Server;
-use testlib::SSL;
-
-testlib::SSL->try_ssl_modules_or_skip();
-
-plan tests => 3;
-
-testlib::Server->set_timeout;
 
 my $counter;
 my $max;
 
-my $uri = testlib::Server->start_server(
+my $uri = start_server(
   tls => AnyEvent::TLS->new(cert => do { local $/; <DATA> }),
   handshake => sub {  # handshake
     my $opt = { @_ };
@@ -76,6 +68,8 @@ $connection->on(finish => sub {
 is $done->recv, '1', 'friendly disconnect';
 
 is $last, 9, 'last = 9';
+
+done_testing;
 
 __DATA__
 -----BEGIN RSA PRIVATE KEY-----

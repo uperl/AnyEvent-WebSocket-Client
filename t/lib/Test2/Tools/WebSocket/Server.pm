@@ -4,14 +4,14 @@ use strict;
 use warnings;
 use base qw( Exporter );
 use URI;
-use Test2::API;
+use Test2::API qw( context );
 use AnyEvent::Handle;
 use AnyEvent::Socket qw( tcp_server);
 use Protocol::WebSocket::Handshake::Server;
 use Protocol::WebSocket::Frame;
 use PerlX::Maybe qw( maybe );
 
-our @EXPORT_OK qw( start_server start_echo );
+our @EXPORT_OK = qw( start_server start_echo );
 
 sub start_server
 {
@@ -28,7 +28,9 @@ sub start_server
       $opt->{tls} ? (tls => 'accept', tls_ctx => $opt->{tls}) : (),
       fh => shift,
       on_eof => sub {
-        note("testlib::Server: on_eof called.");
+        my $ctx = context();
+        $ctx->note("testlib::Server: on_eof called.");
+        $ctx->release;
       }
     );
   
@@ -66,7 +68,9 @@ sub start_server
   my $uri = URI->new('ws://127.0.0.1/echo');
   $uri->port($port);
   $uri->scheme('wss') if $opt->{tls};
-  note "$uri";
+  my $ctx = context();
+  $ctx->note("$uri");
+  $ctx->release;
   $uri;
 }
 

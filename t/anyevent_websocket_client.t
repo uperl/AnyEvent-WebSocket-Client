@@ -1,19 +1,15 @@
-use strict;
-use warnings;
-BEGIN { eval q{ use EV } }
+use lib 't/lib';
+use Test2::Plugin::EV;
+use Test2::Plugin::AnyEvent::Timeout;
+use Test2::V0 -no_srand => 1;
+use Test2::Tools::WebSocket::Server qw( start_server );
 use AnyEvent::WebSocket::Client;
-use Test::More;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib::Server;
-
-testlib::Server->set_timeout;
 
 my $counter;
 my $max;
 my $last_handshake;
 
-my $uri = testlib::Server->start_server(
+my $uri = start_server(
   customize_server_response => sub {
     my($handshake) = @_;
     if($handshake->req->subprotocol)
@@ -101,17 +97,17 @@ subtest 'version' => sub {
 
 subtest 'subprotocol' => sub {
 
-  is_deeply(
+  is(
     AnyEvent::WebSocket::Client->new( subprotocol => ['foo','bar','baz'] )->subprotocol,
     ['foo','bar','baz'],
   );
 
-  is_deeply(
+  is(
     AnyEvent::WebSocket::Client->new( subprotocol => ['foo'] )->subprotocol,
     ['foo'],
   );
 
-  is_deeply(
+  is(
     AnyEvent::WebSocket::Client->new( subprotocol => 'foo' )->subprotocol,
     ['foo'],
   );
@@ -132,7 +128,7 @@ subtest 'subprotocol' => sub {
 
 subtest http_headers => sub {
 
-  is_deeply(
+  is(
     AnyEvent::WebSocket::Client->new( http_headers => { 'X-Foo' => 'bar', 'X-Baz' => [ 'abc', 'def' ] } )->http_headers,
     [ 'X-Baz' => 'abc',
       'X-Baz' => 'def',
@@ -141,7 +137,7 @@ subtest http_headers => sub {
 
   my $client = AnyEvent::WebSocket::Client->new( http_headers => [ 'X-Foo' => 'bar', 'X-Baz' => 'abc', 'X-Baz' => 'def' ] );
 
-  is_deeply(
+  is(
     $client->http_headers,
     [  'X-Foo' => 'bar', 
        'X-Baz' => 'abc', 

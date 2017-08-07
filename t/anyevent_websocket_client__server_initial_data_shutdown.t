@@ -1,23 +1,16 @@
-use strict;
-use warnings;
-use utf8;
-BEGIN { eval q{ use EV } }
-use AnyEvent;
+use lib 't/lib';
+use Test2::Require::SSL;
+use Test2::Plugin::EV;
+use Test2::Plugin::AnyEvent::Timeout;
+use Test2::V0 -no_srand => 1;
+use Test2::Tools::WebSocket::Server qw( start_server );
 use AnyEvent::WebSocket::Client;
-use Test::More;
-use FindBin ();
-use lib $FindBin::Bin;
-use testlib::Server;
-use testlib::SSL;
-
-testlib::SSL->try_ssl_modules_or_skip;
-testlib::Server->set_timeout;
 
 sub test_case
 {
   my (%case_args) = @_;
   subtest $case_args{label}, sub {
-    my $url = testlib::Server->start_server(
+    my $url = start_server(
       tls => $case_args{server_tls},
       handshake => sub {
         my $opt = { @_ };
@@ -48,7 +41,7 @@ sub test_case
       $cv_finish->send;
     });
     $cv_finish->recv;
-    is_deeply(
+    is(
       \@received_messages, ["initial message from server"],
       "client should receive the initial message sent from the server, even if the server immediately shuts down."
     );
