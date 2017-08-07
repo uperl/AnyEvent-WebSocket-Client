@@ -14,9 +14,9 @@ $modules{$_} = $_ for qw(
   AnyEvent
   Devel::Cycle
   EV
+  ExtUtils::MakeMaker
   IO::Socket::SSL
   Math::Random::Secure
-  Module::Build
   Mojolicious
   Moo
   Net::SSLeay
