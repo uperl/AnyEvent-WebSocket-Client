@@ -98,6 +98,36 @@ subtest 'send' => sub {
     
   };
   
+  {
+    my @test_data = (
+      {label => "single character", data => "a"},
+      {label => "5k bytes", data => "a" x 5000},
+      {label => "empty", data => ""},
+      {label => "0", data => 0},
+      {label => "utf8 charaters", data => 'ＵＴＦ８ ＷＩＤＥ ＣＨＡＲＡＣＴＥＲＳ'},
+    );
+    
+    foreach my $case (@test_data)
+    {
+      subtest $case->{label} => sub {
+        is(
+          $round_trip->($case->{data}),
+          object {
+            call decoded_body => $case->{data};
+          },
+          'string'
+        );
+        is(
+          $round_trip->(AnyEvent::WebSocket::Message->new(body => $case->{data})),
+          object {
+            call decoded_body => $case->{data};
+          },
+          'object'
+        );
+      };
+    }
+  }
+  
   subtest 'close' => sub {
   
     my $done = AnyEvent->condvar;
