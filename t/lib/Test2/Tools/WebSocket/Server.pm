@@ -31,6 +31,7 @@ sub start_server
         my $ctx = context();
         $ctx->note("on_eof called.");
         $ctx->release;
+        $opt->{eof}->() if $opt->{eof};
       }
     );
   
@@ -93,3 +94,4 @@ sub start_echo
 }
 
 1;
+

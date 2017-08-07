@@ -1,40 +1,35 @@
 use lib 't/lib';
 use Test2::Require::Module 'Capture::Tiny';
-use Test2::Require::Module 'EV';
-use Test2::Require::Module 'Mojolicious' => '3.0';
-use Test2::Require::Module 'Mojolicious::Lite';
 use Test2::Require::Module 'Test::Memory::Cycle';
 use Test2::Require::Module 'Devel::Cycle';
+use Test2::Plugin::EV;
 use Test2::Plugin::AnyEvent::Timeout;
 use Test2::V0 -no_srand => 1;
-use Test2::Tools::WebSocket::Mojo qw( start_mojo );
+use Test2::Tools::WebSocket::Server qw( start_server );
 use AnyEvent::WebSocket::Client;
-use Mojolicious::Lite;
 use Capture::Tiny qw( capture_stderr );
 use Test::Memory::Cycle;
 
-app->log->level('fatal');
-
 my $finished = 0;
+my $done = AnyEvent->condvar;
 
-websocket '/foo' => sub {
-  my $self = shift;
-  $self->on(message => sub {
-    my($self, $payload) = @_;
-    $self->send($payload);
-  });
-  $self->on(finish => sub {
+my $uri = start_server(
+  message => sub {
+    my $opt = { @_ };
+    
+    return if !$opt->{frame}->is_text && !$opt->{frame}->is_binary;
+    
+    $opt->{hdl}->push_write($opt->{frame}->new(buffer => $opt->{message}, max_payload_size => 0 )->to_bytes);
+    
+  },
+  eof => sub {
     $finished = 1;
-    note 'FINISH';
-  });
-};
-
-
-my ($server, $port) =  start_mojo(app => app());
+    $done->send;
+  },
+);
 
 my $client = AnyEvent::WebSocket::Client->new;
-
-my $connection = $client->connect("ws://127.0.0.1:$port/foo")->recv;
+my $connection = $client->connect($uri)->recv;
 isa_ok $connection, 'AnyEvent::WebSocket::Connection';
 
 is $finished, 0, 'finished = 0';
@@ -46,8 +41,7 @@ is $finished, 0, 'finished = 0';
 note capture_stderr { memory_cycle_ok $connection };
 undef $connection;
 
-$server->ioloop->one_tick;
-$server->ioloop->one_tick;
+$done->recv;
 
 is $finished, 1, 'finished = 1';
 
