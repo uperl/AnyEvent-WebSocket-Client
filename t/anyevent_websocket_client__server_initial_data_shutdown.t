@@ -28,7 +28,7 @@ sub test_case
       my $error = $@;
       if($case_args{server_tls})
       {
-        testlib::SSL->diag_about_issue22;
+        #testlib::SSL->diag_about_issue22;
       }
       die $error;
     }

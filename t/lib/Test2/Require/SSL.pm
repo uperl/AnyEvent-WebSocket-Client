@@ -13,8 +13,6 @@ sub skip
   return 'user requested skip of SSL tests via environment'
       if $ENV{ANYEVENT_WEBSOCKET_TEST_SKIP_SSL};
 
-  #test2_add_callback_exit(\&diag_about_issue22);
-
   return;
 }
 

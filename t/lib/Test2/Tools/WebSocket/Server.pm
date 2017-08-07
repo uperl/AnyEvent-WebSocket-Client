@@ -29,7 +29,7 @@ sub start_server
       fh => shift,
       on_eof => sub {
         my $ctx = context();
-        $ctx->note("testlib::Server: on_eof called.");
+        $ctx->note("on_eof called.");
         $ctx->release;
       }
     );
