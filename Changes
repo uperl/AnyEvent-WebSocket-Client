@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.40_02   2017-08-10 12:39:28 -0400
   - Fix testing testing failure introduced in 0.40_01
 
 0.40_01   2017-08-06 22:59:50 -0400
