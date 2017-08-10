@@ -31,8 +31,15 @@ sub start_server
         my $ctx = context();
         $ctx->note("on_eof called.");
         $ctx->release;
-        $opt->{eof}->() if $opt->{eof};
-      }
+        $opt->{end}->() if $opt->{end};
+      },
+      on_error => sub {
+        my(undef, undef, $error) = @_;
+        my $ctx = context();
+        $ctx->note("error = $error");
+        $ctx->release;
+        $opt->{end}->() if $opt->{end};
+      },
     );
   
     $hdl->on_read(

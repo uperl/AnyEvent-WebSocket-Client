@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Fix testing testing failure introduced in 0.40_01
 
 0.40_01   2017-08-06 22:59:50 -0400
   - Add close_code, close_reason and close_error properties to AnyEvent::Connection
