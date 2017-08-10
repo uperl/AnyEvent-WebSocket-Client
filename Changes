@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Possible workaround for Perl 5.8.x bug (gh#19)
 
 0.40_02   2017-08-10 12:39:28 -0400
   - Fix testing testing failure introduced in 0.40_01

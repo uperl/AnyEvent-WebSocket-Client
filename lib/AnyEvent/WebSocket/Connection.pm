@@ -432,6 +432,21 @@ sub close
   $self;
 }
 
+if($] < 5.010)
+{
+  # This is a workaround for GH#19
+  # https://github.com/plicease/AnyEvent-WebSocket-Client/issues/19
+  # I am not 100% sure about this, but maybe as a trade off it isn't
+  # too bad?  The previous workaround was to downgrade to AE 6.x
+  # something.  Unfortunately, we now require AE 7.x something for
+  # SSL bug fixes.
+  *DEMOLISH = sub
+  {
+    my($self) = @_;
+    eval { $self->handle->push_shutdown } if $self->_is_write_open;
+  };
+}
+
 1;
 
 =head1 SERVER CONNECTIONS
