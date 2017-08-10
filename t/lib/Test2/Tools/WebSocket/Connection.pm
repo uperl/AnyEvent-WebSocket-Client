@@ -9,7 +9,23 @@ use base qw( Exporter );
 
 our @EXPORT_OK = qw( create_connection_pair create_connection_and_handle );
 
-sub create_handle_pair
+# ABSTRACT: Test AnyEvent::WebSocket::Connection without a server or client
+# VERSION
+
+=head1 SYNOPSIS
+
+ use Test2::Tools::WebSocket::Connection qw( create_connection_pair );
+ 
+ my($a, $b) = create_connection_pair;
+ 
+=head1 DESCRIPTION
+
+This module provides a function for building a pair of L<AnyEvent::WebSocket::Connection>
+objects that can be used for testing.
+
+=cut
+
+sub _create_handle_pair
 {
   my @ports;
   my $cv_port = AnyEvent->condvar;
@@ -41,12 +57,26 @@ sub create_handle_pair
   return ($a_handle, $b_handle);
 }
 
+=head1 FUNCTIONS
+
+=head2 create_connection_pair
+
+ my($a,$b) = create_connection_pair;
+ my($a,$b) = create_connection_pair(\%a_options, \%b_options);
+
+This function creates a pair of connection object which are connected.  When
+you send a message on one end it will be received on the other.  The
+optional option hashes are passed into L<AnyEvent::WebSocket::Connection>
+so you can use any option that is legal there.
+
+=cut
+
 sub create_connection_pair
 {
   my ($a_options_ref, $b_options_ref) = @_;
   $a_options_ref ||= {};
   $b_options_ref ||= {};
-  my ($a_handle, $b_handle) = create_handle_pair();
+  my ($a_handle, $b_handle) = _create_handle_pair();
   require AnyEvent::WebSocket::Connection;
   return (
     AnyEvent::WebSocket::Connection->new(%$a_options_ref, handle => $a_handle),
@@ -54,10 +84,21 @@ sub create_connection_pair
   );
 }
 
+=head2 create_connection_and_handle
+
+ my($connection, $handle) = create_connection_and_handle;
+ my($connection, $handle) = create_connection_and_handle(\%connection_options);
+
+This is the same as create_connection_pair, except a L<AnyEvent::Handle> object
+is returned for one end.  This can be useful for some lower level testing.
+
+=cut
+
+
 sub create_connection_and_handle
 {
   my ($a_options_ref) = @_;
-  my ($a_handle, $b_handle) = create_handle_pair();
+  my ($a_handle, $b_handle) = _create_handle_pair();
   require AnyEvent::WebSocket::Connection;
   return (
     AnyEvent::WebSocket::Connection->new(%$a_options_ref, handle => $a_handle),
@@ -66,3 +107,20 @@ sub create_connection_and_handle
 }
 
 1;
+
+
+=head1 SEEL ALSO
+
+=over 4
+
+=item L<AnyEvent::WebSocket::Client>
+
+=item L<AnyEvent::WebSocket::Server>
+
+=item L<Test::Mojo>
+
+Also provides methods for testing websockets.
+
+=back
+
+=cut
