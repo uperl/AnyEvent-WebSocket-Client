@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.40_03   2017-08-10 14:53:41 -0400
   - Possible workaround for Perl 5.8.x bug (gh#19)
 
 0.40_02   2017-08-10 12:39:28 -0400
