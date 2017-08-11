@@ -367,7 +367,7 @@ payload which is larger that C<max_payload_size>.
 
  $cb->($connection, $message)
 
-Called when the connection is terminated.  If the connection is terminted
+Called when the connection is terminated.  If the connection is terminated
 due to an error, the message will be provided as the second argument.
 On a cleanly closed connection this will be `undef`.
 
