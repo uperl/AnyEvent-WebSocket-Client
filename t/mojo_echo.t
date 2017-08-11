@@ -1,4 +1,5 @@
 use lib 't/lib';
+use Test2::Require::NotWindows;
 use Test2::Require::Module 'EV';
 use Test2::Require::Module 'Mojolicious' => '3.0';
 use Test2::Require::Module 'Mojolicious::Lite';

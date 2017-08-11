@@ -2,7 +2,7 @@ package Test2::Require::SSL;
 
 use strict;
 use warnings;
-use Test2::API qw( context test2_add_callback_exit );
+use Test2::API qw( context );
 use base qw( Test2::Require );
 
 sub skip
