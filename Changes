@@ -2,6 +2,9 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.41      2017-08-11 14:05:40 -0400
+  - Production version functionally identical to the 0.40_03 release.  
+
 0.40_03   2017-08-10 14:53:41 -0400
   - Possible workaround for Perl 5.8.x bug (gh#19)
 
