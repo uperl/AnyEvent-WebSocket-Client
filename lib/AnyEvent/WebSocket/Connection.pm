@@ -387,16 +387,17 @@ On a cleanly closed connection this will be `undef`.
 
 =cut
 
-sub _cancel_for {
-    my( $self, $event, $handler ) = @_;
+sub _cancel_for
+{
+  my( $self, $event, $handler ) = @_;
 
-    my $handler_id = Scalar::Util::refaddr($handler);
-    $event = '_'.$event.'_cb';
+  my $handler_id = Scalar::Util::refaddr($handler);
 
-    return sub {
-        @{ $self->$event } = grep { Scalar::Util::refaddr($_) != $handler_id } 
-                                @{ $self->$event };
-    };
+  return sub {
+    my $accessor = "_${event}_cb";
+    @{ $self->$accessor } = grep { Scalar::Util::refaddr($_) != $handler_id } 
+                         @{ $self->$accessor };
+  };
 }
 
 sub on
