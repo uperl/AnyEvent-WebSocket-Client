@@ -13,6 +13,13 @@ pod_spelling_system:
     - Kivanc
     - Yazan
     - unregisters
+    - Champoux
+    - JJATRIA
+    - KYZN
+    - TOSHIOITO
+    - YANICK
+    - Yanick
+    - ito
 
 pod_coverage:
   # format is "Class#method" or "Class", regex allowed

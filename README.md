@@ -199,11 +199,13 @@ Author: Graham Ollis <plicease@cpan.org>
 
 Contributors:
 
-Toshio Ito
+Toshio Ito (debug-ito, TOSHIOITO)
 
-José Joaquín Atria
+José Joaquín Atria (JJATRIA)
 
-Kivanc Yazan
+Kivanc Yazan (KYZN)
+
+Yanick Champoux (YANICK)
 
 # COPYRIGHT AND LICENSE
 
