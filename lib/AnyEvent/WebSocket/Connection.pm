@@ -396,7 +396,7 @@ sub _cancel_for
   return sub {
     my $accessor = "_${event}_cb";
     @{ $self->$accessor } = grep { Scalar::Util::refaddr($_) != $handler_id } 
-                         @{ $self->$accessor };
+                            @{ $self->$accessor };
   };
 }
 
