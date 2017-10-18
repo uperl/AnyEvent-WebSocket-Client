@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.42_01   2017-10-18 11:45:16 -0400
   - You can now unregister event callbacks.
   - The 'on' method for AnyEvent::WebSocket::Connection now returns a
     code ref that can be used to unregister the callback.
