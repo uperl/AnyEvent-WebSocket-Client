@@ -349,10 +349,10 @@ and C<$message> is an L<AnyEvent::WebSocket::Message> (if available).
 
 Returns a coderef that unregisters the callback when invoked.
 
-    my $cancel = $connection->on( each_message => sub { ...  });
-
-    # later on...
-    $cancel->();
+ my $cancel = $connection->on( each_message => sub { ...  });
+ 
+ # later on...
+ $cancel->();
 
 =head3 each_message
 

@@ -12,6 +12,7 @@ pod_spelling_system:
     - subprotocols
     - Kivanc
     - Yazan
+    - unregisters
 
 pod_coverage:
   # format is "Class#method" or "Class", regex allowed
