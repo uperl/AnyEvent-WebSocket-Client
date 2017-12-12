@@ -325,8 +325,7 @@ sub send
   
   if(ref $message)
   {
-    $frame = Protocol::WebSocket::Frame->new(buffer => $message->body, masked => $self->masked, max_payload_size => 0);
-    $frame->opcode($message->opcode);
+    $frame = Protocol::WebSocket::Frame->new(opcode => $message->opcode, buffer => $message->body, masked => $self->masked, max_payload_size => 0);
   }
   else
   {
