@@ -47,6 +47,15 @@ sub test_client {
 my $PROXY_URL = get_env("PERL_AE_WS_C_TEST_PROXY_URL", "the proxy URL");
 my $PROXY_ON =  get_env("PERL_AE_WS_C_TEST_PROXY_ON", "0 (if the proxy is down) or 1 (if the proxy is up)");
 
+diag(<<'NOTE');
+squid HTTP proxy denies connection to ports other than 443 (HTTPS) by default.
+In this case, this test fails. To pass the test, you have to configure squid.conf
+to allow connection to 80 (HTTP) and 443. For example,
+
+  ## http_access deny !Safe_ports
+  http_access allow CONNECT Safe_ports
+NOTE
+
 foreach my $n (qw(ws http wss https)) {
     my $e = "${n}_proxy";
     delete $ENV{lc($e)};
