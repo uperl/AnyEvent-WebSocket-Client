@@ -256,7 +256,7 @@ sub connect
     return $done;
   }
     
-  $self->make_tcp_connection($uri->scheme, $uri->host, $uri->port, sub {
+  $self->_make_tcp_connection($uri->scheme, $uri->host, $uri->port, sub {
     my $fh = shift;
     unless($fh)
     {
@@ -340,7 +340,7 @@ sub connect
   $done;
 }
 
-sub make_tcp_connection
+sub _make_tcp_connection
 {
   my $self = shift;
   my $scheme = shift;
