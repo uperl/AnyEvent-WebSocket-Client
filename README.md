@@ -123,6 +123,20 @@ Although, the order cannot be guaranteed when using the hash style.
 The maximum payload size for received frames.  Currently defaults to whatever
 [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) defaults to.
 
+## env\_proxy
+
+If you set true to this boolean attribute, it loads proxy settings
+from environment variables. If it finds valid proxy settings,
+`connect` method will use that proxy.
+
+Default: false.
+
+For `ws` WebSocket end-points, first it reads `ws_proxy` (or
+`WS_PROXY`) environment variable. If it is not set or empty string,
+then it reads `http_proxy` (or `HTTP_PROXY`). For `wss` WebSocket
+end-points, it reads `wss_proxy` (`WSS_PROXY`) and `https_proxy`
+(`HTTPS_PROXY`) environment variables.
+
 # METHODS
 
 ## connect
