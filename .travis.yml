@@ -1,10 +1,13 @@
 language: perl
+
 sudo: false
 
 install:
   - perlbrew list
   - dzil authordeps --missing | cpanm -n
   - dzil listdeps --missing | cpanm -n
+  - cpanm -n HTTP::Proxy
+  - perl maint/proxy.pl &
 
 perl:
   - "5.14"
@@ -16,11 +19,11 @@ perl:
   - "5.26"
 
 script:
-  # see GH#26
-  - cpanm -v https://cpan.metacpan.org/authors/id/P/PE/PEVANS/Socket-2.021.tar.gz
   - dzil test -v
 
 env:
   global:
     - PERL_USE_UNSAFE_INC=0
+    - PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128
+    - PERL_AE_WS_C_TEST_PROXY_ON=1
 
