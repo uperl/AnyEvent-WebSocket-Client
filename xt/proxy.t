@@ -1,33 +1,27 @@
-use strict;
-use warnings;
-use Test::More;
+use Test2::V0 -no_srand => 1;
 use AnyEvent;
 use AnyEvent::WebSocket::Client;
-use Try::Tiny;
 
 sub get_env {
     my ($env_name, $desc) = @_;
     my $val = $ENV{$env_name};
     if(!defined($val) || $val eq "") {
-        plan skip_all => "Set $env_name environment variable to $desc to enable this test.";
+        skip_all "Set $env_name environment variable to $desc to enable this test.";
     }
     return $val;
 }
 
 sub test_client_at {
     my ($client, $echo_url, $exp_conn_success) = @_;
-    my ($conn, $err) = try {
-        (scalar($client->connect($echo_url)->recv), undef);
-    }catch {
-        (undef, $_[0])
-    };
+    my $conn = eval { $client->connect($echo_url)->recv };
+    my $err = $@;
     if(!$exp_conn_success) {
         is $conn, undef;
         like $err, qr/unable to connect/i;
         return;
     }
     isnt $conn, undef;
-    is $err, undef;
+    is $err, '';
     my $res_cv = AnyEvent->condvar;
     $conn->on(next_message => sub {
         $res_cv->send($_[1]->decoded_body);
