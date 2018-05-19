@@ -106,6 +106,17 @@ has max_payload_size => (
   is => 'ro',
 );
 
+=head2 max_fragments_amount
+
+The maximum fragments amount for received frames.  Currently defaults to whatever
+L<Protocol::WebSocket> defaults to.
+
+=cut
+
+has max_fragments_amount => (
+  is => 'ro',
+);
+
 =head2 close_code
 
 If provided by the other side, the code that was provided when the 
@@ -189,7 +200,10 @@ sub BUILD
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
 
-  my $frame = Protocol::WebSocket::Frame->new( maybe max_payload_size => $self->max_payload_size );
+  my $frame = Protocol::WebSocket::Frame->new(
+    maybe max_payload_size => $self->max_payload_size,
+    maybe max_fragments_amount => $self->max_fragments_amount,
+  );
 
   my $read_cb = sub {
     my ($handle) = @_;

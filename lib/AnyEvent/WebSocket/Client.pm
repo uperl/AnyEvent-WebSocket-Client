@@ -196,6 +196,16 @@ has max_payload_size => (
   is => 'ro',
 );
 
+=head2 max_fragments_amount
+
+The maximum fragments amount for received frames.  Currently defaults to whatever
+L<Protocol::WebSocket> defaults to.
+
+=cut
+
+has max_fragments_amount => (
+  is => 'ro',
+);
 
 =head2 env_proxy
 
@@ -326,10 +336,11 @@ sub connect
         undef $handshake;
         $done->send(
           AnyEvent::WebSocket::Connection->new(
-                  handle           => $hdl,
-                  masked           => 1,
-            maybe subprotocol      => $sb,
-            maybe max_payload_size => $self->max_payload_size,
+                  handle               => $hdl,
+                  masked               => 1,
+            maybe subprotocol          => $sb,
+            maybe max_payload_size     => $self->max_payload_size,
+            maybe max_fragments_amount => $self->max_fragments_amount,
           )
         );
         undef $hdl;
