@@ -18,7 +18,7 @@ use Carp ();
 
  # send a message through the websocket...
  $connection->send('a message');
- 
+
  # recieve message from the websocket...
  $connection->on(each_message => sub {
    # $connection is the same connection object
@@ -26,34 +26,34 @@ use Carp ();
    my($connection, $message) = @_;
    ...
  });
- 
+
  # handle a closed connection...
  $connection->on(finish => sub {
    # $connection is the same connection object
    my($connection) = @_;
    ...
  });
- 
+
  # close an opened connection
  # (can do this either inside or outside of
  # a callback)
  $connection->close;
 
-(See L<AnyEvent::WebSocket::Client> or L<AnyEvent::WebSocket::Server> on 
+(See L<AnyEvent::WebSocket::Client> or L<AnyEvent::WebSocket::Server> on
 how to create a connection)
 
 =head1 DESCRIPTION
 
-This class represents a WebSocket connection with a remote server or a 
+This class represents a WebSocket connection with a remote server or a
 client.
 
-If the connection object falls out of scope then the connection will be 
+If the connection object falls out of scope then the connection will be
 closed gracefully.
 
-This class was created for a client to connect to a server via 
-L<AnyEvent::WebSocket::Client>, and was later extended to work on the 
-server side via L<AnyEvent::WebSocket::Server>.  Once a WebSocket 
-connection is established, the API for both client and server is 
+This class was created for a client to connect to a server via
+L<AnyEvent::WebSocket::Client>, and was later extended to work on the
+server side via L<AnyEvent::WebSocket::Server>.  Once a WebSocket
+connection is established, the API for both client and server is
 identical.
 
 =head1 ATTRIBUTES
@@ -106,9 +106,20 @@ has max_payload_size => (
   is => 'ro',
 );
 
+=head2 max_fragments_amount
+
+The maximum fragments amount for received frames.  Currently defaults to whatever
+L<Protocol::WebSocket> defaults to.
+
+=cut
+
+has max_fragments_amount => (
+  is => 'ro',
+);
+
 =head2 close_code
 
-If provided by the other side, the code that was provided when the 
+If provided by the other side, the code that was provided when the
 connection was closed.
 
 =cut
@@ -166,10 +177,10 @@ sub BUILD
 {
   my $self = shift;
   Scalar::Util::weaken $self;
-  
+
   my @temp_messages = ();
   my $are_callbacks_supposed_to_be_ready = 0;
-  
+
   my $finish = sub {
     my(undef, undef, $message) = @_;
     my $strong_self = $self; # preserve $self because otherwise $self can be destroyed in the callbacks.
@@ -189,7 +200,10 @@ sub BUILD
   $self->handle->on_error($finish);
   $self->handle->on_eof($finish);
 
-  my $frame = Protocol::WebSocket::Frame->new( maybe max_payload_size => $self->max_payload_size );
+  my $frame = Protocol::WebSocket::Frame->new(
+    maybe max_payload_size => $self->max_payload_size,
+    maybe max_fragments_amount => $self->max_fragments_amount,
+  );
 
   my $read_cb = sub {
     my ($handle) = @_;
@@ -239,7 +253,7 @@ sub BUILD
   # situation in TLS mode, because on_eof can fire even if we don't
   # have any on_read (
   # https://metacpan.org/pod/AnyEvent::Handle#I-get-different-callback-invocations-in-TLS-mode-Why-cant-I-pause-reading
-  # )   
+  # )
   $self->handle->on_read($read_cb);
   my $idle_w; $idle_w = AE::idle sub {
     undef $idle_w;
@@ -266,7 +280,7 @@ sub _process_message
 {
   my ($self, $received_message) = @_;
   return if !$self->_is_read_open;
-  
+
   if($received_message->is_text || $received_message->is_binary)
   {
     $_->($self, $received_message) for @{ $self->_next_message_cb };
@@ -320,9 +334,9 @@ sub send
 {
   my($self, $message) = @_;
   my $frame;
-  
+
   return $self if !$self->_is_write_open;
-  
+
   if(ref $message)
   {
     $frame = Protocol::WebSocket::Frame->new(opcode => $message->opcode, buffer => $message->body, masked => $self->masked, max_payload_size => 0);
@@ -349,7 +363,7 @@ and C<$message> is an L<AnyEvent::WebSocket::Message> (if available).
 Returns a coderef that unregisters the callback when invoked.
 
  my $cancel = $connection->on( each_message => sub { ...  });
- 
+
  # later on...
  $cancel->();
 
@@ -357,7 +371,7 @@ Returns a coderef that unregisters the callback when invoked.
 
  $cb->($connection, $message, $unregister)
 
-Called each time a message is received from the WebSocket. 
+Called each time a message is received from the WebSocket.
 C<$unregister> is a coderef that removes this callback from
 the active listeners when invoked.
 
@@ -394,7 +408,7 @@ sub _cancel_for
 
   return sub {
     my $accessor = "_${event}_cb";
-    @{ $self->$accessor } = grep { Scalar::Util::refaddr($_) != $handler_id } 
+    @{ $self->$accessor } = grep { Scalar::Util::refaddr($_) != $handler_id }
                             @{ $self->$accessor };
   };
 }
@@ -402,7 +416,7 @@ sub _cancel_for
 sub on
 {
   my($self, $event, $cb) = @_;
-  
+
   if($event eq 'next_message')
   {
     push @{ $self->_next_message_cb }, $cb;

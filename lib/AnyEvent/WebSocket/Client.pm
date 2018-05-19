@@ -19,11 +19,11 @@ use PerlX::Maybe qw( maybe provided );
 =head1 SYNOPSIS
 
  use AnyEvent::WebSocket::Client 0.12;
- 
+
  my $client = AnyEvent::WebSocket::Client->new;
- 
+
  $client->connect("ws://localhost:1234/service")->cb(sub {
- 
+
    # make $connection an our variable rather than
    # my so that it will stick around.  Once the
    # connection falls out of scope any callbacks
@@ -34,10 +34,10 @@ use PerlX::Maybe qw( maybe provided );
      warn $@;
      return;
    }
-   
+
    # send a message through the websocket...
    $connection->send('a message');
-   
+
    # recieve message from the websocket...
    $connection->on(each_message => sub {
      # $connection is the same connection object
@@ -45,7 +45,7 @@ use PerlX::Maybe qw( maybe provided );
      my($connection, $message) = @_;
      ...
    });
-   
+
    # handle a closed connection...
    $connection->on(finish => sub {
      # $connection is the same connection object
@@ -56,7 +56,7 @@ use PerlX::Maybe qw( maybe provided );
    # close the connection (either inside or
    # outside another callback)
    $connection->close;
- 
+
  });
 
  ## uncomment to enter the event loop before exiting.
@@ -68,7 +68,7 @@ use PerlX::Maybe qw( maybe provided );
 
 This class provides an interface to interact with a web server that provides
 services via the WebSocket protocol in an L<AnyEvent> context.  It uses
-L<Protocol::WebSocket> rather than reinventing the wheel.  You could use 
+L<Protocol::WebSocket> rather than reinventing the wheel.  You could use
 L<AnyEvent> and L<Protocol::WebSocket> directly if you wanted finer grain
 control, but if that is not necessary then this class may save you some time.
 
@@ -147,7 +147,7 @@ as a hash reference, or an array reference.  For example:
      'X-Baz' => [ 'abc', 'def' ],
    },
  );
- 
+
  AnyEvent::WebSocket::Client->new(
    http_headers => [
      'X-Foo' => 'bar',
@@ -196,6 +196,16 @@ has max_payload_size => (
   is => 'ro',
 );
 
+=head2 max_fragments_amount
+
+The maximum fragments amount for received frames.  Currently defaults to whatever
+L<Protocol::WebSocket> defaults to.
+
+=cut
+
+has max_fragments_amount => (
+  is => 'ro',
+);
 
 =head2 env_proxy
 
@@ -229,7 +239,7 @@ Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of L<URI::ws>,
 L<URI::wss>, or a string that represents a legal WebSocket URL.
 
-This method will return an L<AnyEvent> condition variable which you can 
+This method will return an L<AnyEvent> condition variable which you can
 attach a callback to.  The value sent through the condition variable will
 be either an instance of L<AnyEvent::WebSocket::Connection> or a croak
 message indicating a failure.  The synopsis above shows how to catch
@@ -245,7 +255,7 @@ sub connect
     require URI;
     $uri = URI->new($uri);
   }
-  
+
   my $done = AE::cv;
 
   # TODO: should we also accept http and https URLs?
@@ -255,7 +265,7 @@ sub connect
     $done->croak("URI is not a websocket");
     return $done;
   }
-    
+
   $self->_make_tcp_connection($uri->scheme, $uri->host, $uri->port, sub {
     my $fh = shift;
     unless($fh)
@@ -269,14 +279,14 @@ sub connect
       maybe version => $self->protocol_version,
             req     => $req,
     );
-    
+
     my %subprotocol;
     if($self->subprotocol)
     {
       %subprotocol = map { $_ => 1 } @{ $self->subprotocol };
       $handshake->req->subprotocol(join(',', @{ $self->subprotocol }));
     }
-    
+
     my $hdl = AnyEvent::Handle->new(
                                                       fh       => $fh,
       provided $uri->secure,                          tls      => 'connect',
@@ -326,10 +336,11 @@ sub connect
         undef $handshake;
         $done->send(
           AnyEvent::WebSocket::Connection->new(
-                  handle           => $hdl,
-                  masked           => 1,
-            maybe subprotocol      => $sb,
-            maybe max_payload_size => $self->max_payload_size,
+                  handle               => $hdl,
+                  masked               => 1,
+            maybe subprotocol          => $sb,
+            maybe max_payload_size     => $self->max_payload_size,
+            maybe max_fragments_amount => $self->max_fragments_amount,
           )
         );
         undef $hdl;
@@ -371,7 +382,7 @@ sub _make_tcp_connection
 
 =head2 My program exits before doing anything, what is up with that?
 
-See this FAQ from L<AnyEvent>: 
+See this FAQ from L<AnyEvent>:
 L<AnyEvent::FAQ#My-program-exits-before-doing-anything-whats-going-on>.
 
 It is probably also a good idea to review the L<AnyEvent> documentation
@@ -384,15 +395,15 @@ if you use a C<my $connection> variable and don't save it somewhere.  For
 example:
 
  $client->connect("ws://foo/service")->cb(sub {
- 
+
    my $connection = eval { shift->recv };
-   
+
    if($@)
    {
      warn $@;
      return;
    }
-   
+
    ...
  });
 
