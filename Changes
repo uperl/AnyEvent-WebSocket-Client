@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.47_01   2018-05-20 09:35:23 -0400
   - Add max_fragments attribute ot AnyEvent::WebSocket::Client
   - Add max_fragments attribute ot AnyEvent::WebSocket::Connection
 
