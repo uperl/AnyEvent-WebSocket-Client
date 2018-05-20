@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Add max_fragments attribute ot AnyEvent::WebSocket::Client
+  - Add max_fragments attribute ot AnyEvent::WebSocket::Connection
 
 0.46      2018-04-07 16:39:29 -0400
   - Production version functionally identical to the 0.45_01 release.

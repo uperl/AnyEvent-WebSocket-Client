@@ -123,9 +123,9 @@ Although, the order cannot be guaranteed when using the hash style.
 The maximum payload size for received frames.  Currently defaults to whatever
 [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) defaults to.
 
-## max\_fragments\_amount
+## max\_fragments
 
-The maximum fragments amount for received frames.  Currently defaults to whatever
+The maximum number of fragments for received frames.  Currently defaults to whatever
 [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) defaults to.
 
 ## env\_proxy

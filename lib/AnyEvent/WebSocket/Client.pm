@@ -196,14 +196,14 @@ has max_payload_size => (
   is => 'ro',
 );
 
-=head2 max_fragments_amount
+=head2 max_fragments
 
-The maximum fragments amount for received frames.  Currently defaults to whatever
+The maximum number of fragments for received frames.  Currently defaults to whatever
 L<Protocol::WebSocket> defaults to.
 
 =cut
 
-has max_fragments_amount => (
+has max_fragments => (
   is => 'ro',
 );
 
@@ -340,7 +340,7 @@ sub connect
                   masked               => 1,
             maybe subprotocol          => $sb,
             maybe max_payload_size     => $self->max_payload_size,
-            maybe max_fragments_amount => $self->max_fragments_amount,
+            maybe max_fragments        => $self->max_fragments,
           )
         );
         undef $hdl;
