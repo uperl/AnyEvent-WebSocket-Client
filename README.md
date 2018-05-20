@@ -123,6 +123,11 @@ Although, the order cannot be guaranteed when using the hash style.
 The maximum payload size for received frames.  Currently defaults to whatever
 [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) defaults to.
 
+## max\_fragments\_amount
+
+The maximum fragments amount for received frames.  Currently defaults to whatever
+[Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) defaults to.
+
 ## env\_proxy
 
 If you set true to this boolean attribute, it loads proxy settings
@@ -220,6 +225,8 @@ José Joaquín Atria (JJATRIA)
 Kivanc Yazan (KYZN)
 
 Yanick Champoux (YANICK)
+
+Fayland Lam (FAYLAND)
 
 # COPYRIGHT AND LICENSE
 
