@@ -3,6 +3,7 @@ Revision history for {{$dist->name}}
 {{$NEXT}}
 
 0.48      2018-05-21 21:08:49 -0400
+  - Production version functionally identical to the 0.47_01 release.
 
 0.47_01   2018-05-20 09:35:23 -0400
   - Add max_fragments attribute ot AnyEvent::WebSocket::Client
