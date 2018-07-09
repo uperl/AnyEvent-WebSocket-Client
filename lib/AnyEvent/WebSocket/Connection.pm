@@ -283,8 +283,14 @@ sub _process_message
   
   if($received_message->is_text || $received_message->is_binary)
   {
-    $_->($self, $received_message) for @{ $self->_next_message_cb };
+    # make a copy in order to allow specifying new callbacks inside the
+    # currently executed next_callback itself. otherwise, any next_callback
+    # added inside the currently executed callback would be added to the end
+    # of the array and executed for the currently processed message instead of
+    # actually the next one.
+    my @next_callbacks = @{ $self->_next_message_cb };
     @{ $self->_next_message_cb } = ();
+    $_->($self, $received_message) for @next_callbacks;
 
     # make a copy in case one of the callbacks get
     # unregistered in the middle of the loop
