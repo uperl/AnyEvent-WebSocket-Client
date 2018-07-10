@@ -387,6 +387,13 @@ the active listeners when invoked.
 
 Called only for the next message received from the WebSocket.
 
+[0.49]
+
+Adding a next_message callback from within a next_message callback will
+result in a callback called on the next message instead of the current
+one. There was a bug in previous versions where the callback would be
+called immediately after current set of callbacks with the same message.
+
 =head3 parse_error
 
  $cb->($connection, $text_error_message)
