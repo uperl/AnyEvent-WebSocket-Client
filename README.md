@@ -228,6 +228,8 @@ Yanick Champoux (YANICK)
 
 Fayland Lam (FAYLAND)
 
+Daniel Kamil Kozar (xavery)
+
 # COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2013 by Graham Ollis.
