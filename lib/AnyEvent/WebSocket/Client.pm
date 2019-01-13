@@ -228,6 +228,23 @@ has env_proxy => (
   default => sub { 0 },
 );
 
+=head2 unix_socket
+
+The URI standards do not support unix domain sockets.  Currently a port
+must be defined as number.  This option when set allows for the use of
+unix domain sockets on supported platforms.  This is done by ignoring the
+URI->host and URI->port methods and using "unix/" for the host and 
+$self->unix_socket for the port.
+
+Defaut: undef
+
+Example value: /tmp/websocket.sock
+
+=cut
+
+has unix_socket=>(
+  is=>'ro',
+);
 
 =head1 METHODS
 
@@ -266,7 +283,17 @@ sub connect
     return $done;
   }
     
-  $self->_make_tcp_connection($uri->scheme, $uri->host, $uri->port, sub {
+  my ($host,$port);
+
+  if(defined($self->unix_socket)) {
+    $host='unix/';
+    $port=$self->unix_socket;
+  } else {
+    $host=$uri->host;
+    $port=$uri->port;
+  }
+
+  $self->_make_tcp_connection($uri->scheme, $host, $port, sub {
     my $fh = shift;
     unless($fh)
     {
