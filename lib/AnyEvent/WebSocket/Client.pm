@@ -19,11 +19,11 @@ use PerlX::Maybe qw( maybe provided );
 =head1 SYNOPSIS
 
  use AnyEvent::WebSocket::Client 0.12;
- 
+
  my $client = AnyEvent::WebSocket::Client->new;
- 
+
  $client->connect("ws://localhost:1234/service")->cb(sub {
- 
+
    # make $connection an our variable rather than
    # my so that it will stick around.  Once the
    # connection falls out of scope any callbacks
@@ -34,10 +34,10 @@ use PerlX::Maybe qw( maybe provided );
      warn $@;
      return;
    }
-   
+
    # send a message through the websocket...
    $connection->send('a message');
-   
+
    # recieve message from the websocket...
    $connection->on(each_message => sub {
      # $connection is the same connection object
@@ -45,7 +45,7 @@ use PerlX::Maybe qw( maybe provided );
      my($connection, $message) = @_;
      ...
    });
-   
+
    # handle a closed connection...
    $connection->on(finish => sub {
      # $connection is the same connection object
@@ -56,13 +56,17 @@ use PerlX::Maybe qw( maybe provided );
    # close the connection (either inside or
    # outside another callback)
    $connection->close;
- 
+
  });
 
  ## uncomment to enter the event loop before exiting.
  ## Note that calling recv on a condition variable before
  ## it has been triggered does not work on all event loops
  #AnyEvent->condvar->recv;
+
+# fixed bad bad pod encoding
+
+=encoding utf8
 
 =head1 DESCRIPTION
 
@@ -147,7 +151,7 @@ as a hash reference, or an array reference.  For example:
      'X-Baz' => [ 'abc', 'def' ],
    },
  );
- 
+
  AnyEvent::WebSocket::Client->new(
    http_headers => [
      'X-Foo' => 'bar',
@@ -422,15 +426,15 @@ if you use a C<my $connection> variable and don't save it somewhere.  For
 example:
 
  $client->connect("ws://foo/service")->cb(sub {
- 
+
    my $connection = eval { shift->recv };
-   
+
    if($@)
    {
      warn $@;
      return;
    }
-   
+
    ...
  });
 
