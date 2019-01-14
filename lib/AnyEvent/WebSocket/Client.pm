@@ -34,10 +34,10 @@ use PerlX::Maybe qw( maybe provided );
      warn $@;
      return;
    }
-
+   
    # send a message through the websocket...
    $connection->send('a message');
-
+   
    # recieve message from the websocket...
    $connection->on(each_message => sub {
      # $connection is the same connection object
@@ -45,18 +45,18 @@ use PerlX::Maybe qw( maybe provided );
      my($connection, $message) = @_;
      ...
    });
-
+   
    # handle a closed connection...
    $connection->on(finish => sub {
      # $connection is the same connection object
      my($connection) = @_;
      ...
    });
-
+   
    # close the connection (either inside or
    # outside another callback)
    $connection->close;
-
+   
  });
 
  ## uncomment to enter the event loop before exiting.
@@ -151,7 +151,7 @@ as a hash reference, or an array reference.  For example:
      'X-Baz' => [ 'abc', 'def' ],
    },
  );
-
+ 
  AnyEvent::WebSocket::Client->new(
    http_headers => [
      'X-Foo' => 'bar',
@@ -266,11 +266,21 @@ be either an instance of L<AnyEvent::WebSocket::Connection> or a croak
 message indicating a failure.  The synopsis above shows how to catch
 such errors using C<eval>.
 
+In some cases you may want to overload some method values returned by the URI.
+
+Extended Arguments: UNIX
+
+ my $cv = $client->connect($uri,unix=>'/path/to.socket');
+
+Extended Arguments: IP
+
+ my $cv = $client->connect($uri,host=>'127.0.0.1',port=>8800);
+
 =cut
 
 sub connect
 {
-  my($self, $uri) = @_;
+  my($self, $uri, %args) = @_;
   unless(ref $uri)
   {
     require URI;
@@ -288,8 +298,15 @@ sub connect
   }
     
   my ($host,$port);
-
-  if(defined($self->unix_socket)) {
+  if(keys %args) {
+    if(defined($args{unix})) {
+      $host='unix/';
+      $port=$args{unix};
+    } else {
+      $host=defined($args{host}) ? $args{host} : $uri->host;
+      $port=defined($args{port}) ? $args{port} : $uri->port;
+    }
+  } elsif(defined($self->unix_socket)) {
     $host='unix/';
     $port=$self->unix_socket;
   } else {
@@ -426,15 +443,15 @@ if you use a C<my $connection> variable and don't save it somewhere.  For
 example:
 
  $client->connect("ws://foo/service")->cb(sub {
-
+ 
    my $connection = eval { shift->recv };
-
+   
    if($@)
    {
      warn $@;
      return;
    }
-
+   
    ...
  });
 
