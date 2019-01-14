@@ -35,8 +35,7 @@ eval {
 our $SKIP_ALL=$@;
 SKIP: {
  skip_all 'unsupported' if $SKIP_ALL;
-  SKIP: {
-    skip 'unsupported',45 if $SKIP_ALL;
+  {
    
     my $dir = tempdir(CLEANUP=>1);
     my $socket="$dir/test.sock";
@@ -128,8 +127,7 @@ SKIP: {
     }
   };
   
-  SKIP: {
-    skip 'unsupported',45 if $SKIP_ALL;
+  {
    
     my $dir = tempdir(CLEANUP=>1);
     my $socket="$dir/test.sock";
@@ -222,7 +220,6 @@ SKIP: {
   }
   
   SKIP: {
-    skip 'unsupported',45 if $SKIP_ALL;
     skip 'ENV TEST_HOST and TEST_PORT not set' ,45 if !$ENV{TEST_HOST} || !$ENV{TEST_PORT};
    
     my ($host,$socket)=@ENV{qw(TEST_HOST TEST_PORT)};
