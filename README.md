@@ -230,6 +230,8 @@ Fayland Lam (FAYLAND)
 
 Daniel Kamil Kozar (xavery)
 
+Michael Shipper (akalinux)
+
 # COPYRIGHT AND LICENSE
 
 This software is copyright (c) 2013 by Graham Ollis.
