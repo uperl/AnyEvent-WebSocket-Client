@@ -64,10 +64,6 @@ use PerlX::Maybe qw( maybe provided );
  ## it has been triggered does not work on all event loops
  #AnyEvent->condvar->recv;
 
-# fixed bad bad pod encoding
-
-=encoding utf8
-
 =head1 DESCRIPTION
 
 This class provides an interface to interact with a web server that provides
