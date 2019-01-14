@@ -1,29 +1,38 @@
-language: perl
+language: minimal
+dist: xenial
+services:
+  - docker
 
-sudo: false
+before_install:
+  - curl https://raw.githubusercontent.com/plicease/cip/master/bin/travis-bootstrap | bash
+  - cip before-install
 
 install:
-  - perlbrew list
-  - dzil authordeps --missing | cpanm -n
-  - dzil listdeps --missing | cpanm -n
-  - cpanm -n HTTP::Proxy
-  - perl maint/proxy.pl &
-
-perl:
-  - "5.14"
-  - "5.16"
-  - "5.18"
-  - "5.20"
-  - "5.22"
-  - "5.24"
-  - "5.26"
+  - cip diag
+  - cip install
 
 script:
-  - dzil test -v
+  - cip script
 
-env:
-  global:
-    - PERL_USE_UNSAFE_INC=0
-    - PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128
-    - PERL_AE_WS_C_TEST_PROXY_ON=1
+jobs:
+  include:
+    - env: CIP_TAG=5.29        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.28        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.28-buster CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.26        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.24        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.22        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.20        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.18        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.16        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.14        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.12        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.10.1      CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.10.0      CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.8         CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+  allow_failures:
+    - env: CIP_TAG=5.28-buster CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
 
+cache:
+  directories:
+    - "$HOME/.cip"
