@@ -234,16 +234,18 @@ has env_proxy => (
 =head2 connect
 
  my $cv = $client->connect($uri)
- my $cv = $client->connect($uri, $host);
  my $cv = $client->connect($uri, $host, $port);
 
 Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of L<URI::ws>,
-L<URI::wss>, or a string that represents a legal WebSocket URL.  You can
-override the connection host and port by passing them in as the second and
-third argument.  These values (if provided) are passed directly into
-L<AnyEvent::Socket>'s C<tcp_connect> function, so you can pass in C<unix/>
-as the host and a filesystem path to connect to a unix domain socket.
+L<URI::wss>, or a string that represents a legal WebSocket URL.
+
+You can  override the connection host and port by passing them in as the
+second and third argument.  These values (if provided) are passed directly
+into L<AnyEvent::Socket>'s C<tcp_connect> function, so please note that
+function's idiosyncrasies in the L<AnyEvent::Socket> documentation.  In
+particular,  you can pass in C<unix/> as the host and a filesystem path
+as the "port" to connect to a unix domain socket.
 
 This method will return an L<AnyEvent> condition variable which you can 
 attach a callback to.  The value sent through the condition variable will
