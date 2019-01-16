@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - You may now overide the host and port when using the
+    AnyEvent::WebSocket::Client's connect method.
 
 0.50      2019-01-14 10:49:47 -0500
   - Fixed a testing bug that was reportd on Debian Buster.
