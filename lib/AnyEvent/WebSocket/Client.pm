@@ -235,6 +235,8 @@ has env_proxy => (
 
  my $cv = $client->connect($uri)
  my $cv = $client->connect($uri, $host, $port);
+ my $cv = $client->connect($uri, \&prepare);
+ my $cv = $client->connect($uri, $host, $port, \&prepare);
 
 Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of L<URI::ws>,
@@ -247,6 +249,12 @@ function's idiosyncrasies in the L<AnyEvent::Socket> documentation.  In
 particular,  you can pass in C<unix/> as the host and a filesystem path
 as the "port" to connect to a unix domain socket.
 
+You can provide a prepare callback as the last argument.  This will be called
+after the file handle is created, but before connecting.  This allows you
+to bind to a specific local port, or set a timeout different from the
+client object.  This is passed (if provided) directly into L<AnyEvent>'s
+C<tcp_connect> function so read the documentation there for more details.
+
 This method will return an L<AnyEvent> condition variable which you can 
 attach a callback to.  The value sent through the condition variable will
 be either an instance of L<AnyEvent::WebSocket::Connection> or a croak
@@ -257,7 +265,10 @@ such errors using C<eval>.
 
 sub connect
 {
-  my($self, $uri, $host, $port) = @_;
+  my $self = shift;
+  my $uri = shift;
+  my $prepare_cb = ref $_[-1] eq 'CODE' ? pop @_ : sub { $self->timeout };
+  my($host, $port) = @_;
   unless(ref $uri)
   {
     require URI;
@@ -358,7 +369,7 @@ sub connect
         undef $done;
       }
     });
-  }, sub { $self->timeout });
+  }, $prepare_cb);
   $done;
 }
 

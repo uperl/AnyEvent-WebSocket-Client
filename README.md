@@ -148,6 +148,8 @@ end-points, it reads `wss_proxy` (`WSS_PROXY`) and `https_proxy`
 
     my $cv = $client->connect($uri)
     my $cv = $client->connect($uri, $host, $port);
+    my $cv = $client->connect($uri, \&prepare);
+    my $cv = $client->connect($uri, $host, $port, \&prepare);
 
 Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of [URI::ws](https://metacpan.org/pod/URI::ws),
@@ -159,6 +161,12 @@ into [AnyEvent::Socket](https://metacpan.org/pod/AnyEvent::Socket)'s `tcp_connec
 function's idiosyncrasies in the [AnyEvent::Socket](https://metacpan.org/pod/AnyEvent::Socket) documentation.  In
 particular,  you can pass in `unix/` as the host and a filesystem path
 as the "port" to connect to a unix domain socket.
+
+You can provide a prepare callback as the last argument.  This will be called
+after the file handle is created, but before connecting.  This allows you
+to bind to a specific local port, or set a timeout different from the
+client object.  This is passed (if provided) directly into [AnyEvent](https://metacpan.org/pod/AnyEvent)'s
+`tcp_connect` function so read the documentation there for more details.
 
 This method will return an [AnyEvent](https://metacpan.org/pod/AnyEvent) condition variable which you can 
 attach a callback to.  The value sent through the condition variable will

@@ -140,6 +140,22 @@ subtest 'tests against count server' => sub {
     };
 
   };
+
+  subtest 'prepare' => sub {
+
+    my $ref;
+
+    my $prepare = sub {
+      $ref = ref $_[0];
+      30;
+    };
+
+    my $client = AnyEvent::WebSocket::Client->new;
+    my $connection = eval { $client->new->connect($uri, $prepare)->recv };
+
+    is $ref, 'GLOB';
+
+  };
   
   subtest 'version' => sub {
   
