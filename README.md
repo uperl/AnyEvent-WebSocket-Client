@@ -147,10 +147,18 @@ end-points, it reads `wss_proxy` (`WSS_PROXY`) and `https_proxy`
 ## connect
 
     my $cv = $client->connect($uri)
+    my $cv = $client->connect($uri, $host, $port);
 
 Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of [URI::ws](https://metacpan.org/pod/URI::ws),
 [URI::wss](https://metacpan.org/pod/URI::wss), or a string that represents a legal WebSocket URL.
+
+You can  override the connection host and port by passing them in as the
+second and third argument.  These values (if provided) are passed directly
+into [AnyEvent::Socket](https://metacpan.org/pod/AnyEvent::Socket)'s `tcp_connect` function, so please note that
+function's idiosyncrasies in the [AnyEvent::Socket](https://metacpan.org/pod/AnyEvent::Socket) documentation.  In
+particular,  you can pass in `unix/` as the host and a filesystem path
+as the "port" to connect to a unix domain socket.
 
 This method will return an [AnyEvent](https://metacpan.org/pod/AnyEvent) condition variable which you can 
 attach a callback to.  The value sent through the condition variable will
