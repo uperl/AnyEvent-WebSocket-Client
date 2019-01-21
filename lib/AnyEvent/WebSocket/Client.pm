@@ -228,24 +228,6 @@ has env_proxy => (
   default => sub { 0 },
 );
 
-=head2 unix_socket
-
-The URI standards do not support unix domain sockets.  Currently a port
-must be defined as number.  This option when set allows for the use of
-unix domain sockets on supported platforms.  This is done by ignoring the
-URI->host and URI->port methods and using "unix/" for the host and 
-$self->unix_socket for the port.
-
-Defaut: undef
-
-Example value: /tmp/websocket.sock
-
-=cut
-
-has unix_socket=>(
-  is=>'ro',
-);
-
 =head1 METHODS
 
 =head2 connect
@@ -264,11 +246,11 @@ such errors using C<eval>.
 
 In some cases you may want to overload some method values returned by the URI.
 
-Extended Arguments: UNIX
+Extended Arguments: UNIX Domain Socket Example
 
- my $cv = $client->connect($uri,unix=>'/path/to.socket');
+ my $cv = $client->connect($uri,host=>'unix/',port=>'/path/to.socket');
 
-Extended Arguments: IP
+Extended Arguments: IPv4 Example
 
  my $cv = $client->connect($uri,host=>'127.0.0.1',port=>8800);
 
@@ -295,16 +277,8 @@ sub connect
     
   my ($host,$port);
   if(keys %args) {
-    if(defined($args{unix})) {
-      $host='unix/';
-      $port=$args{unix};
-    } else {
-      $host=defined($args{host}) ? $args{host} : $uri->host;
-      $port=defined($args{port}) ? $args{port} : $uri->port;
-    }
-  } elsif(defined($self->unix_socket)) {
-    $host='unix/';
-    $port=$self->unix_socket;
+    $host=defined($args{host}) ? $args{host} : $uri->host;
+    $port=defined($args{port}) ? $args{port} : $uri->port;
   } else {
     $host=$uri->host;
     $port=$uri->port;

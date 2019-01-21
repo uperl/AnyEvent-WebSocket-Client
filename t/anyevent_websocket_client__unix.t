@@ -40,98 +40,6 @@ SKIP: {
     my $dir = tempdir(CLEANUP=>1);
     my $socket="$dir/test.sock";
   
-   
-    my $server = AnyEvent::WebSocket::Server->new();
-    my $server_conn;
-    my $tcp_server = tcp_server 'unix/', $socket, sub {
-      my ($fh)=@_;
-      $server->establish($fh)->cb(sub {
-        $server_conn=eval { shift->recv };
-   
-        undef $t;
-        $CV->send('client - connected');
-   
-        if($@) {
-          return $CV->send("error: $@");
-        }
-   
-        $server_conn->on(each_message => sub {
-          my ($conn,$msg)=@_;
-          $LAST_CLIENT=$msg->decoded_body;
-          undef $t;
-          $CV->send('client - ok');
-        });
-   
-        $server_conn->on(finish=>sub {
-          my ($conn)=@_;
-          undef $t;
-          $CV->send('client - close');
-          $conn->close;
-          undef $conn;
-        });
-      });
-    };
-   
-    for(my $x=0;$x<$CONNECTION_COUNT;++$x) {
-      my $client=AnyEvent::WebSocket::Client->new(unix_socket=>$socket);
-      cmp_ok($client->unix_socket,'eq',$socket,'make sure the object has our socket connection: '.$x);
-      my $client_conn;
-     
-      $client->connect("ws://localhost:123$x")->cb(sub {
-        $client_conn=eval { shift->recv };
-        if($@) {
-            undef $t;
-          return $CV->send("error, $@");
-        }
-     
-        $client_conn->on(each_message=>sub {
-          my ($conn,$msg)=@_;
-          $LAST_SERVER=$msg->decoded_body;
-          undef $t;
-          $CV->send('server - ok');
-        });
-     
-        $client_conn->on(finish=>sub {
-          my ($conn);
-          $conn->close;
-          undef $conn;
-        });
-      });
-      {
-        my $res=next_cv();
-        cmp_ok($res,'eq','client - connected','connection open check connection: '.$x);
-      }
-      for(my $id=0;$id<$TEST_MSG_COUNT;++$id) {
-        {
-          my $msg=to_json {testing=>$id};
-          $server_conn->send($msg);
-          my $res=next_cv();
-          cmp_ok($res,'eq','server - ok','send data from server to client set: '.$id);
-          cmp_ok($LAST_SERVER,'eq',$msg,'last message from the server should match our current message set: '.$id);
-        }
-        {
-          my $msg=to_json {testing=>$id};
-          $client_conn->send($msg);
-          my $res=next_cv();
-          cmp_ok($res,'eq','client - ok','send data from server to client set: '.$id);
-          cmp_ok($LAST_CLIENT,'eq',$msg,'last message from the client should match our current message set: '.$id);
-        }
-      }
-  
-      {
-        $client_conn->close;
-        my $res=next_cv();
-        diag $res;
-        cmp_ok($res,'eq','client - close','Should have closed the client connection without error');
-      }
-    }
-  };
-  
-  {
-   
-    my $dir = tempdir(CLEANUP=>1);
-    my $socket="$dir/test.sock";
-  
     use AnyEvent::WebSocket::Client;
    
     my $server = AnyEvent::WebSocket::Server->new();
@@ -169,7 +77,7 @@ SKIP: {
       my $client=AnyEvent::WebSocket::Client->new();
       my $client_conn;
      
-      $client->connect("ws://localhost:123$x",unix=>$socket)->cb(sub {
+      $client->connect("ws://localhost:123$x",host=>'unix/',port=>$socket)->cb(sub {
         $client_conn=eval { shift->recv };
         if($@) {
             undef $t;
