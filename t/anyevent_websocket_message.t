@@ -24,7 +24,7 @@ while(my($type, $opcode) = each %ops)
       next if $method eq "is_$type";
       ok !$message->$method, "\$message->$method is false";
     }
-    
+
     my $method = "is_$type";
     ok $message->$method, "\$message->$method is true";
   };
@@ -35,7 +35,7 @@ subtest default => sub {
   my $message = eval { AnyEvent::WebSocket::Message->new(body => 'foo') };
   diag $@ if $@;
   isa_ok $message, 'AnyEvent::WebSocket::Message';
-  
+
   is $message->opcode, 1, 'message.opcode = 1';
   ok $message->is_text, 'message.is_text is true';
 };

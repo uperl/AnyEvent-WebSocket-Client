@@ -13,7 +13,7 @@ use Encode ();
  $connection->send(
    AnyEvent::WebSocket::Message->new(body => "some message"),
  );
-
+ 
  $connection->on(each_message => sub {
    my($connection, $message) = @_;
    if($message->is_text || $message->is_binary)
