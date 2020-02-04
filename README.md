@@ -1,4 +1,4 @@
-# AnyEvent::WebSocket::Client [![Build Status](https://secure.travis-ci.org/plicease/AnyEvent-WebSocket-Client.png)](http://travis-ci.org/plicease/AnyEvent-WebSocket-Client)
+# AnyEvent::WebSocket::Client [![Build Status](https://secure.travis-ci.org/plicease/AnyEvent-WebSocket-Client.png)](http://travis-ci.org/plicease/AnyEvent-WebSocket-Client) ![windows](https://github.com/plicease/AnyEvent-WebSocket-Client/workflows/windows/badge.svg) ![macos](https://github.com/plicease/AnyEvent-WebSocket-Client/workflows/macos/badge.svg)
 
 WebSocket client for AnyEvent
 
@@ -21,10 +21,10 @@ $client->connect("ws://localhost:1234/service")->cb(sub {
     warn $@;
     return;
   }
-  
+
   # send a message through the websocket...
   $connection->send('a message');
-  
+
   # recieve message from the websocket...
   $connection->on(each_message => sub {
     # $connection is the same connection object
@@ -32,7 +32,7 @@ $client->connect("ws://localhost:1234/service")->cb(sub {
     my($connection, $message) = @_;
     ...
   });
-  
+
   # handle a closed connection...
   $connection->on(finish => sub {
     # $connection is the same connection object
@@ -56,7 +56,7 @@ $client->connect("ws://localhost:1234/service")->cb(sub {
 
 This class provides an interface to interact with a web server that provides
 services via the WebSocket protocol in an [AnyEvent](https://metacpan.org/pod/AnyEvent) context.  It uses
-[Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) rather than reinventing the wheel.  You could use 
+[Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) rather than reinventing the wheel.  You could use
 [AnyEvent](https://metacpan.org/pod/AnyEvent) and [Protocol::WebSocket](https://metacpan.org/pod/Protocol::WebSocket) directly if you wanted finer grain
 control, but if that is not necessary then this class may save you some time.
 
@@ -168,7 +168,7 @@ function's idiosyncrasies in the [AnyEvent::Socket](https://metacpan.org/pod/Any
 particular,  you can pass in `unix/` as the host and a filesystem path
 as the "port" to connect to a unix domain socket.
 
-This method will return an [AnyEvent](https://metacpan.org/pod/AnyEvent) condition variable which you can 
+This method will return an [AnyEvent](https://metacpan.org/pod/AnyEvent) condition variable which you can
 attach a callback to.  The value sent through the condition variable will
 be either an instance of [AnyEvent::WebSocket::Connection](https://metacpan.org/pod/AnyEvent::WebSocket::Connection) or a croak
 message indicating a failure.  The synopsis above shows how to catch
@@ -178,7 +178,7 @@ such errors using `eval`.
 
 ## My program exits before doing anything, what is up with that?
 
-See this FAQ from [AnyEvent](https://metacpan.org/pod/AnyEvent): 
+See this FAQ from [AnyEvent](https://metacpan.org/pod/AnyEvent):
 [AnyEvent::FAQ#My-program-exits-before-doing-anything-whats-going-on](https://metacpan.org/pod/AnyEvent::FAQ#My-program-exits-before-doing-anything-whats-going-on).
 
 It is probably also a good idea to review the [AnyEvent](https://metacpan.org/pod/AnyEvent) documentation
@@ -194,13 +194,13 @@ example:
 $client->connect("ws://foo/service")->cb(sub {
 
   my $connection = eval { shift->recv };
-  
+
   if($@)
   {
     warn $@;
     return;
   }
-  
+
   ...
 });
 ```
