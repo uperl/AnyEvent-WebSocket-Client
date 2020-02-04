@@ -4,51 +4,53 @@ WebSocket client for AnyEvent
 
 # SYNOPSIS
 
-    use AnyEvent::WebSocket::Client 0.12;
-    
-    my $client = AnyEvent::WebSocket::Client->new;
-    
-    $client->connect("ws://localhost:1234/service")->cb(sub {
-    
-      # make $connection an our variable rather than
-      # my so that it will stick around.  Once the
-      # connection falls out of scope any callbacks
-      # tied to it will be destroyed.
-      our $connection = eval { shift->recv };
-      if($@) {
-        # handle error...
-        warn $@;
-        return;
-      }
-      
-      # send a message through the websocket...
-      $connection->send('a message');
-      
-      # recieve message from the websocket...
-      $connection->on(each_message => sub {
-        # $connection is the same connection object
-        # $message isa AnyEvent::WebSocket::Message
-        my($connection, $message) = @_;
-        ...
-      });
-      
-      # handle a closed connection...
-      $connection->on(finish => sub {
-        # $connection is the same connection object
-        my($connection) = @_;
-        ...
-      });
+```perl
+use AnyEvent::WebSocket::Client 0.12;
 
-      # close the connection (either inside or
-      # outside another callback)
-      $connection->close;
-    
-    });
+my $client = AnyEvent::WebSocket::Client->new;
 
-    ## uncomment to enter the event loop before exiting.
-    ## Note that calling recv on a condition variable before
-    ## it has been triggered does not work on all event loops
-    #AnyEvent->condvar->recv;
+$client->connect("ws://localhost:1234/service")->cb(sub {
+
+  # make $connection an our variable rather than
+  # my so that it will stick around.  Once the
+  # connection falls out of scope any callbacks
+  # tied to it will be destroyed.
+  our $connection = eval { shift->recv };
+  if($@) {
+    # handle error...
+    warn $@;
+    return;
+  }
+  
+  # send a message through the websocket...
+  $connection->send('a message');
+  
+  # recieve message from the websocket...
+  $connection->on(each_message => sub {
+    # $connection is the same connection object
+    # $message isa AnyEvent::WebSocket::Message
+    my($connection, $message) = @_;
+    ...
+  });
+  
+  # handle a closed connection...
+  $connection->on(finish => sub {
+    # $connection is the same connection object
+    my($connection) = @_;
+    ...
+  });
+
+  # close the connection (either inside or
+  # outside another callback)
+  $connection->close;
+
+});
+
+## uncomment to enter the event loop before exiting.
+## Note that calling recv on a condition variable before
+## it has been triggered does not work on all event loops
+#AnyEvent->condvar->recv;
+```
 
 # DESCRIPTION
 
@@ -95,26 +97,30 @@ exception if none of the protocols are supported by the server.
 Extra headers to include in the initial request.  May be either specified
 as a hash reference, or an array reference.  For example:
 
-    AnyEvent::WebSocket::Client->new(
-      http_headers => {
-        'X-Foo' => 'bar',
-        'X-Baz' => [ 'abc', 'def' ],
-      },
-    );
-    
-    AnyEvent::WebSocket::Client->new(
-      http_headers => [
-        'X-Foo' => 'bar',
-        'X-Baz' => 'abc',
-        'X-Baz' => 'def',
-      ],
-    );
+```perl
+AnyEvent::WebSocket::Client->new(
+  http_headers => {
+    'X-Foo' => 'bar',
+    'X-Baz' => [ 'abc', 'def' ],
+  },
+);
+
+AnyEvent::WebSocket::Client->new(
+  http_headers => [
+    'X-Foo' => 'bar',
+    'X-Baz' => 'abc',
+    'X-Baz' => 'def',
+  ],
+);
+```
 
 Will generate:
 
-    X-Foo: bar
-    X-Baz: abc
-    X-Baz: def
+```
+X-Foo: bar
+X-Baz: abc
+X-Baz: def
+```
 
 Although, the order cannot be guaranteed when using the hash style.
 
@@ -146,8 +152,10 @@ end-points, it reads `wss_proxy` (`WSS_PROXY`) and `https_proxy`
 
 ## connect
 
-    my $cv = $client->connect($uri)
-    my $cv = $client->connect($uri, $host, $port);
+```perl
+my $cv = $client->connect($uri)
+my $cv = $client->connect($uri, $host, $port);
+```
 
 Open a connection to the web server and open a WebSocket to the resource
 defined by the given URL.  The URL may be either an instance of [URI::ws](https://metacpan.org/pod/URI::ws),
@@ -182,18 +190,20 @@ Make sure that the connection object is still in scope.  This often happens
 if you use a `my $connection` variable and don't save it somewhere.  For
 example:
 
-    $client->connect("ws://foo/service")->cb(sub {
-    
-      my $connection = eval { shift->recv };
-      
-      if($@)
-      {
-        warn $@;
-        return;
-      }
-      
-      ...
-    });
+```perl
+$client->connect("ws://foo/service")->cb(sub {
+
+  my $connection = eval { shift->recv };
+  
+  if($@)
+  {
+    warn $@;
+    return;
+  }
+  
+  ...
+});
+```
 
 Unless `$connection` is saved somewhere it will get deallocated along with
 any associated message callbacks will also get deallocated once the connect
