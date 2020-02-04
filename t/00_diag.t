@@ -1,7 +1,7 @@
 use Test2::V0 -no_srand => 1;
 use Config;
 
-eval q{ require Test::More };
+eval { require 'Test/More.pm' };
 
 # This .t file is generated.
 # make changes instead to dist.ini
@@ -79,9 +79,11 @@ diag sprintf $format, 'perl ', $];
 
 foreach my $module (sort @modules)
 {
-  if(eval qq{ require $module; 1 })
+  my $pm = "$module.pm";
+  $pm =~ s{::}{/}g;
+  if(eval { require $pm; 1 })
   {
-    my $ver = eval qq{ \$$module\::VERSION };
+    my $ver = eval { $module->VERSION };
     $ver = 'undef' unless defined $ver;
     diag sprintf $format, $module, $ver;
   }
@@ -100,3 +102,4 @@ if($post_diag)
 spacer;
 
 done_testing;
+
