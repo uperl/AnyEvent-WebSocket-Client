@@ -11,24 +11,24 @@ subtest 'send' => sub {
   my($a,$b) = create_connection_pair;
 
   my $round_trip = sub {
-  
+
     my($message) = @_;
-    
+
     my $done = AnyEvent->condvar;
-    
+
     $b->on(next_message => sub {
       my(undef, $message) = @_;
       $done->send($message);
     });
-    
+
     $a->send($message);
-    
+
     $done->recv;
-  
+
   };
 
   subtest 'string' => sub {
-  
+
     is(
       $round_trip->('hello world'),
       object {
@@ -36,11 +36,11 @@ subtest 'send' => sub {
       },
     );
   };
-  
+
   require AnyEvent::WebSocket::Message;
-  
+
   subtest 'message object' => sub {
-  
+
     is(
       $round_trip->(AnyEvent::WebSocket::Message->new(
         body => 'And another one',
@@ -49,9 +49,9 @@ subtest 'send' => sub {
         call body => 'And another one';
       },
     );
-  
+
   };
-  
+
   subtest 'is_text' => sub {
 
     is(
@@ -64,10 +64,10 @@ subtest 'send' => sub {
         call is_text => T();
         call is_binary => F();
       },
-    );  
+    );
 
   };
-  
+
 
   subtest 'is_binary' => sub {
 
@@ -81,10 +81,10 @@ subtest 'send' => sub {
         call is_text => F();
         call is_binary => T();
       },
-    );  
+    );
 
   };
-  
+
   subtest 'ping' => sub {
 
     skip_all 'no pong callback... yet';
@@ -95,9 +95,9 @@ subtest 'send' => sub {
         body   => 'zz',
       )
     );
-    
+
   };
-  
+
   {
     my @test_data = (
       {label => "single character", data => "a"},
@@ -106,7 +106,7 @@ subtest 'send' => sub {
       {label => "0", data => 0},
       {label => "utf8 charaters", data => 'ＵＴＦ８ ＷＩＤＥ ＣＨＡＲＡＣＴＥＲＳ'},
     );
-    
+
     foreach my $case (@test_data)
     {
       subtest $case->{label} => sub {
@@ -127,24 +127,24 @@ subtest 'send' => sub {
       };
     }
   }
-  
+
   subtest 'close' => sub {
-  
+
     my $done = AnyEvent->condvar;
-  
+
     $b->on(finish => sub {
       $done->send;
     });
-  
+
     $a->send(
       AnyEvent::WebSocket::Message->new(
         opcode => 8,
         body   => pack('naa', 1005, 'b','b'),
       ),
     );
-    
+
     $done->recv;
-    
+
     is(
       $b,
       object {
@@ -153,14 +153,14 @@ subtest 'send' => sub {
       },
     );
   };
-  
+
 };
 
 subtest 'masked attribute should control whether the frames sent by the Connection are masked or not' => sub {
 
   foreach my $masked (0,1)
   {
-  
+
     subtest "masked = $masked" => sub {
       my ($a_conn, $b_handle) = create_connection_and_handle({masked => $masked});
       my $cv_finish = AnyEvent->condvar;
@@ -173,7 +173,7 @@ subtest 'masked attribute should control whether the frames sent by the Connecti
       $a_conn->send("Hello");
       $cv_finish->recv;
     };
-  
+
   }
 
 };
@@ -374,7 +374,7 @@ subtest 'Connection should refuse extremely huge messages' => sub {
         $cv_finish->send;
         return;
       }
-    
+
       # push_write is delayed to prevent deep-recursion and to give
       # $a_conn chance to receive data.
       my $w; $w = AnyEvent->idle(cb => sub {
@@ -403,7 +403,7 @@ subtest 'Connection should refuse extremely huge messages' => sub {
     $b_handle->on_error(sub {
       my $handle = shift;
       $handle->push_shutdown;
-      $cv_finish->end; 
+      $cv_finish->end;
     });
     $b_handle->on_read(sub {});
 
@@ -437,20 +437,20 @@ subtest 'other end is closed' => sub {
   my($a,$b) = create_connection_pair;
 
   my $round_trip = sub {
-  
+
     my($message) = @_;
-    
+
     my $done = AnyEvent->condvar;
-    
+
     $b->on(next_message => sub {
       my(undef, $message) = @_;
       $done->send($message);
     });
-    
+
     $a->send($message);
-    
+
     $done->recv;
-  
+
   };
 
   my $closed = 0;
@@ -476,11 +476,11 @@ subtest 'other end is closed' => sub {
     },
     'quit',
   );
-  
+
   $a->close;
-  
+
   $quit_cv->recv;
-  
+
   is $closed, 1, "closed";
 
 };
@@ -495,22 +495,22 @@ subtest 'close codes' => sub {
     [ [1000],             [1000, ''],         'normal close code'               ],
     [ [1000, 'a reason'], [1000, 'a reason'], 'normal close code with reason'   ],
   );
-  
+
   foreach my $test_data (@test_data)
   {
     my($args, $expected, $label) = @$test_data;
     subtest $label => sub {
-    
+
       my($a,$b) = create_connection_pair;
-      
+
       my $done = AnyEvent->condvar;
-      
+
       $b->on(finish => sub { $done->send });
-      
+
       $a->close(@$args);
-      
+
       $done->recv;
-      
+
       is(
         $b,
         object {
@@ -518,7 +518,7 @@ subtest 'close codes' => sub {
           call close_reason => $expected->[1];
         },
       );
-    
+
     };
   }
 
@@ -530,7 +530,7 @@ subtest 'next_message callback can be set from within a next_message callback' =
 
   my $round_trip = sub {
     my $done = AnyEvent->condvar;
-    
+
     $b->on(next_message => sub {
       my(undef, $message) = @_;
       $first_msg = $message;
@@ -541,7 +541,7 @@ subtest 'next_message callback can be set from within a next_message callback' =
         $done->send;
       });
     });
-    
+
     $a->send('first');
     $done->recv;
   };
@@ -565,9 +565,9 @@ subtest 'next_message callback can be set from within a next_message callback' =
     },
     'second message',
   );
-  
+
   $a->close;
-  
+
   $quit_cv->recv;
 };
 
