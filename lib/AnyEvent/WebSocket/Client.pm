@@ -7,7 +7,6 @@ use AE;
 use AnyEvent;
 use AnyEvent::Handle;
 use AnyEvent::Socket ();
-use AnyEvent::Connector;
 use Protocol::WebSocket::Request;
 use Protocol::WebSocket::Handshake::Client;
 use AnyEvent::WebSocket::Connection;
@@ -371,6 +370,7 @@ sub _make_tcp_connection
   {
     return &AnyEvent::Socket::tcp_connect(@_);
   }
+  require AnyEvent::Connector;
   my @connectors =
       $scheme eq "ws"
       ? (map { AnyEvent::Connector->new(env_proxy => $_) } qw(ws http))
