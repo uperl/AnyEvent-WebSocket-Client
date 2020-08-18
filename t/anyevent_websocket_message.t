@@ -11,8 +11,9 @@ my %ops = qw(
 
 my @methods = map { "is_$_" } keys %ops;
 
-while(my($type, $opcode) = each %ops)
+foreach my $type (keys %ops)
 {
+  my $opcode = $ops{$type};
   subtest $type => sub {
     plan tests => 8;
     my $message = AnyEvent::WebSocket::Message->new(body => 'body', opcode => $opcode);

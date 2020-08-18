@@ -4,7 +4,7 @@ services:
   - docker
 
 before_install:
-  - curl https://raw.githubusercontent.com/plicease/cip/master/bin/travis-bootstrap | bash
+  - curl https://raw.githubusercontent.com/plicease/cip/main/bin/travis-bootstrap | bash
   - cip before-install
 
 install:
@@ -16,9 +16,11 @@ script:
 
 jobs:
   include:
-    - env: CIP_TAG=5.31        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=static
+    - env: CIP_TAG=5.33        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.32        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.32-buster CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.30        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
-    - env: CIP_TAG=5.30-buster CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.28        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.26        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.24        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
@@ -34,6 +36,11 @@ jobs:
   allow_failures:
     - env: CIP_TAG=5.30-buster CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'  
 
+
+branches:
+  only:
+    - master
+    - main
 
 cache:
   directories:
