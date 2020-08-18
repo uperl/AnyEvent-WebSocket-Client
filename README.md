@@ -1,4 +1,4 @@
-# AnyEvent::WebSocket::Client [![Build Status](https://secure.travis-ci.org/plicease/AnyEvent-WebSocket-Client.png)](http://travis-ci.org/plicease/AnyEvent-WebSocket-Client) ![windows](https://github.com/plicease/AnyEvent-WebSocket-Client/workflows/windows/badge.svg) ![macos](https://github.com/plicease/AnyEvent-WebSocket-Client/workflows/macos/badge.svg)
+# AnyEvent::WebSocket::Client [![Build Status](https://travis-ci.org/plicease/AnyEvent-WebSocket-Client.svg)](http://travis-ci.org/plicease/AnyEvent-WebSocket-Client) ![windows](https://github.com/plicease/AnyEvent-WebSocket-Client/workflows/windows/badge.svg) ![macos](https://github.com/plicease/AnyEvent-WebSocket-Client/workflows/macos/badge.svg)
 
 WebSocket client for AnyEvent
 
