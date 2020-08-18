@@ -27,14 +27,13 @@ jobs:
     - env: CIP_TAG=5.22        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.20        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.18        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
-    - env: CIP_TAG=5.16        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.14        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.12        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.10.1      CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.10.0      CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
     - env: CIP_TAG=5.8         CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
   allow_failures:
-    - env: CIP_TAG=5.32-buster CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
+    - env: CIP_TAG=5.16        CIP_ENV='PERL_AE_WS_C_TEST_PROXY_URL=http://localhost:3128 PERL_AE_WS_C_TEST_PROXY_ON=1'
 
 
 branches:
