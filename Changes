@@ -2,6 +2,10 @@ Revision history for {{$dist->name}}
 
 {{$NEXT}}
 
+0.54      2021-03-19 06:13:48 -0600
+  - Delay loading AnyEvent::Connector until needed.
+  - Moved git repository to new github org.
+
 0.53      2019-04-01 08:42:05 -0400
   - Add missing timeout from test that could otherwise hang with a
     broken combination of Debian Buster / Net::SSLeay / AnyEvent.
