@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         cip_tag:
           - static
@@ -42,7 +43,7 @@ jobs:
 
       - name: Bootstrap CIP
         run: |
-          curl https://raw.githubusercontent.com/plicease/cip/main/bin/github-bootstrap | bash
+          curl -L https://raw.githubusercontent.com/uperl/cip/main/bin/github-bootstrap | bash
 
       - name: Cache-Key
         id: cache-key
@@ -73,3 +74,8 @@ jobs:
       - name: Build + Test
         run: |
           cip script
+
+      - name: CPAN log
+        if: ${{ failure() }}
+        run: |
+          cip exec bash -c 'cat $HOME/.cpanm/latest-build/build.log'
