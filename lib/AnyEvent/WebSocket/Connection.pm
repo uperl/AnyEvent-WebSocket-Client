@@ -463,7 +463,7 @@ sub on
 Close the connection.  You may optionally provide a code and a reason.
 See L<section 5.5.1|https://tools.ietf.org/html/rfc6455#section-5.5.1> and L<section 7.4.1|https://tools.ietf.org/html/rfc6455#section-7.4.1> of RFC6455.
 
-The code is a 16-bit unsigned integer value that indicates why you close the connection. By default the code is 1005.
+The code is a 16-bit unsigned integer value that indicates why you close the connection. By default the code is 1000.
 
 The reason is a character string (not an octet string) that further describes why you close the connection. By default the reason is an empty string.
 
@@ -473,7 +473,7 @@ sub close
 {
   my($self, $code, $reason) = @_;
 
-  my $body = pack('n', ($code) ? $code : '1005');
+  my $body = pack('n', ($code) ? $code : '1000');
 
   $body .= Encode::encode 'UTF-8', $reason if defined $reason;
 

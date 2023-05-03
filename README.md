@@ -1,4 +1,4 @@
-# AnyEvent::WebSocket::Client ![linux](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/linux/badge.svg) ![windows](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/windows/badge.svg) ![macos](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/macos/badge.svg) ![cygwin](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/cygwin/badge.svg) ![msys2-mingw](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/msys2-mingw/badge.svg)
+# AnyEvent::WebSocket::Client ![linux](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/linux/badge.svg) ![windows](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/windows/badge.svg) ![macos](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/macos/badge.svg) ![msys2-mingw](https://github.com/uperl/AnyEvent-WebSocket-Client/workflows/msys2-mingw/badge.svg)
 
 WebSocket client for AnyEvent
 
@@ -250,7 +250,7 @@ Daniel Kamil Kozar (xavery)
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2013 by Graham Ollis.
+This software is copyright (c) 2013-2022 by Graham Ollis.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.

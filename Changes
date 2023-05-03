@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  [WARNING: change in behavior]
+  - Fix the default code for close to be 1000 (gh#61, gh#62)
 
 0.54      2021-03-19 06:13:48 -0600
   - Delay loading AnyEvent::Connector until needed.
