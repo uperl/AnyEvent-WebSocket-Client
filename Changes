@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+
+0.55      2023-05-04 10:28:24 -0600
   [WARNING: change in behavior]
   - Fix the default code for close to be 1000 (gh#61, gh#62)
 
