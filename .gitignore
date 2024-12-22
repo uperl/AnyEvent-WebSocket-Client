@@ -3,3 +3,5 @@
 /example/output
 *.swp
 *~
+*.old
+*.orig
